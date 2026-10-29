@@ -1,0 +1,248 @@
+--- spec-antes-da2
++++ spec-da2-aceptada
+@@ -1,7 +1,7 @@
+ # Spec 001 — WMS operativo con editor visual y almacén 3D
+ 
+-Estado: base, enmienda 01 y perfil de validación de DA-1 aprobados por el usuario;
+-pendiente de cierre de DA-2 a DA-7 antes del plan técnico.
++Estado: base, enmienda 01 y decisiones DA-1 y DA-2 aprobadas por el usuario;
++pendiente de cierre de DA-3 a DA-7 antes del plan técnico.
+ 
+ ## Contexto y objetivo
+ 
+@@ -27,9 +27,10 @@
+ El usuario aprobó la base de esta especificación y la enmienda 01 que corrige
+ errores detectados en su revisión. Las correcciones se identifican en
+ «Historial de cambios». Las decisiones que no pueden cerrarse con el contexto
+-disponible se identifican como DA-2 a DA-7 en «Dudas abiertas»; no se consideran
++disponible se identifican como DA-3 a DA-7 en «Dudas abiertas»; no se consideran
+ resueltas por aprobar el alcance general ni por solicitar estas correcciones.
+ DA-1 está resuelta mediante el perfil de validación aceptado por el usuario.
++DA-2 está resuelta mediante las reglas de datos e importación aceptadas.
+ 
+ ### Definiciones funcionales
+ 
+@@ -41,6 +42,10 @@
+ - **Ubicación:** espacio identificado en el que se registra mercancía. Puede
+   pertenecer a una zona directamente o estar dentro de un rack y nivel.
+ - **SKU:** código que identifica un producto dentro del catálogo de la empresa.
++- **Unidad base:** unidad declarada para las cantidades de un producto. Las
++  piezas, cajas y pallets se cuentan en enteros; el peso, volumen y longitud
++  admiten hasta tres decimales en su unidad base. No se convierten cantidades
++  automáticamente entre cajas y piezas ni entre otras presentaciones.
+ - **Existencia física registrada:** cantidad que el WMS registra en una
+   ubicación; su visualización no equivale a una comprobación por sensores.
+ - **Cantidad reservada:** parte de la existencia comprometida para un pedido y
+@@ -251,8 +256,8 @@
+ - RF-41: SI un producto tiene existencias, reservas u operaciones abiertas,
+   ENTONCES EL SISTEMA rechazará su eliminación.
+ 
+-Las cantidades fraccionarias, conversiones entre presentaciones y cambios de
+-unidad se resolverán en DA-2.
++Las cantidades se registran en la unidad base del producto conforme a las
++reglas de datos aprobadas. La importación de catálogo no cambia esa unidad.
+ 
+ ### Recepciones y movimientos internos — H5
+ 
+@@ -358,12 +363,13 @@
+ 
+ ### Importación y exportación — H10, H11
+ 
+-- RF-80: CUANDO un administrador cargue un archivo CSV o Excel admitido,
++- RF-80: CUANDO un administrador cargue un archivo CSV o XLSX admitido,
+   EL SISTEMA mostrará una previsualización de los registros interpretados.
+ - RF-81: CUANDO un administrador solicite validar una importación, EL SISTEMA
+   identificará los registros inválidos antes de permitir aplicarla.
+-- RF-82: SI una importación contiene registros inválidos o duplicados,
+-  ENTONCES EL SISTEMA impedirá aplicarla hasta corregir esos registros.
++- RF-82: SI una importación contiene registros inválidos o duplicados dentro
++  del mismo archivo, ENTONCES EL SISTEMA impedirá aplicarla hasta corregir
++  esos registros.
+ - RF-83: SI una importación no corresponde al formato admitido, ENTONCES
+   EL SISTEMA rechazará el archivo con una explicación del motivo.
+ - RF-84: CUANDO un administrador confirme una importación válida de catálogo,
+@@ -380,14 +386,25 @@
+ - RF-88: SI falla la aplicación de una importación, ENTONCES EL SISTEMA
+   mantendrá los datos anteriores a esa importación.
+ - RF-89: CUANDO un administrador o supervisor solicite exportar inventario o
+-  historial a CSV o Excel, EL SISTEMA generará el archivo con los filtros y la
++  historial a CSV o XLSX, EL SISTEMA generará el archivo con los filtros y la
+   empresa de la consulta activa.
+ - RF-90: EL SISTEMA tratará como texto los valores de catálogo que podrían
+   interpretarse como fórmulas al abrir una exportación en una hoja de cálculo.
+ 
+ Los límites de archivo y volumen son los del perfil de validación aprobado.
+-Las variantes de Excel admitidas y el comportamiento para actualizar productos
+-existentes requieren resolver DA-2.
++Los formatos admitidos son CSV y XLSX. Una importación de catálogo puede crear
++productos o actualizar el nombre de productos existentes, identificados por
++su SKU dentro de la empresa, sin cambiar su código, unidad ni existencias.
++Las existencias iniciales se incorporan por su flujo separado, conforme a
++RF-85 y RF-86.
++
++Una repetición del mismo SKU dentro de un archivo de catálogo es un duplicado;
++una fila cuyo SKU ya existe en el catálogo es una actualización, no un
++duplicado por ese único motivo. En una importación de existencias iniciales,
++la repetición de la misma combinación de producto y ubicación es un duplicado.
++Las comparaciones de códigos conservan las reglas de mayúsculas y espacios
++exteriores de RF-17 y RF-35.
++
+ La importación de pedidos, distribuciones físicas o historial antiguo no está
+ incluida en esta primera propuesta.
+ 
+@@ -509,6 +526,68 @@
+ Para este límite, 20 MB equivalen a 20.000.000 bytes; los registros de datos no
+ incluyen la fila de encabezados. Un archivo que cumple estos límites sigue
+ sujeto al resto de validaciones de importación.
++
++### Reglas de datos e importación aprobadas — H2, H4, H9, H10, H11
++
++- RF-123: SI una cantidad de un producto contado en piezas, cajas o pallets
++  no es entera, ENTONCES EL SISTEMA rechazará esa cantidad.
++- RF-124: SI una cantidad de peso, volumen o longitud contiene más de tres
++  decimales, ENTONCES EL SISTEMA la rechazará sin redondearla automáticamente.
++- RF-125: EL SISTEMA registrará las cantidades de cada producto en su unidad
++  base sin convertirlas automáticamente a otra presentación.
++- RF-126: EL SISTEMA mostrará y solicitará las dimensiones del editor en metros.
++- RF-127: SI un nombre está vacío después de retirar espacios exteriores o
++  supera 160 caracteres, ENTONCES EL SISTEMA rechazará su guardado.
++- RF-128: SI un código está vacío después de retirar espacios exteriores,
++  supera 64 caracteres o contiene caracteres distintos de letras, números,
++  guion, guion bajo, punto o barra inclinada, ENTONCES EL SISTEMA rechazará
++  su guardado.
++- RF-129: CUANDO se configure una empresa sin una elección distinta de zona
++  horaria, EL SISTEMA utilizará America/Lima para sus fechas.
++- RF-130: CUANDO un administrador configure una zona horaria válida para su
++  empresa, EL SISTEMA la utilizará para las consultas de fechas de esa empresa.
++- RF-131: EL SISTEMA mostrará las fechas operativas en la zona horaria
++  configurada para la empresa de la sesión.
++- RF-132: CUANDO un usuario filtre por fechas inicial y final válidas,
++  EL SISTEMA incluirá ambos días completos según la zona horaria de su empresa.
++- RF-133: SI la fecha final de un filtro precede a su fecha inicial, ENTONCES
++  EL SISTEMA rechazará ese filtro.
++- RF-134: CUANDO un administrador confirme una importación válida de catálogo
++  con un SKU existente en su empresa, EL SISTEMA actualizará el nombre del
++  producto correspondiente.
++- RF-135: SI una fila de importación intenta cambiar la unidad base de un
++  producto existente, ENTONCES EL SISTEMA rechazará la importación.
++- RF-136: CUANDO se previsualice una importación de catálogo, EL SISTEMA
++  distinguirá las creaciones propuestas de las actualizaciones propuestas.
++- RF-137: CUANDO una importación actualice el nombre de un producto,
++  EL SISTEMA conservará su SKU y unidad base anteriores.
++- RF-138: CUANDO una importación actualice el nombre de un producto,
++  EL SISTEMA conservará sus cantidades de inventario anteriores.
++
++### Reglas de datos aprobadas — DA-2 resuelta
++
++| Tema | Regla acordada |
++|---|---|
++| Cantidades | Piezas, cajas y pallets enteros; peso, volumen y longitud hasta tres decimales. |
++| Unidades | Una unidad base por producto; sin conversiones automáticas de presentaciones. |
++| Dimensiones del editor | Metros. |
++| Nombres | Obligatorios, hasta 160 caracteres. |
++| Códigos de negocio | Obligatorios, hasta 64 caracteres; letras, números y los símbolos `-`, `_`, `.` y `/`. |
++| Fechas | Zona configurable por empresa, inicialmente America/Lima; días inicial y final incluidos en los filtros. |
++| Archivos | CSV y XLSX, previsualizados y validados antes de aplicar. |
++| Productos existentes | Actualización del nombre por SKU conservando código, unidad y existencias. |
++
++Los nombres comprenden los de empresa, almacenes, elementos de su distribución,
++productos y personas. Los códigos de negocio comprenden los SKU y códigos de
++almacén y elementos de su distribución; no son las credenciales de acceso,
++cuyas reglas se concretarán en DA-3. Los espacios exteriores se retiran antes
++de comprobar nombres y códigos; no se aceptan espacios internos en los códigos.
++
++El registro de cero en un conteo continúa permitido. Las reglas de enteros y
++precisión se aplican también a los conteos e importaciones. La actualización
++del nombre por importación no permite cambiar la unidad base ni convertir las
++existencias de un producto existente. Los detalles del formato de intercambio
++se documentarán en el contrato del plan sin cambiar estas reglas.
+ 
+ ## Requisitos no funcionales
+ 
+@@ -591,13 +670,18 @@
+ | Usuario sin sesión, desactivado o de otra empresa | Rechazar el acceso; RF-4, RF-5, RF-8. |
+ | Último administrador activo | Impedir su desactivación o pérdida de rol; RF-9. |
+ | Código duplicado con mayúsculas o espacios exteriores | Rechazar el duplicado en su ámbito; RF-17, RF-35. |
+-| Código vacío o con caracteres no admitidos | Pendiente de los límites de entrada de DA-2. |
++| Nombre vacío o mayor a 160 caracteres | Rechazar el guardado; RF-127. |
++| Código vacío, mayor a 64 caracteres o con caracteres no admitidos | Rechazar el guardado; RF-128. |
++| Nombre de 160 caracteres o código de 64 caracteres | Aceptar la longitud si cumple las demás validaciones; RF-127, RF-128. |
+ | Cantidad cero o negativa en una recepción o pedido | Rechazar la confirmación; RF-43, RF-51. |
+ | Cantidad no positiva en movimiento, reserva, preparación o despacho | Rechazar la confirmación; RF-107. |
+ | Conteo observado igual a cero | Permitir registrar la observación sin modificar stock; RF-64, RF-65. |
+ | Conteo negativo, no numérico, infinito o sin cantidad | Rechazar el registro; RF-108. |
+ | Ubicación con varios productos al contar | Asociar cada cantidad observada a su producto y ubicación; RF-64, RF-66, RF-109. |
+-| Cantidades fraccionarias y cambios de unidad | Pendiente de DA-2. |
++| Cantidad fraccionaria de piezas, cajas o pallets | Rechazar la cantidad; RF-123. |
++| Peso, volumen o longitud con hasta tres decimales | Evaluar con las demás reglas sin redondeo automático; RF-124, RF-125. |
++| Peso, volumen o longitud con más de tres decimales | Rechazar sin redondear; RF-124. |
++| Cambio de unidad por importación de un SKU existente | Rechazar la importación; RF-135. |
+ | Dimensiones nulas, negativas o no numéricas | Rechazar el guardado; RF-15. |
+ | Ubicación fuera del elemento que la contiene | Rechazar el guardado; RF-16. |
+ | Superposición entre racks, pasillos y zonas | Pendiente de DA-6. |
+@@ -621,6 +705,9 @@
+ | Importación que supera 20 MB o 20.000 registros de datos | Rechazar la aplicación sin modificar datos de negocio; RF-122. |
+ | Importación de exactamente 20 MB o 20.000 registros de datos | Evaluar el archivo con las demás validaciones; el valor límite por sí solo no lo rechaza; RF-122. |
+ | Archivo con filas inválidas o duplicadas | No aplicar la importación; RF-82. |
++| SKU existente en la empresa y no repetido en el archivo de catálogo | Previsualizar una actualización de nombre conservando código, unidad y cantidades; RF-134 a RF-138. |
++| Archivo de catálogo que mezcla SKU nuevos y existentes | Previsualizar las creaciones y actualizaciones con aplicación íntegra o sin cambios si falla; RF-84, RF-88, RF-134, RF-136. |
++| Archivo de formato distinto de CSV o XLSX | Rechazar con explicación; RF-83. |
+ | Importación repetida tras perder la respuesta | No duplicar efectos; RF-87, RF-102. |
+ | Reintentos concurrentes de una operación con igual empresa, referencia y datos | Conservar un único resultado confirmado sin duplicar efectos; RF-87, RF-102, RF-110. |
+ | Referencia repetida con cantidades, ubicaciones u otros datos de negocio distintos | Rechazar la nueva solicitud sin alterar los datos existentes; RF-111. |
+@@ -635,7 +722,8 @@
+ | Identificador de acceso duplicado en la empresa o rol no permitido | Rechazar la acción correspondiente; RF-114, RF-115. |
+ | Reinicio después de una operación confirmada | Conservar el resultado; RF-104. |
+ | Respaldo inválido o incompatible | No sustituir datos válidos; detalle del procedimiento pendiente del plan y su verificación. |
+-| Rangos de fechas e instalaciones en zonas horarias distintas | Zona horaria, límites del intervalo y presentación pendientes de DA-2. |
++| Consulta de fechas desde una zona horaria distinta de la empresa | Aplicar la zona de la empresa e incluir ambos días extremos del intervalo; RF-130 a RF-132. |
++| Fecha final anterior a la inicial | Rechazar el filtro; RF-133. |
+ | Volumen que exceda el perfil de validación | No considerarlo capacidad demostrada de esta entrega; el perfil no impone un bloqueo comercial por licencia. |
+ 
+ ## Fuera de alcance
+@@ -705,17 +793,21 @@
+   importación y carga inicial 3D aprobados.
+ - CF-18: La revisión de interfaz incluye el editor a 1280 × 720 y la consulta
+   y las operaciones móviles a 360 × 800.
++- CF-19: Las comprobaciones de cantidades distinguen enteros, hasta tres
++  decimales y exceso de precisión sin redondeos silenciosos.
++- CF-20: Las comprobaciones de importación distinguen creaciones,
++  actualizaciones de nombre, duplicados y cambios de unidad rechazados.
++- CF-21: Las comprobaciones de fechas incluyen ambos días extremos del rango
++  según la zona de la empresa, aunque el dispositivo use otra zona horaria.
+ 
+ ## Dudas abiertas
+ 
+ - **DA-1 — Escala y plataformas: resuelta.** El usuario aceptó el perfil de
+   validación, sus objetivos temporales y los tamaños de pantalla descritos en
+   los requisitos no funcionales.
+-- **DA-2 — Reglas de datos y archivos.** [NECESITA ACLARACIÓN: ¿qué unidades y
+-  cantidades fraccionarias se admitirán, habrá conversiones de presentaciones,
+-  qué límites tendrán nombres y códigos, qué zona horaria regirá las consultas
+-  y qué variantes de Excel y actualizaciones de catálogo por importación se
+-  admitirán?]
++- **DA-2 — Reglas de datos y archivos: resuelta.** El usuario aceptó las reglas
++  de cantidades, unidades, dimensiones, nombres, códigos, fechas, formatos y
++  actualizaciones de catálogo descritas en esta especificación.
+ - **DA-3 — Alta y acceso inicial.** [NECESITA ACLARACIÓN: ¿cómo se crearán las
+   empresas y su primer administrador en esta primera versión; habrá registro
+   del visitante o alta inicial controlada para la demostración?]
+@@ -778,3 +870,18 @@
+ - Se conserva la numeración existente y la constitución permanece intacta.
+ - DA-2 a DA-7 continúan abiertas. No se generan plan, tareas ni código de la
+   aplicación mientras queden estas decisiones por cerrar.
++
++### 2026-10-29 — Enmienda 03: reglas de datos e importación aceptadas
++
++- DA-2 se cierra con las reglas aceptadas explícitamente por el usuario.
++- Se añaden RF-123 a RF-138 para expresar cantidades enteras o de hasta tres
++  decimales, unidad base sin conversiones, dimensiones en metros, nombres y
++  códigos limitados, zona horaria por empresa y actualización del nombre por
++  importación sin cambiar SKU, unidad ni inventario.
++- RF-80 y RF-89 concretan los formatos CSV y XLSX. RF-82 precisa que el
++  duplicado se evalúa dentro del archivo, diferenciándolo de un SKU existente
++  que se va a actualizar.
++- Se concretan las definiciones, casos límite y CF-19 a CF-21 afectados por
++  estas reglas. Se conservan los identificadores y requisitos no afectados.
++- El resto de decisiones DA-3 a DA-7 continúa abierto; la constitución
++  permanece sin cambios.

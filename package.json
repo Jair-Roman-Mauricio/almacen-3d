@@ -1,0 +1,36 @@
+{
+  "name": "almacen-3d",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.22.1",
+    "pnpm": "12.16.1"
+  },
+  "packageManager": "pnpm@12.16.1",
+  "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.19.2",
+    "@types/supertest": "7.2.1",
+    "@nestjs/testing": "12.3.2",
+    "eslint": "10.13.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.72.1",
+    "vitest": "5.0.5",
+    "supertest": "7.3.1",
+    "@nestjs/common": "12.3.2",
+    "@nestjs/core": "12.3.2",
+    "pg": "8.23.1",
+    "@types/pg": "8.23.1",
+    "@almacen/contracts": "workspace:*"
+  },
+  "scripts": {
+    "lint": "eslint . && node tools/check-boundaries.mjs",
+    "typecheck": "node scripts/workspaces.mjs typecheck",
+    "build": "node scripts/workspaces.mjs build",
+    "test:unit": "vitest run --config vitest.unit.config.ts",
+    "db:migrate": "pnpm --filter @almacen/database run build && node --env-file=.env packages/database/dist/migrate-cli.js",
+    "test:integration": "node scripts/workspaces.mjs backend && tsc -p tsconfig.fixtures.json && node --env-file=.env node_modules/vitest/vitest.mjs run --config vitest.integration.config.ts",
+    "preinstall": "node scripts/check-package-manager.mjs"
+  }
+}

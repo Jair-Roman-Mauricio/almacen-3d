@@ -1,0 +1,358 @@
+--- spec-base-aprobada
++++ spec-enmienda-01
+@@ -1,6 +1,7 @@
+ # Spec 001 — WMS operativo con editor visual y almacén 3D
+ 
+-Estado: borrador pendiente de aprobación y revisión de ambigüedades.
++Estado: base aprobada por el usuario; enmienda de correcciones solicitada,
++pendiente de aprobación de los cambios y de cierre de dudas.
+ 
+ ## Contexto y objetivo
+ 
+@@ -23,10 +24,11 @@
+ alertas de stock bajo; importación y exportación CSV/Excel; landing y planes
+ demostrativos; y conexión al servidor obligatoria en esta primera versión.
+ 
+-Las políticas de detalle expuestas a continuación son propuestas del borrador,
+-pendientes de su aprobación. Las decisiones que no pueden cerrarse con el
+-contexto disponible se identifican como DA-1 a DA-6 en «Dudas abiertas»; no se
+-considerarán resueltas por aprobar el alcance general.
++El usuario aprobó la base de esta especificación y autorizó corregir los errores
++detectados en su revisión. Las correcciones de esta enmienda se identifican en
++«Historial de cambios». Las decisiones que no pueden cerrarse con el contexto
++disponible se identifican como DA-1 a DA-7 en «Dudas abiertas»; no se consideran
++resueltas por aprobar el alcance general ni por solicitar estas correcciones.
+ 
+ ### Definiciones funcionales
+ 
+@@ -52,12 +54,27 @@
+ - **Preparación o picking:** comprobación de la mercancía reservada que se
+   entregará en un despacho; no reduce por sí sola la existencia física
+   registrada en esta primera propuesta.
++- **Cantidad preparada pendiente de despacho:** cantidad preparada para un
++  producto, pedido y ubicación de origen que todavía no se ha despachado.
++  Un despacho confirmado deja de formar parte de esa cantidad pendiente.
+ - **Despacho:** confirmación de la salida física registrada de la mercancía
+   preparada; consume su reserva.
+-- **Conteo:** observación de una cantidad en una ubicación. Su registro no
+-  equivale a autorizar un ajuste.
++- **Conteo:** observación de la cantidad de un producto identificado en una
++  ubicación. La referencia del conteo corresponde a ese mismo producto y
++  ubicación; otros productos de la ubicación se cuentan por separado. Su
++  registro no equivale a autorizar un ajuste.
+ - **Operación confirmada:** acción que el servidor aceptó y que el usuario
+   puede consultar posteriormente en el historial.
++- **Referencia de operación:** identificador estable de una acción dentro de
++  una empresa, conservado cuando se reintenta esa acción. Los datos de la acción
++  comprenden su tipo y, según corresponda, productos, cantidades, ubicaciones,
++  pedido o contenido de la importación.
++- **Misma operación:** acción que conserva su empresa, referencia y datos de
++  negocio en un reintento. Una referencia ya utilizada no identifica otra acción
++  con datos distintos. Dos acciones iniciadas separadamente tienen referencias
++  distintas aunque sus datos de negocio coincidan.
++- **Edición desactualizada:** distribución en edición cuya versión de partida
++  dejó de ser la última guardada porque otra edición se guardó después.
+ 
+ ## Usuarios / actores
+ 
+@@ -68,11 +85,11 @@
+ - **Supervisor:** organiza el trabajo y controla el inventario de su empresa.
+ - **Operario:** ejecuta el trabajo de almacén autorizado y registra conteos.
+ 
+-### Propuesta de permisos para la primera entrega
+-
+-Esta matriz es parte del borrador que se somete a aprobación. Cada capacidad
+-queda limitada a la empresa de la sesión. No se propone un rol adicional de
+-administración global de la plataforma.
++### Permisos de la primera entrega
++
++Esta matriz pertenece a la base aprobada. Cada capacidad queda limitada a la
++empresa de la sesión. No se incorpora un rol adicional de administración
++global de la plataforma.
+ 
+ | Capacidad | Administrador | Supervisor | Operario |
+ |---|---|---|---|
+@@ -122,6 +139,8 @@
+   la conexión para evitar confirmar o repetir trabajo incorrectamente.
+ - H14: Como responsable de una instalación quiero recuperar los datos guardados
+   para continuar utilizando el WMS después de un reinicio o restauración.
++- H15: Como administrador quiero crear usuarios de mi empresa con un rol
++  permitido para que el equipo pueda utilizar el WMS con los permisos acordados.
+ 
+ ## Requisitos funcionales (criterios de aceptación en EARS)
+ 
+@@ -172,8 +191,9 @@
+   conservará la última distribución guardada.
+ - RF-20: MIENTRAS existan cambios del editor sin guardar, EL SISTEMA solicitará
+   confirmación antes de abandonar esa edición.
+-- RF-21: SI un elemento contiene existencias o ubicaciones referenciadas por
+-  operaciones abiertas, ENTONCES EL SISTEMA rechazará su eliminación.
++- RF-21: SI al confirmar una eliminación el elemento contiene existencias o
++  ubicaciones referenciadas por operaciones abiertas, ENTONCES EL SISTEMA
++  rechazará su eliminación.
+ - RF-22: CUANDO se guarde un cambio geométrico permitido, EL SISTEMA conservará
+   la identidad de las ubicaciones existentes afectadas.
+ - RF-23: CUANDO se guarde un cambio geométrico permitido, EL SISTEMA mantendrá
+@@ -206,10 +226,10 @@
+ - RF-33: EL SISTEMA permitirá consultar inventario y ubicaciones mediante una
+   lista aunque la representación 3D no esté disponible.
+ 
+-La actualización de otras sesiones sin recarga requiere el objetivo de
+-actualización pendiente en DA-1. El bloqueo de una ubicación no cancela
+-reservas que ya existían; el tratamiento de estas operaciones se revisará antes
+-de aprobar definitivamente esta política.
++La actualización de otras sesiones sin recarga requiere el objetivo pendiente
++en DA-1. El bloqueo de una ubicación no cancela reservas que ya existían; el
++tratamiento de esas operaciones y de las salidas desde ubicaciones bloqueadas
++queda pendiente de DA-7.
+ 
+ ### Catálogo y cantidades — H4
+ 
+@@ -270,7 +290,8 @@
+ - RF-55: CUANDO un usuario autorizado consulte un pedido reservado, EL SISTEMA
+   mostrará los productos y ubicaciones que debe preparar.
+ - RF-56: CUANDO un usuario autorizado registre una preparación válida,
+-  EL SISTEMA conservará la cantidad preparada para el pedido correspondiente.
++  EL SISTEMA conservará la cantidad preparada por producto y ubicación de
++  origen para el pedido correspondiente.
+ - RF-57: SI se intenta preparar una cantidad mayor que la reservada pendiente
+   de preparar, ENTONCES EL SISTEMA rechazará ese registro.
+ - RF-58: CUANDO un administrador o supervisor confirme un despacho válido,
+@@ -278,7 +299,8 @@
+   registrada en las ubicaciones reservadas.
+ - RF-59: CUANDO se confirme un despacho válido, EL SISTEMA consumirá la reserva
+   correspondiente a la cantidad despachada.
+-- RF-60: SI un despacho incluye una cantidad no preparada, ENTONCES EL SISTEMA
++- RF-60: SI un despacho supera la cantidad preparada pendiente de despacho
++  del mismo pedido, producto y ubicación de origen, ENTONCES EL SISTEMA
+   rechazará su confirmación.
+ - RF-61: SI un despacho no puede confirmarse por completo, ENTONCES EL SISTEMA
+   mantendrá las cantidades y reservas previas a ese despacho.
+@@ -293,20 +315,20 @@
+ ### Conteos, ajustes e historial — H7, H8
+ 
+ - RF-64: CUANDO un usuario autorizado registre un conteo válido, EL SISTEMA
+-  conservará la cantidad observada y la ubicación contada.
++  conservará el producto, la cantidad observada y la ubicación contada.
+ - RF-65: CUANDO se registre un conteo, EL SISTEMA mantendrá la existencia física
+   registrada hasta que se autorice un ajuste.
+ - RF-66: CUANDO se consulte un conteo, EL SISTEMA mostrará su diferencia frente
+-  a la existencia registrada que se tomó como referencia.
++  a la existencia del mismo producto y ubicación que se tomó como referencia.
+ - RF-67: CUANDO un administrador o supervisor confirme un ajuste válido con
+   motivo, EL SISTEMA aplicará la corrección autorizada al inventario.
+ - RF-68: SI un ajuste no tiene motivo, ENTONCES EL SISTEMA rechazará su
+   confirmación.
+ - RF-69: SI un ajuste dejaría la existencia por debajo de una cantidad
+   reservada, ENTONCES EL SISTEMA rechazará su confirmación.
+-- RF-70: SI hubo movimientos que modificaron la cantidad de referencia del
+-  conteo antes de autorizar su ajuste, ENTONCES EL SISTEMA rechazará el ajuste
+-  basado en esa referencia desactualizada.
++- RF-70: SI las existencias del producto y ubicación contados cambiaron después
++  de tomar la referencia del conteo y antes de autorizar su ajuste, ENTONCES
++  EL SISTEMA rechazará el ajuste basado en esa referencia desactualizada.
+ - RF-71: CUANDO se confirme una modificación de inventario, EL SISTEMA
+   conservará autor, fecha, referencia, motivo o tipo, producto, cantidad y
+   ubicaciones afectadas en su historial.
+@@ -351,8 +373,9 @@
+ - RF-86: SI una importación de existencias iniciales afecta un producto y
+   ubicación que ya registran existencias, ENTONCES EL SISTEMA rechazará esa
+   importación.
+-- RF-87: SI una importación confirmada se vuelve a enviar como la misma
+-  operación, ENTONCES EL SISTEMA no volverá a aplicar sus efectos.
++- RF-87: SI una importación confirmada se vuelve a enviar con la misma empresa,
++  referencia y datos de negocio, ENTONCES EL SISTEMA no volverá a aplicar sus
++  efectos.
+ - RF-88: SI falla la aplicación de una importación, ENTONCES EL SISTEMA
+   mantendrá los datos anteriores a esa importación.
+ - RF-89: CUANDO un administrador o supervisor solicite exportar inventario o
+@@ -398,8 +421,9 @@
+ - RF-101: CUANDO se restablezca la conexión después de una respuesta perdida,
+   EL SISTEMA permitirá consultar el resultado de la operación antes de
+   repetir sus efectos.
+-- RF-102: SI se reenvía la misma operación de inventario después de una
+-  respuesta perdida, ENTONCES EL SISTEMA no duplicará sus efectos.
++- RF-102: SI se reenvía una operación de inventario con la misma empresa,
++  referencia y datos de negocio después de una respuesta perdida, ENTONCES
++  EL SISTEMA no duplicará sus efectos.
+ - RF-103: SI dos operaciones concurrentes compiten por una cantidad que no
+   permite satisfacer ambas, ENTONCES EL SISTEMA rechazará la operación que
+   produciría una existencia negativa o una reserva excesiva.
+@@ -409,6 +433,71 @@
+   búsquedas o navegación de la vista 3D.
+ - RF-106: CUANDO un usuario tenga conexión al servidor de la instalación local,
+   EL SISTEMA permitirá completar el flujo operativo sin acceso a internet.
++
++### Validación de cantidades y conteos — H4, H5, H6, H7
++
++- RF-107: SI un movimiento interno, una reserva, una preparación o un despacho
++  indica una cantidad ausente, no numérica, infinita o menor o igual a cero,
++  ENTONCES EL SISTEMA rechazará su confirmación.
++- RF-108: SI un conteo indica una cantidad ausente, no numérica, infinita o
++  negativa, ENTONCES EL SISTEMA rechazará su registro.
++- RF-109: SI un conteo refiere un producto o una ubicación inexistente en la
++  empresa y el almacén correspondientes, ENTONCES EL SISTEMA rechazará su
++  registro.
++
++### Reintentos y acciones distintas — H10, H13
++
++- RF-110: SI se reintenta una operación ya confirmada conservando su empresa,
++  referencia y datos de negocio, ENTONCES EL SISTEMA devolverá el resultado
++  registrado de esa confirmación al usuario autorizado.
++- RF-111: SI se reutiliza una referencia de operación con datos de negocio
++  distintos dentro de la misma empresa, ENTONCES EL SISTEMA rechazará la nueva
++  solicitud sin modificar los datos de negocio existentes.
++- RF-112: CUANDO un usuario inicie otra acción con una referencia nueva y datos
++  de negocio iguales a los de una acción anterior, EL SISTEMA la evaluará como
++  una operación distinta sujeta a sus validaciones de negocio.
++
++### Alta de usuarios de una empresa existente — H1, H15
++
++- RF-113: CUANDO un administrador registre un usuario válido con nombre,
++  identificador de acceso y rol permitido, EL SISTEMA lo incorporará a la
++  empresa de la sesión del administrador.
++- RF-114: SI el identificador de acceso de un nuevo usuario ya existe en esa
++  empresa ignorando mayúsculas y espacios exteriores, ENTONCES EL SISTEMA
++  rechazará la creación duplicada.
++- RF-115: SI el rol indicado al crear o modificar un usuario no es
++  administrador, supervisor u operario, ENTONCES EL SISTEMA rechazará la acción.
++
++El acceso inicial y las credenciales de los usuarios se concretarán al resolver
++DA-3; estos requisitos no habilitan el registro público ni crean empresas
++adicionales.
++
++### Ediciones concurrentes de la distribución — H2
++
++- RF-116: SI un administrador intenta guardar una edición desactualizada de la
++  distribución, ENTONCES EL SISTEMA rechazará ese guardado sin reemplazar la
++  última distribución guardada.
++- RF-117: SI se rechaza un guardado por edición desactualizada, ENTONCES
++  EL SISTEMA conservará el borrador de esa sesión identificado como no guardado.
++
++Estos requisitos no introducen mezcla automática de ediciones ni una biblioteca
++de versiones del layout.
++
++### Consumo de reservas y preparación al despachar — H6
++
++- RF-118: SI un despacho supera la reserva vigente del mismo pedido, producto
++  y ubicación de origen, ENTONCES EL SISTEMA rechazará su confirmación.
++- RF-119: CUANDO un despacho se confirme, EL SISTEMA reducirá la cantidad
++  preparada pendiente de despacho por la cantidad despachada correspondiente.
++- RF-120: SI un nuevo despacho afecta a un pedido cuyas cantidades ya fueron
++  despachadas por completo, ENTONCES EL SISTEMA rechazará su confirmación.
++- RF-121: SI varios despachos concurrentes de un mismo pedido intentarían
++  consumir una cantidad mayor que la reservada o preparada pendiente de
++  despacho, ENTONCES EL SISTEMA rechazará los despachos que excedan esos saldos.
++
++RF-120 se aplica a una nueva operación de despacho; la repetición de una
++operación ya confirmada conserva el comportamiento de RF-110. Estas
++salvaguardas no resuelven la política de despachos parciales pendiente en DA-4.
+ 
+ ## Requisitos no funcionales
+ 
+@@ -451,19 +540,26 @@
+ | Código duplicado con mayúsculas o espacios exteriores | Rechazar el duplicado en su ámbito; RF-17, RF-35. |
+ | Código vacío o con caracteres no admitidos | Pendiente de los límites de entrada de DA-2. |
+ | Cantidad cero o negativa en una recepción o pedido | Rechazar la confirmación; RF-43, RF-51. |
++| Cantidad no positiva en movimiento, reserva, preparación o despacho | Rechazar la confirmación; RF-107. |
+ | Conteo observado igual a cero | Permitir registrar la observación sin modificar stock; RF-64, RF-65. |
++| Conteo negativo, no numérico, infinito o sin cantidad | Rechazar el registro; RF-108. |
++| Ubicación con varios productos al contar | Asociar cada cantidad observada a su producto y ubicación; RF-64, RF-66, RF-109. |
+ | Cantidades fraccionarias y cambios de unidad | Pendiente de DA-2. |
+ | Dimensiones nulas, negativas o no numéricas | Rechazar el guardado; RF-15. |
+ | Ubicación fuera del elemento que la contiene | Rechazar el guardado; RF-16. |
+ | Superposición entre racks, pasillos y zonas | Pendiente de DA-6. |
+ | Borrar rack con existencias o trabajo pendiente | Rechazar la eliminación; RF-21. |
++| Entrada de existencias después de abrir el editor y antes de eliminar un elemento | Rechazar la eliminación al comprobar su estado en la confirmación; RF-21. |
+ | Descartar o abandonar cambios de distribución | Conservar lo guardado; RF-19, RF-20. |
++| Dos administradores guardan ediciones basadas en la misma distribución anterior | Conservar el primer guardado válido y rechazar el desactualizado manteniendo su borrador; RF-116, RF-117. |
+ | Buscar un producto inexistente | Mostrar ausencia de resultados; RF-29. |
+ | Lienzo 3D no disponible | Permitir la alternativa operativa; RF-33, RNF-6. |
+-| Ubicación bloqueada con reservas anteriores | No cancelar automáticamente la reserva; política final pendiente de revisión. |
++| Ubicación bloqueada con reservas anteriores | No cancelar automáticamente la reserva; preparación, despacho y salidas pendientes de DA-7. |
+ | Dos reservas simultáneas de la última cantidad disponible | No confirmar ambas si exceden el stock; RF-103. |
+-| Mover mercancía que ya está reservada | Rechazar la parte que excede la cantidad no reservada; RF-47. |
++| Mover una cantidad mayor que la disponible no reservada | Rechazar el movimiento completo sin cambiar las cantidades; RF-47, RF-48. |
+ | Cancelar pedido ya preparado o despachado | Rechazar la cancelación; RF-63. |
++| Nueva operación de despacho sobre un pedido completamente despachado | Rechazar la operación; RF-120. |
++| Varios despachos concurrentes sobre el mismo saldo reservado y preparado | No consumir ese saldo más de una vez; RF-118, RF-119, RF-121. |
+ | Salida parcial o cantidades preparadas distintas del pedido | Pendiente de DA-4. |
+ | Traslado entre almacenes de la misma empresa | Pendiente de DA-5. |
+ | Conteo desactualizado por un movimiento posterior | Rechazar el ajuste basado en la referencia anterior; RF-70. |
+@@ -471,12 +567,17 @@
+ | Archivo vacío, corrupto o de formato no admitido | Rechazar la importación con motivo; RF-81 a RF-83. |
+ | Archivo con filas inválidas o duplicadas | No aplicar la importación; RF-82. |
+ | Importación repetida tras perder la respuesta | No duplicar efectos; RF-87, RF-102. |
++| Reintentos concurrentes de una operación con igual empresa, referencia y datos | Conservar un único resultado confirmado sin duplicar efectos; RF-87, RF-102, RF-110. |
++| Referencia repetida con cantidades, ubicaciones u otros datos de negocio distintos | Rechazar la nueva solicitud sin alterar los datos existentes; RF-111. |
++| Dos acciones legítimas con datos iguales y referencias distintas | Evaluar cada acción por separado con sus validaciones de negocio; RF-112. |
+ | Fallo durante una importación | Mantener el estado previo; RF-88. |
+ | Texto que una hoja de cálculo interpretaría como fórmula | Exportarlo como texto; RF-90. |
+ | Exportación sin coincidencias | Producir un archivo identificable como resultado vacío; detalles de presentación en revisión. |
+ | Respuesta perdida después de confirmar en el servidor | Mostrar resultado no confirmado hasta consultarlo; RF-100 a RF-102. |
+ | Internet caído con servidor local accesible | Permitir el flujo operativo; RF-106. |
+ | Desconexión completa del servidor | Impedir confirmaciones; RF-99. |
++| Creación de otro usuario después de configurar la empresa | Incorporarlo a la empresa del administrador autorizado; RF-6, RF-113. |
++| Identificador de acceso duplicado en la empresa o rol no permitido | Rechazar la acción correspondiente; RF-114, RF-115. |
+ | Reinicio después de una operación confirmada | Conservar el resultado; RF-104. |
+ | Respaldo inválido o incompatible | No sustituir datos válidos; detalle del procedimiento pendiente del plan y su verificación. |
+ | Rangos de fechas e instalaciones en zonas horarias distintas | Zona horaria, límites del intervalo y presentación pendientes de DA-2. |
+@@ -517,7 +618,7 @@
+   incluyendo los casos de rechazo aplicables.
+ - CF-2: Cada RNF tiene evidencia automática o manual identificada; los que no
+   puedan verificarse se declaran expresamente en la validación.
+-- CF-3: Las dudas DA-1 a DA-6 están resueltas antes de aprobar el plan técnico.
++- CF-3: Las dudas DA-1 a DA-7 están resueltas antes de aprobar el plan técnico.
+ - CF-4: Una demostración local permite iniciar sesión, configurar un almacén,
+   registrar productos, recibir mercancía, moverla, reservarla, prepararla y
+   despacharla, conservando un historial coherente.
+@@ -538,6 +639,12 @@
+   comprobación de consola y verificación de estados e interacciones.
+ - CF-13: Se ejecutan las verificaciones acordadas para todos los principios
+   aplicables de la constitución.
++- CF-14: Las pruebas de reintentos distinguen una operación repetida, una
++  referencia reutilizada con otros datos y dos acciones nuevas con datos iguales.
++- CF-15: Una prueba de guardados concurrentes conserva la distribución aceptada
++  sin perder el borrador de la sesión cuyo guardado se rechazó.
++- CF-16: Las pruebas de despacho repetido y concurrente impiden consumir más
++  existencias, reservas o preparación que las correspondientes al pedido.
+ 
+ ## Dudas abiertas
+ 
+@@ -563,3 +670,36 @@
+   superposiciones de zonas, pasillos y racks se impedirán; se permitirá mover o
+   redimensionar elementos ocupados conservando sus ubicaciones, o será
+   necesario vaciarlos antes?]
++- **DA-7 — Operaciones sobre ubicaciones bloqueadas.** [NECESITA ACLARACIÓN:
++  ¿se permitirán preparar y despachar reservas anteriores al bloqueo; qué
++  salidas o movimientos desde una ubicación bloqueada estarán permitidos?]
++
++## Historial de cambios
++
++### 2026-10-28 — Enmienda 01: correcciones autorizadas de la revisión
++
++La base fue aprobada por el usuario antes de su revisión. Después de recibir el
++informe de hallazgos, el usuario autorizó corregir los problemas que podían
++resolverse sin decidir por él el alcance pendiente.
++
++- Se conserva la numeración de RF-1 a RF-106 y de los doce RNF existentes.
++- Se añaden H15 y RF-107 a RF-121 para completar comportamientos del alcance
++  aprobado: validación de cantidades, conteos identificados, reintentos, alta
++  de usuarios, guardados concurrentes y consumo de saldos al despachar.
++- RF-21 se precisa para comprobar el impedimento de eliminación en el momento
++  de confirmar, incluyendo cambios de inventario posteriores a abrir el editor.
++- RF-56 y RF-60 se precisan para distinguir la preparación por producto y
++  ubicación de la cantidad que todavía está pendiente de despacho.
++- RF-64, RF-66 y RF-70 se precisan para vincular conteos y sus referencias al
++  mismo producto y ubicación.
++- RF-87 y RF-102 se precisan para distinguir referencias, reintentos y datos de
++  negocio sin confundir acciones nuevas con datos coincidentes.
++- Se corrige el caso límite de movimientos sobre mercancía reservada para
++  exigir rechazo completo, conforme a RF-47 y RF-48.
++- Se añaden casos límite para las validaciones y conflictos corregidos y
++  CF-14 a CF-16 para comprobarlos.
++- DA-7 formaliza una política de bloqueo que ya estaba pendiente fuera de la
++  lista de dudas; CF-3 exige resolverla también antes de aprobar el plan.
++- No se modifica la constitución ni se amplía «Fuera de alcance». No existen
++  plan, tareas ni implementación de la aplicación que actualizar por esta
++  enmienda.

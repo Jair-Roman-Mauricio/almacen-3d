@@ -1,0 +1,44 @@
+name: almacen3d-local
+
+services:
+  postgres-dev:
+    image: postgres:18.6@sha256:979bccfde35445db618c65107d27d08c6c21339d8dc3ad4c830c6633947be0e4
+    environment:
+      POSTGRES_USER: alm_bootstrap
+      POSTGRES_DB: almacen_dev
+      POSTGRES_PASSWORD: ${PG_DEV_BOOTSTRAP_PASSWORD:?Ejecuta setup-env.mjs}
+      PG_MIGRATION_PASSWORD: ${PG_DEV_MIGRATION_PASSWORD:?Ejecuta setup-env.mjs}
+      PG_APP_PASSWORD: ${PG_DEV_APP_PASSWORD:?Ejecuta setup-env.mjs}
+    ports:
+      - "127.0.0.1:55432:5432"
+    volumes:
+      - dev-data:/var/lib/postgresql
+      - ./postgres/init-roles.sql:/docker-entrypoint-initdb.d/01-roles.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  postgres-test:
+    image: postgres:18.6@sha256:979bccfde35445db618c65107d27d08c6c21339d8dc3ad4c830c6633947be0e4
+    environment:
+      POSTGRES_USER: alm_bootstrap
+      POSTGRES_DB: almacen_test
+      POSTGRES_PASSWORD: ${PG_TEST_BOOTSTRAP_PASSWORD:?Ejecuta setup-env.mjs}
+      PG_MIGRATION_PASSWORD: ${PG_TEST_MIGRATION_PASSWORD:?Ejecuta setup-env.mjs}
+      PG_APP_PASSWORD: ${PG_TEST_APP_PASSWORD:?Ejecuta setup-env.mjs}
+    ports:
+      - "127.0.0.1:55433:5432"
+    volumes:
+      - test-data:/var/lib/postgresql
+      - ./postgres/init-roles.sql:/docker-entrypoint-initdb.d/01-roles.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  dev-data:
+  test-data:

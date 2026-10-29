@@ -1,0 +1,28 @@
+{
+  "name": "@almacen/database",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@almacen/domain": "workspace:*",
+    "pg": "8.23.1",
+    "drizzle-orm": "0.45.4"
+  },
+  "devDependencies": {
+    "drizzle-kit": "0.31.11",
+    "@types/pg": "8.23.1"
+  },
+  "scripts": {
+    "build": "tsc -b tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  }
+}

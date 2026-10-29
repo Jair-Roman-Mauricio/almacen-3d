@@ -1,0 +1,16 @@
+node_modules/
+.tools/
+dist/
+.next/
+*.tsbuildinfo
+.env
+.env.*
+!.env.example
+output/
+coverage/
+tests/.compiled/
+.DS_Store
+package-lock.json
+npm-shrinkwrap.json
+yarn.lock
+.pnpm-store/

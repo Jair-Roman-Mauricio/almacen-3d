@@ -1,0 +1,179 @@
+--- spec-antes-da6
++++ spec-da6-aceptada
+@@ -1,7 +1,7 @@
+ # Spec 001 — WMS operativo con editor visual y almacén 3D
+ 
+-Estado: base, enmienda 01 y decisiones DA-1 a DA-5 aprobadas por el usuario;
+-pendiente de cierre de DA-6 y DA-7 antes del plan técnico.
++Estado: base, enmienda 01 y decisiones DA-1 a DA-6 aprobadas por el usuario;
++pendiente de cierre de DA-7 antes del plan técnico.
+ 
+ ## Contexto y objetivo
+ 
+@@ -27,8 +27,8 @@
+ El usuario aprobó la base de esta especificación y la enmienda 01 que corrige
+ errores detectados en su revisión. Las correcciones se identifican en
+ «Historial de cambios». Las decisiones que no pueden cerrarse con el contexto
+-disponible se identifican como DA-6 y DA-7 en «Dudas abiertas»; no se consideran
+-resueltas por aprobar el alcance general ni por solicitar estas correcciones.
++disponible se identifica como DA-7 en «Dudas abiertas»; no se considera resuelta
++por aprobar el alcance general ni por solicitar estas correcciones.
+ DA-1 está resuelta mediante el perfil de validación aceptado por el usuario.
+ DA-2 está resuelta mediante las reglas de datos e importación aceptadas.
+ DA-3 está resuelta mediante el registro SaaS, el asistente local y el acceso por
+@@ -37,6 +37,8 @@
+ pedidos asignada a operarios, con conservación de avances al reasignar.
+ DA-5 está resuelta mediante traslados entre almacenes de la misma empresa con
+ salida, stock en tránsito y recepción confirmada en destino.
++DA-6 está resuelta mediante límites de contención, rechazo de solapamientos y
++bloqueo de cambios geométricos sobre elementos ocupados o con trabajo pendiente.
+ 
+ ### Definiciones funcionales
+ 
+@@ -51,6 +53,19 @@
+ - **Almacén:** instalación física perteneciente a una empresa.
+ - **Distribución del almacén:** representación de zonas, pasillos, racks,
+   niveles y ubicaciones con sus dimensiones y posición.
++- **Contención física:** cada elemento ocupa un espacio que debe quedar dentro
++  de su contenedor declarado. Las zonas pertenecen al almacén; los racks y
++  pasillos a una zona; los niveles a un rack; las ubicaciones a un nivel o
++  directamente a una zona.
++- **Solapamiento físico:** intersección de los espacios interiores de dos
++  elementos cuya superposición está prohibida. La contención entre un elemento
++  y su contenedor no se considera una colisión; compartir únicamente un borde
++  sin invadir el interior no constituye solapamiento.
++- **Elemento ocupado o con trabajo pendiente:** elemento que contiene,
++  directamente o a través de sus elementos descendientes, existencias físicas
++  registradas o ubicaciones referenciadas por operaciones abiertas. Una
++  cantidad reservada o preparada que todavía no salió sigue siendo existencia
++  física registrada.
+ - **Ubicación:** espacio identificado en el que se registra mercancía. Puede
+   pertenecer a una zona directamente o estar dentro de un rack y nivel.
+ - **SKU:** código que identifica un producto dentro del catálogo de la empresa.
+@@ -254,8 +269,10 @@
+ - RF-23: CUANDO se guarde un cambio geométrico permitido, EL SISTEMA mantendrá
+   las cantidades de inventario anteriores a ese cambio.
+ 
+-Las reglas de superposición entre otros elementos físicos y los cambios de
+-layout sobre ubicaciones ocupadas requieren resolver DA-6.
++Las reglas aprobadas de contención y solapamiento se comprueban al guardar.
++Mover, redimensionar o eliminar elementos ocupados o con operaciones abiertas
++está bloqueado; primero se deben retirar sus existencias y cerrar sus
++operaciones, conservando la trazabilidad de esos pasos.
+ 
+ ### Consulta 3D e inventario espacial — H3
+ 
+@@ -851,6 +868,51 @@
+ empresa permanece en 100 y la mercancía en tránsito nunca está disponible
+ para nuevos pedidos.
+ 
++### Contención, solapamientos y edición de elementos ocupados — H2
++
++- RF-189: SI al guardar una distribución algún elemento queda fuera de los
++  límites de su contenedor declarado, ENTONCES EL SISTEMA rechazará ese guardado.
++- RF-190: SI al guardar una distribución dos zonas se solapan entre sí,
++  ENTONCES EL SISTEMA rechazará ese guardado.
++- RF-191: SI al guardar una distribución dos racks se solapan entre sí,
++  ENTONCES EL SISTEMA rechazará ese guardado.
++- RF-192: SI al guardar una distribución un rack se solapa con un pasillo,
++  ENTONCES EL SISTEMA rechazará ese guardado.
++- RF-193: SI al guardar una distribución dos ubicaciones del mismo nivel o
++  directamente de la misma zona se solapan, ENTONCES EL SISTEMA rechazará
++  ese guardado.
++- RF-194: EL SISTEMA permitirá que las zonas contengan racks y pasillos y que
++  los racks y niveles contengan sus elementos conforme a la jerarquía declarada.
++- RF-195: SI al confirmar un cambio de posición el elemento está ocupado o
++  tiene trabajo pendiente, ENTONCES EL SISTEMA rechazará ese cambio.
++- RF-196: SI al confirmar un cambio de dimensiones el elemento está ocupado o
++  tiene trabajo pendiente, ENTONCES EL SISTEMA rechazará ese cambio.
++- RF-197: SI una distribución incluye algún cambio que incumple las reglas de
++  geometría o de elementos ocupados, ENTONCES EL SISTEMA conservará la última
++  distribución guardada sin aplicar parcialmente la edición rechazada.
++- RF-198: CUANDO dos elementos solo compartan un borde sin invadir sus
++  interiores, EL SISTEMA no tratará ese contacto como solapamiento físico.
++- RF-199: SI se rechaza una edición por contención, solapamiento o trabajo
++  pendiente, ENTONCES EL SISTEMA identificará el elemento afectado y el motivo
++  del rechazo.
++
++### Reglas del editor aprobadas — DA-6 resuelta
++
++| Regla | Comportamiento acordado |
++|---|---|
++| Contención | Cada elemento queda dentro de los límites de su contenedor. |
++| Zonas | No se solapan entre sí y contienen los racks y pasillos correspondientes. |
++| Solapamientos | Se rechazan entre racks, entre ubicaciones del mismo nivel y entre racks y pasillos. Las ubicaciones directamente en una zona tampoco invaden el espacio de otras ubicaciones de esa zona. |
++| Elementos ocupados | No se permite mover, redimensionar ni eliminar elementos con existencias o trabajo pendiente; primero se vacían y cierran sus operaciones. |
++| Identidad e inventario | Un cambio válido conserva los identificadores y cantidades registradas. |
++
++La comprobación de existencias y trabajo pendiente se realiza al confirmar el
++guardado, aunque el elemento estuviera vacío cuando se abrió el editor. Al
++afectar un contenedor, se comprueba también el estado de sus elementos
++descendientes. No se eliminan existencias ni operaciones para permitir un
++cambio geométrico. Las reglas de edición desactualizada de RF-116 y RF-117
++continúan aplicándose.
++
+ ## Requisitos no funcionales
+ 
+ - RNF-1: EL SISTEMA presentará los textos de la interfaz y los mensajes de
+@@ -954,8 +1016,16 @@
+ | Cambio de unidad por importación de un SKU existente | Rechazar la importación; RF-135. |
+ | Dimensiones nulas, negativas o no numéricas | Rechazar el guardado; RF-15. |
+ | Ubicación fuera del elemento que la contiene | Rechazar el guardado; RF-16. |
+-| Superposición entre racks, pasillos y zonas | Pendiente de DA-6. |
++| Dos zonas que comparten espacio interior | Rechazar el guardado; RF-190. |
++| Rack dentro de su zona, con niveles y ubicaciones dentro de sus contenedores | Permitir la contención si cumple las demás validaciones; RF-189, RF-194. |
++| Solapamiento entre racks o entre un rack y un pasillo | Rechazar el guardado; RF-191, RF-192. |
++| Solapamiento entre ubicaciones del mismo nivel o de la misma zona directa | Rechazar el guardado; RF-193. |
++| Contacto únicamente entre bordes de elementos | No rechazar por solapamiento si no comparten interior; RF-198. |
+ | Borrar rack con existencias o trabajo pendiente | Rechazar la eliminación; RF-21. |
++| Mover o redimensionar un elemento con stock o referencias de operaciones abiertas | Rechazar el cambio e indicar el motivo; RF-195, RF-196, RF-199. |
++| Mover un contenedor aparentemente vacío cuyo descendiente tiene stock | Rechazar el cambio; definición de elemento ocupado y RF-195. |
++| Un elemento recibe stock o una operación abierta después de abrir el editor | Volver a comprobar su estado al guardar y rechazar el cambio que dejó de estar permitido; RF-21, RF-195, RF-196. |
++| Edición con varios cambios y uno inválido | Conservar íntegra la distribución guardada anterior; RF-197. |
+ | Entrada de existencias después de abrir el editor y antes de eliminar un elemento | Rechazar la eliminación al comprobar su estado en la confirmación; RF-21. |
+ | Descartar o abandonar cambios de distribución | Conservar lo guardado; RF-19, RF-20. |
+ | Dos administradores guardan ediciones basadas en la misma distribución anterior | Conservar el primer guardado válido y rechazar el desactualizado manteniendo su borrador; RF-116, RF-117. |
+@@ -1105,6 +1175,13 @@
+   no duplican salidas ni incorporan al destino más que el saldo en tránsito.
+ - CF-31: Se rechazan traslados hacia almacenes de otras empresas sin modificar
+   el inventario de ninguna de las empresas.
++- CF-32: Se verifica la contención válida y el contacto de bordes, y se rechazan
++  los solapamientos prohibidos entre zonas, racks, pasillos y ubicaciones.
++- CF-33: Se rechazan cambios de posición, dimensiones o eliminación de
++  elementos con existencias o trabajo pendiente, incluyendo descendientes y
++  cambios de estado posteriores a abrir el editor.
++- CF-34: Un cambio geométrico válido conserva identidades y cantidades; una
++  edición que contiene un cambio inválido conserva la distribución anterior.
+ 
+ ## Dudas abiertas
+ 
+@@ -1126,10 +1203,10 @@
+   entre almacenes de la misma empresa con salida, stock en tránsito separado
+   y recepción confirmada en destino; no se utilizará mercancía reservada para
+   otros pedidos.
+-- **DA-6 — Cambios físicos del almacén.** [NECESITA ACLARACIÓN: ¿qué
+-  superposiciones de zonas, pasillos y racks se impedirán; se permitirá mover o
+-  redimensionar elementos ocupados conservando sus ubicaciones, o será
+-  necesario vaciarlos antes?]
++- **DA-6 — Cambios físicos del almacén: resuelta.** El usuario aceptó los
++  límites de contención, el rechazo de solapamientos, el bloqueo de movimiento,
++  redimensionado o eliminación de elementos ocupados o con trabajo pendiente,
++  y la conservación de identificadores y cantidades en cambios válidos.
+ - **DA-7 — Operaciones sobre ubicaciones bloqueadas.** [NECESITA ACLARACIÓN:
+   ¿se permitirán preparar y despachar reservas anteriores al bloqueo; qué
+   salidas o movimientos desde una ubicación bloqueada estarán permitidos?]
+@@ -1236,3 +1313,14 @@
+ - Se añaden definiciones, casos límite y CF-28 a CF-31 para comprobar el flujo.
+ - Los RF y RNF anteriores conservan sus identificadores y contenidos. La
+   constitución permanece intacta. DA-6 y DA-7 continúan abiertas.
++
++### 2026-10-29 — Enmienda 07: reglas físicas del editor aceptadas
++
++- DA-6 se cierra con las reglas aceptadas explícitamente por el usuario.
++- Se añaden RF-189 a RF-199 para contención, solapamientos, cambios sobre
++  elementos ocupados, guardados sin aplicación parcial y explicación del rechazo.
++- Se concretan las definiciones de contención, solapamiento y elemento ocupado
++  o con trabajo pendiente, incluyendo sus descendientes.
++- Se añaden los casos límite y CF-32 a CF-34 para comprobar las reglas.
++- Los RF y RNF anteriores conservan sus identificadores y contenidos. La
++  constitución permanece intacta. Solo DA-7 continúa abierta.

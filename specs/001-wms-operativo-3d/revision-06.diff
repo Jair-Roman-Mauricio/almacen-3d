@@ -1,0 +1,224 @@
+--- spec-antes-da5
++++ spec-da5-aceptada
+@@ -1,7 +1,7 @@
+ # Spec 001 — WMS operativo con editor visual y almacén 3D
+ 
+-Estado: base, enmienda 01 y decisiones DA-1 a DA-4 aprobadas por el usuario;
+-pendiente de cierre de DA-5 a DA-7 antes del plan técnico.
++Estado: base, enmienda 01 y decisiones DA-1 a DA-5 aprobadas por el usuario;
++pendiente de cierre de DA-6 y DA-7 antes del plan técnico.
+ 
+ ## Contexto y objetivo
+ 
+@@ -27,7 +27,7 @@
+ El usuario aprobó la base de esta especificación y la enmienda 01 que corrige
+ errores detectados en su revisión. Las correcciones se identifican en
+ «Historial de cambios». Las decisiones que no pueden cerrarse con el contexto
+-disponible se identifican como DA-5 a DA-7 en «Dudas abiertas»; no se consideran
++disponible se identifican como DA-6 y DA-7 en «Dudas abiertas»; no se consideran
+ resueltas por aprobar el alcance general ni por solicitar estas correcciones.
+ DA-1 está resuelta mediante el perfil de validación aceptado por el usuario.
+ DA-2 está resuelta mediante las reglas de datos e importación aceptadas.
+@@ -35,6 +35,8 @@
+ código de empresa, correo y contraseña aceptados por el usuario.
+ DA-4 está resuelta mediante operaciones de salida parciales y preparación de
+ pedidos asignada a operarios, con conservación de avances al reasignar.
++DA-5 está resuelta mediante traslados entre almacenes de la misma empresa con
++salida, stock en tránsito y recepción confirmada en destino.
+ 
+ ### Definiciones funcionales
+ 
+@@ -64,7 +66,14 @@
+   reservada. Una cantidad en una ubicación bloqueada no está disponible para
+   nuevas asignaciones.
+ - **Movimiento interno:** cambio de ubicación dentro de un mismo almacén.
+-  La gestión de traslados entre almacenes queda pendiente de DA-5.
++- **Traslado entre almacenes:** operación de la misma empresa con almacenes
++  distintos de origen y destino, productos y cantidades identificados. La
++  salida reduce el stock del origen; la recepción incorpora al destino las
++  cantidades cuya llegada se confirma.
++- **Stock en tránsito:** cantidad que salió del almacén de origen mediante un
++  traslado y todavía no tiene recepción confirmada en destino. Se muestra
++  separada del stock físico registrado en ubicaciones y no se puede reservar
++  para nuevos pedidos.
+ - **Pedido de salida:** solicitud registrada en el WMS con productos y
+   cantidades para preparar y despachar.
+ - **Saldo pendiente del pedido:** cantidad solicitada menos cantidad ya
+@@ -96,7 +105,7 @@
+ - **Referencia de operación:** identificador estable de una acción dentro de
+   una empresa, conservado cuando se reintenta esa acción. Los datos de la acción
+   comprenden su tipo y, según corresponda, productos, cantidades, ubicaciones,
+-  pedido o contenido de la importación.
++  pedido, traslado o contenido de la importación.
+ - **Misma operación:** acción que conserva su empresa, referencia y datos de
+   negocio en un reintento. Una referencia ya utilizada no identifica otra acción
+   con datos distintos. Dos acciones iniciadas separadamente tienen referencias
+@@ -130,6 +139,9 @@
+ | Gestionar catálogo y umbrales de stock bajo | Sí | Sí | No |
+ | Crear pedidos y realizar reservas | Sí | Sí | No |
+ | Confirmar recepciones y movimientos internos | Sí | Sí | Sí |
++| Consultar traslados de la empresa | Sí | Sí | Sí |
++| Crear traslados y confirmar su salida | Sí | Sí | No |
++| Confirmar recepción de un traslado en destino | Sí | Sí | Sí |
+ | Asignar o reasignar preparación de pedidos | Sí | Sí | No |
+ | Registrar preparación de pedidos | Sí | Sí | Solo pedidos asignados |
+ | Confirmar despachos | Sí | Sí | No |
+@@ -181,6 +193,8 @@
+   administrador para iniciar el uso de una instalación local.
+ - H18: Como supervisor quiero asignar y reasignar la preparación de pedidos
+   conservando sus avances para organizar el trabajo del equipo.
++- H19: Como supervisor quiero trasladar mercancía entre almacenes de mi empresa
++  conservando su trazabilidad y disponibilidad durante el recorrido.
+ 
+ ## Requisitos funcionales (criterios de aceptación en EARS)
+ 
+@@ -758,6 +772,84 @@
+ despachar 40, dejando 60 pendientes de despacho. Al completar esas 40, no
+ quedan sus cantidades como reservas ni preparación pendientes. Una nueva
+ reserva para el mismo pedido se limita a su saldo todavía no comprometido.
++
++### Traslados entre almacenes de la misma empresa — H4, H5, H19
++
++- RF-171: CUANDO un administrador o supervisor registre un traslado válido,
++  EL SISTEMA lo conservará con su referencia, almacenes de origen y destino,
++  productos, cantidades y ubicaciones de origen.
++- RF-172: SI un traslado indica el mismo almacén como origen y destino o un
++  almacén ajeno a la empresa de la sesión, ENTONCES EL SISTEMA rechazará la
++  acción.
++- RF-173: CUANDO se confirme una salida válida de traslado, EL SISTEMA
++  descontará las cantidades declaradas de sus ubicaciones de origen.
++- RF-174: CUANDO se confirme una salida válida de traslado, EL SISTEMA
++  incorporará esas cantidades al stock en tránsito del traslado.
++- RF-175: SI una salida de traslado supera el stock disponible no reservado
++  en alguna ubicación de origen, ENTONCES EL SISTEMA rechazará su confirmación.
++- RF-176: SI se intenta confirmar una nueva salida de un traslado cuya salida
++  ya fue confirmada, ENTONCES EL SISTEMA rechazará esa nueva operación.
++- RF-177: CUANDO un usuario consulte un traslado con mercancía en tránsito,
++  EL SISTEMA mostrará esas cantidades separadas de las existencias registradas
++  en ubicaciones de almacén.
++- RF-178: MIENTRAS una cantidad permanezca en tránsito, EL SISTEMA la excluirá
++  del stock disponible para nuevas reservas.
++- RF-179: CUANDO un usuario autorizado confirme una recepción válida de
++  traslado, EL SISTEMA incorporará las cantidades recibidas a sus ubicaciones
++  del almacén de destino.
++- RF-180: CUANDO se confirme una recepción válida de traslado, EL SISTEMA
++  reducirá las cantidades pendientes en tránsito por las cantidades recibidas.
++- RF-181: SI una recepción de traslado supera la cantidad todavía pendiente
++  en tránsito del producto correspondiente, ENTONCES EL SISTEMA rechazará su
++  confirmación.
++- RF-182: SI una salida o recepción de traslado indica una cantidad ausente,
++  no numérica, infinita o menor o igual a cero, ENTONCES EL SISTEMA rechazará su
++  confirmación.
++- RF-183: SI una recepción de traslado indica una ubicación inexistente,
++  bloqueada o que no pertenece a su almacén de destino, ENTONCES EL SISTEMA
++  rechazará su confirmación.
++- RF-184: CUANDO todas las cantidades de un traslado tengan recepción
++  confirmada, EL SISTEMA lo identificará como recibido por completo.
++- RF-185: SI falla la confirmación de una salida o recepción de traslado,
++  ENTONCES EL SISTEMA mantendrá las cantidades físicas y en tránsito anteriores
++  a esa operación.
++- RF-186: EL SISTEMA conservará la suma de existencias físicas y stock en
++  tránsito por producto de la empresa como efecto exclusivo de cada etapa
++  confirmada de un traslado.
++- RF-187: CUANDO se confirme una salida o recepción de traslado, EL SISTEMA
++  conservará su autor, fecha, referencia de traslado, productos, cantidades y
++  almacenes afectados en el historial de esa etapa.
++- RF-188: SI varias recepciones concurrentes de un traslado superarían su saldo
++  en tránsito, ENTONCES EL SISTEMA rechazará las recepciones que excedan ese
++  saldo.
++
++### Traslados aprobados — DA-5 resuelta
++
++| Etapa | Efecto sobre inventario |
++|---|---|
++| Registro | Identifica la mercancía y la ruta; no confirma por sí solo una salida física. |
++| Salida confirmada | Descuenta del origen e incorpora al stock en tránsito en la misma operación. |
++| En tránsito | Conserva el saldo por recibir separado del stock de ubicaciones y sin disponibilidad para pedidos. |
++| Recepción confirmada | Descuenta del tránsito e incorpora lo recibido a las ubicaciones del destino en la misma operación. |
++
++La salida solo utiliza cantidades no reservadas en el origen; no libera ni
++consume reservas de otros pedidos. Las confirmaciones de cada etapa están
++sujetas a las reglas de empresa, cantidades, unidades y reintentos ya
++definidas. Repetir la misma referencia con los mismos datos devuelve el
++resultado confirmado conforme a RF-110, mientras que una salida nueva después
++de una salida ya confirmada se rechaza conforme a RF-176.
++
++El stock en tránsito no aparece como si ya estuviera físicamente en el origen
++o destino. Las recepciones reducen su saldo pendiente; mientras exista saldo
++por recibir, el traslado no se considera recibido por completo. El tratamiento
++de salidas desde ubicaciones bloqueadas se concretará con DA-7. Este flujo no
++incluye transportistas, seguimiento por GPS ni reversión de etapas confirmadas.
++
++Ejemplo de validación: con 100 unidades en origen y ninguna en destino,
++una salida de 20 deja 80 en origen y 20 en tránsito; confirmar la recepción de
++esas 20 deja 80 en origen, 20 en destino y cero en tránsito. El total de la
++empresa permanece en 100 y la mercancía en tránsito nunca está disponible
++para nuevos pedidos.
+ 
+ ## Requisitos no funcionales
+ 
+@@ -882,7 +974,16 @@
+ | Pedido reasignado después de abrirlo el operario anterior | Conservar avances previos y rechazar nuevos avances del operario anterior; RF-165 a RF-167. |
+ | Asignación a un usuario de otra empresa, inactivo o sin rol de operario | Rechazar la asignación; RF-164. |
+ | Pedido parcialmente despachado con líneas pendientes | Mantener el estado parcialmente despachado hasta completar todas las líneas; RF-161, RF-162. |
+-| Traslado entre almacenes de la misma empresa | Pendiente de DA-5. |
++| Salida de traslado de 20 unidades desde un origen con 100 | Conservar 80 en origen y 20 en tránsito, sin incrementar todavía el destino; RF-173, RF-174. |
++| Recepción del traslado de 20 unidades | Incorporar 20 en destino y descontar esas 20 del tránsito; RF-179, RF-180. |
++| Nueva reserva sobre mercancía en tránsito | Rechazar el uso de esa mercancía como disponible; RF-178. |
++| Salida de traslado que requiere mercancía reservada para otro pedido | Rechazar sin consumir ni liberar la reserva existente; RF-175. |
++| Traslado al mismo almacén o hacia otra empresa | Rechazar la acción; RF-5, RF-172. |
++| Nueva salida de un traslado que ya salió | Rechazar la nueva operación sin volver a descontar del origen; RF-176. |
++| Recepción que excede el saldo pendiente en tránsito | Rechazar sin modificar cantidades; RF-181. |
++| Recepciones concurrentes del mismo saldo en tránsito | No incorporar al destino más mercancía que la pendiente; RF-188. |
++| Recepción de traslado en ubicación bloqueada, inexistente o de otro almacén | Rechazar la recepción; RF-183. |
++| Fallo o pérdida de respuesta al confirmar una etapa de traslado | Conservar la confirmación íntegra o el estado anterior, sin duplicar efectos al reintentar; RF-102, RF-110, RF-185. |
+ | Conteo desactualizado por un movimiento posterior | Rechazar el ajuste basado en la referencia anterior; RF-70. |
+ | Ajuste que afectaría reservas | Rechazar el ajuste; RF-69. |
+ | Archivo vacío, corrupto o de formato no admitido | Rechazar la importación con motivo; RF-81 a RF-83. |
+@@ -996,6 +1097,14 @@
+   confirmación de nuevos avances por el operario anterior.
+ - CF-27: Las comprobaciones de concurrencia impiden reservar o preparar por
+   encima de los saldos pendientes del pedido, aunque haya más stock físico.
++- CF-28: Se verifica el traslado de 20 unidades desde un origen con 100,
++  conservando el total de la empresa durante salida, tránsito y recepción.
++- CF-29: Se comprueba que un traslado no consume mercancía reservada para
++  otros pedidos ni ofrece su stock en tránsito para nuevas reservas.
++- CF-30: Los reintentos y las confirmaciones concurrentes de etapas de traslado
++  no duplican salidas ni incorporan al destino más que el saldo en tránsito.
++- CF-31: Se rechazan traslados hacia almacenes de otras empresas sin modificar
++  el inventario de ninguna de las empresas.
+ 
+ ## Dudas abiertas
+ 
+@@ -1013,9 +1122,10 @@
+   preparaciones y despachos parciales, preparación asignada por administrador
+   o supervisor a un operario, ejecución limitada a los pedidos asignados para
+   los operarios y conservación de avances al reasignar.
+-- **DA-5 — Traslados entre almacenes.** [NECESITA ACLARACIÓN: ¿la primera
+-  versión incluirá traslados entre almacenes de la misma empresa o únicamente
+-  movimientos entre ubicaciones de un mismo almacén?]
++- **DA-5 — Traslados entre almacenes: resuelta.** El usuario aceptó traslados
++  entre almacenes de la misma empresa con salida, stock en tránsito separado
++  y recepción confirmada en destino; no se utilizará mercancía reservada para
++  otros pedidos.
+ - **DA-6 — Cambios físicos del almacén.** [NECESITA ACLARACIÓN: ¿qué
+   superposiciones de zonas, pasillos y racks se impedirán; se permitirá mover o
+   redimensionar elementos ocupados conservando sus ubicaciones, o será
+@@ -1112,3 +1222,17 @@
+   solicitud y las reglas de cancelación; una salida parcial no autoriza
+   aplicar parcialmente una solicitud inválida ni revertir un despacho anterior.
+ - La constitución permanece intacta. DA-5 a DA-7 siguen abiertas.
++
++### 2026-10-29 — Enmienda 06: traslados entre almacenes aceptados
++
++- DA-5 se cierra con el flujo de salida, tránsito y recepción aceptado por el
++  usuario para almacenes de la misma empresa.
++- Se añaden H19 y RF-171 a RF-188 para registro, validación, efectos de cada
++  etapa, conservación de cantidades, rechazo de reservas ajenas, reintentos e
++  historial del traslado.
++- Se incorporan permisos de traslado: administrador y supervisor crean y
++  confirman salidas; los tres roles pueden consultar y confirmar recepciones.
++  Estos permisos aplican la separación ya acordada entre salidas y recepciones.
++- Se añaden definiciones, casos límite y CF-28 a CF-31 para comprobar el flujo.
++- Los RF y RNF anteriores conservan sus identificadores y contenidos. La
++  constitución permanece intacta. DA-6 y DA-7 continúan abiertas.

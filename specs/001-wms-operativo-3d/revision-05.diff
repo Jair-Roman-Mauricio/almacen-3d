@@ -1,0 +1,236 @@
+--- spec-antes-da4
++++ spec-da4-aceptada
+@@ -1,7 +1,7 @@
+ # Spec 001 — WMS operativo con editor visual y almacén 3D
+ 
+-Estado: base, enmienda 01 y decisiones DA-1 a DA-3 aprobadas por el usuario;
+-pendiente de cierre de DA-4 a DA-7 antes del plan técnico.
++Estado: base, enmienda 01 y decisiones DA-1 a DA-4 aprobadas por el usuario;
++pendiente de cierre de DA-5 a DA-7 antes del plan técnico.
+ 
+ ## Contexto y objetivo
+ 
+@@ -27,12 +27,14 @@
+ El usuario aprobó la base de esta especificación y la enmienda 01 que corrige
+ errores detectados en su revisión. Las correcciones se identifican en
+ «Historial de cambios». Las decisiones que no pueden cerrarse con el contexto
+-disponible se identifican como DA-4 a DA-7 en «Dudas abiertas»; no se consideran
++disponible se identifican como DA-5 a DA-7 en «Dudas abiertas»; no se consideran
+ resueltas por aprobar el alcance general ni por solicitar estas correcciones.
+ DA-1 está resuelta mediante el perfil de validación aceptado por el usuario.
+ DA-2 está resuelta mediante las reglas de datos e importación aceptadas.
+ DA-3 está resuelta mediante el registro SaaS, el asistente local y el acceso por
+ código de empresa, correo y contraseña aceptados por el usuario.
++DA-4 está resuelta mediante operaciones de salida parciales y preparación de
++pedidos asignada a operarios, con conservación de avances al reasignar.
+ 
+ ### Definiciones funcionales
+ 
+@@ -65,6 +67,18 @@
+   La gestión de traslados entre almacenes queda pendiente de DA-5.
+ - **Pedido de salida:** solicitud registrada en el WMS con productos y
+   cantidades para preparar y despachar.
++- **Saldo pendiente del pedido:** cantidad solicitada menos cantidad ya
++  despachada, calculada por producto o línea del pedido.
++- **Saldo pendiente de reservar:** saldo pendiente del pedido menos la reserva
++  vigente de esa línea. Una reserva ya consumida por un despacho no se vuelve
++  a contar como reserva vigente.
++- **Cantidad reservada pendiente de preparar:** reserva vigente menos cantidad
++  preparada todavía pendiente de despacho, para el mismo pedido, producto y
++  ubicación de origen.
++- **Preparación asignada:** pedido de preparación con un operario activo de
++  la misma empresa designado por un administrador o supervisor. El operario
++  asignado ejecuta los avances pendientes; administrador y supervisor conservan
++  los permisos de preparación de la matriz aprobada.
+ - **Preparación o picking:** comprobación de la mercancía reservada que se
+   entregará en un despacho; no reduce por sí sola la existencia física
+   registrada en esta primera propuesta.
+@@ -116,7 +130,8 @@
+ | Gestionar catálogo y umbrales de stock bajo | Sí | Sí | No |
+ | Crear pedidos y realizar reservas | Sí | Sí | No |
+ | Confirmar recepciones y movimientos internos | Sí | Sí | Sí |
+-| Registrar preparación de pedidos | Sí | Sí | Sí |
++| Asignar o reasignar preparación de pedidos | Sí | Sí | No |
++| Registrar preparación de pedidos | Sí | Sí | Solo pedidos asignados |
+ | Confirmar despachos | Sí | Sí | No |
+ | Registrar conteos | Sí | Sí | Sí |
+ | Autorizar ajustes de inventario | Sí | Sí | No |
+@@ -125,8 +140,8 @@
+ 
+ El alta inicial se realiza por el formulario SaaS o el asistente de instalación
+ local, según la modalidad. Los usuarios adicionales los crea el administrador
+-de su empresa. La asignación de trabajo a operarios concretos queda pendiente
+-de DA-4.
++de su empresa. El administrador o supervisor asigna la preparación de cada
++pedido a un operario activo de la misma empresa.
+ 
+ ## Historias de usuario
+ 
+@@ -164,6 +179,8 @@
+   para comenzar a utilizar la modalidad SaaS de demostración.
+ - H17: Como responsable de instalación quiero configurar la empresa y su primer
+   administrador para iniciar el uso de una instalación local.
++- H18: Como supervisor quiero asignar y reasignar la preparación de pedidos
++  conservando sus avances para organizar el trabajo del equipo.
+ 
+ ## Requisitos funcionales (criterios de aceptación en EARS)
+ 
+@@ -333,8 +350,16 @@
+ - RF-63: SI se intenta cancelar un pedido con cantidades preparadas o
+   despachadas, ENTONCES EL SISTEMA rechazará esa cancelación.
+ 
+-La posibilidad de reservas, preparaciones o despachos parciales de un pedido
+-queda pendiente de DA-4; estos requisitos no la presuponen.
++Se permiten reservas, preparaciones y despachos parciales del pedido. Una
++solicitud parcial indica expresamente las cantidades que se desean procesar y
++debe confirmarse íntegramente o rechazarse sin aplicar efectos parciales. Esto
++no habilita aplicar por su cuenta una cantidad menor que la solicitada cuando
++falla una validación. RF-53, RF-57, RF-60 y RF-61 siguen aplicándose.
++
++Las reglas de cancelación de RF-62 y RF-63 se conservan: un pedido con
++cantidades preparadas o despachadas no puede cancelarse mediante esa acción.
++La confirmación de operaciones parciales no introduce una anulación de
++despachos anteriores ni una cancelación separada de saldos.
+ 
+ ### Conteos, ajustes e historial — H7, H8
+ 
+@@ -533,8 +558,9 @@
+   despacho, ENTONCES EL SISTEMA rechazará los despachos que excedan esos saldos.
+ 
+ RF-120 se aplica a una nueva operación de despacho; la repetición de una
+-operación ya confirmada conserva el comportamiento de RF-110. Estas
+-salvaguardas no resuelven la política de despachos parciales pendiente en DA-4.
++operación ya confirmada conserva el comportamiento de RF-110. Las cantidades
++parciales consumen únicamente su reserva y preparación correspondientes,
++conservando el saldo restante del pedido.
+ 
+ ### Límites de importación acordados — H10
+ 
+@@ -672,6 +698,66 @@
+ El alta SaaS no autoriza modificar empresas existentes ni asignarse acceso a
+ ellas. Los datos utilizados en las pruebas de esta primera entrega serán
+ sintéticos conforme a la constitución.
++
++### Operaciones parciales y asignación de preparación — H6, H18
++
++- RF-156: CUANDO un administrador o supervisor solicite una reserva parcial
++  válida de un pedido, EL SISTEMA reservará la cantidad solicitada conservando
++  el saldo no reservado de la línea.
++- RF-157: CUANDO un usuario autorizado registre una preparación parcial válida,
++  EL SISTEMA conservará la cantidad reservada que todavía falta preparar.
++- RF-158: CUANDO un administrador o supervisor confirme un despacho parcial
++  válido, EL SISTEMA conservará el saldo del pedido que todavía no se despachó.
++- RF-159: SI una nueva reserva supera el saldo pendiente de reservar de su
++  línea de pedido, ENTONCES EL SISTEMA rechazará esa solicitud.
++- RF-160: CUANDO un usuario autorizado consulte un pedido, EL SISTEMA mostrará
++  por línea las cantidades solicitadas, reservadas vigentes, preparadas
++  pendientes de despacho, despachadas y pendientes del pedido.
++- RF-161: MIENTRAS un pedido tenga alguna cantidad despachada y alguna línea
++  con saldo pendiente, EL SISTEMA lo identificará como parcialmente despachado.
++- RF-162: CUANDO todas las líneas de un pedido alcancen su cantidad solicitada
++  despachada, EL SISTEMA lo identificará como despachado por completo.
++- RF-163: CUANDO un administrador o supervisor asigne la preparación de un
++  pedido a un operario activo de su empresa, EL SISTEMA registrará ese operario
++  como responsable de la preparación pendiente.
++- RF-164: SI una asignación o reasignación indica un usuario inactivo, de otra
++  empresa o con rol distinto de operario, ENTONCES EL SISTEMA rechazará la acción.
++- RF-165: SI un operario intenta confirmar preparación y no es el operario
++  asignado al pedido en ese momento, ENTONCES EL SISTEMA rechazará ese avance.
++- RF-166: CUANDO un administrador o supervisor reasigne válidamente un pedido
++  de preparación, EL SISTEMA cambiará el operario responsable del trabajo
++  pendiente.
++- RF-167: CUANDO se reasigne la preparación de un pedido, EL SISTEMA conservará
++  las cantidades preparadas y despachadas previamente confirmadas.
++- RF-168: CUANDO se confirme una asignación o reasignación de preparación,
++  EL SISTEMA conservará su autor, fecha, pedido y operario asignado en el
++  historial de esa acción.
++- RF-169: SI varias reservas concurrentes del mismo pedido superarían el saldo
++  pendiente de reservar, ENTONCES EL SISTEMA rechazará las solicitudes que
++  excedan ese saldo.
++- RF-170: SI varias preparaciones concurrentes del mismo pedido, producto y
++  ubicación superarían la cantidad reservada pendiente de preparar,
++  ENTONCES EL SISTEMA rechazará los avances que excedan ese saldo.
++
++### Trabajo de salida aprobado — DA-4 resuelta
++
++| Tema | Regla acordada |
++|---|---|
++| Operaciones parciales | Se puede reservar, preparar y despachar parte de un pedido, conservando sus saldos pendientes. |
++| Asignación | Administrador o supervisor asigna cada pedido de preparación a un operario activo de la empresa. |
++| Ejecución | Un operario confirma avances solo en sus pedidos asignados; administrador y supervisor mantienen sus permisos. |
++| Reasignación | Cambia el responsable del trabajo pendiente, sin borrar avances confirmados. |
++
++La comprobación de quién está asignado se aplica al confirmar el avance, aunque
++el operario hubiese abierto el pedido antes de una reasignación. Si el usuario
++asignado se desactiva o deja de tener rol de operario, sus permisos se revocan
++conforme a RF-7 y RF-8; la supervisión conserva la posibilidad de reasignar el
++trabajo pendiente sin borrar avances.
++
++Ejemplo de validación: un pedido de 100 unidades puede reservar, preparar y
++despachar 40, dejando 60 pendientes de despacho. Al completar esas 40, no
++quedan sus cantidades como reservas ni preparación pendientes. Una nueva
++reserva para el mismo pedido se limita a su saldo todavía no comprometido.
+ 
+ ## Requisitos no funcionales
+ 
+@@ -789,7 +875,13 @@
+ | Cancelar pedido ya preparado o despachado | Rechazar la cancelación; RF-63. |
+ | Nueva operación de despacho sobre un pedido completamente despachado | Rechazar la operación; RF-120. |
+ | Varios despachos concurrentes sobre el mismo saldo reservado y preparado | No consumir ese saldo más de una vez; RF-118, RF-119, RF-121. |
+-| Salida parcial o cantidades preparadas distintas del pedido | Pendiente de DA-4. |
++| Reserva, preparación y despacho de 40 unidades de un pedido de 100 | Conservar 60 pendientes, consumiendo solo los saldos de las 40 despachadas; RF-156 a RF-160. |
++| Nueva reserva que excede el saldo pendiente aunque exista inventario suficiente | Rechazar la solicitud; RF-159. |
++| Reservas o preparaciones concurrentes sobre el mismo saldo del pedido | No comprometer ni preparar más que el saldo correspondiente; RF-169, RF-170. |
++| Operario que intenta preparar un pedido sin asignación o asignado a otro | Rechazar la confirmación del avance; RF-165. |
++| Pedido reasignado después de abrirlo el operario anterior | Conservar avances previos y rechazar nuevos avances del operario anterior; RF-165 a RF-167. |
++| Asignación a un usuario de otra empresa, inactivo o sin rol de operario | Rechazar la asignación; RF-164. |
++| Pedido parcialmente despachado con líneas pendientes | Mantener el estado parcialmente despachado hasta completar todas las líneas; RF-161, RF-162. |
+ | Traslado entre almacenes de la misma empresa | Pendiente de DA-5. |
+ | Conteo desactualizado por un movimiento posterior | Rechazar el ajuste basado en la referencia anterior; RF-70. |
+ | Ajuste que afectaría reservas | Rechazar el ajuste; RF-69. |
+@@ -897,6 +989,13 @@
+   configuración ante reinicios o intentos de alta inicial repetidos.
+ - CF-24: La demostración permite acceder con los tres roles usando las cuentas
+   ficticias precargadas sin envío obligatorio de correos.
++- CF-25: Se verifica un pedido de 100 unidades despachado primero en 40 y luego
++  en 60, conservando los saldos correctos en ambos pasos y cerrándolo solo al
++  completar las 100.
++- CF-26: Se verifica que reasignar un pedido conserva sus avances y revoca la
++  confirmación de nuevos avances por el operario anterior.
++- CF-27: Las comprobaciones de concurrencia impiden reservar o preparar por
++  encima de los saldos pendientes del pedido, aunque haya más stock físico.
+ 
+ ## Dudas abiertas
+ 
+@@ -910,9 +1009,10 @@
+   SaaS, el asistente de instalación local, el alta de equipo por administrador,
+   el acceso con código de empresa, correo y contraseña, y las cuentas ficticias
+   de demostración sin dependencia del envío de correos.
+-- **DA-4 — Trabajo de salida.** [NECESITA ACLARACIÓN: ¿se permitirán reservas,
+-  preparación y despachos parciales; las tareas se asignarán a un operario o
+-  estarán disponibles para cualquier operario autorizado de la empresa?]
++- **DA-4 — Trabajo de salida: resuelta.** El usuario aceptó reservas,
++  preparaciones y despachos parciales, preparación asignada por administrador
++  o supervisor a un operario, ejecución limitada a los pedidos asignados para
++  los operarios y conservación de avances al reasignar.
+ - **DA-5 — Traslados entre almacenes.** [NECESITA ACLARACIÓN: ¿la primera
+   versión incluirá traslados entre almacenes de la misma empresa o únicamente
+   movimientos entre ubicaciones de un mismo almacén?]
+@@ -998,3 +1098,17 @@
+   el acceso y la demostración acordados.
+ - Se conserva la numeración existente y la constitución permanece intacta.
+   DA-4 a DA-7 siguen abiertas; no se generan plan ni tareas todavía.
++
++### 2026-10-29 — Enmienda 05: parciales y asignación de preparación aceptados
++
++- DA-4 se cierra con las reglas aceptadas explícitamente por el usuario.
++- Se añaden H18 y RF-156 a RF-170 para reservas, preparación y despachos
++  parciales con saldos por línea; asignación y reasignación; conservación de
++  avances y control de concurrencia sobre los saldos del pedido.
++- La matriz precisa que los operarios preparan únicamente pedidos asignados
++  y añade la asignación y reasignación para administrador y supervisor.
++- Se añaden definiciones, casos límite y CF-25 a CF-27 relacionados.
++- Se mantienen los RF existentes, incluida la confirmación íntegra de cada
++  solicitud y las reglas de cancelación; una salida parcial no autoriza
++  aplicar parcialmente una solicitud inválida ni revertir un despacho anterior.
++- La constitución permanece intacta. DA-5 a DA-7 siguen abiertas.

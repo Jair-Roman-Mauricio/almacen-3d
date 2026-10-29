@@ -1,0 +1,183 @@
+--- spec-antes-da1
++++ spec-da1-aceptada
+@@ -1,7 +1,7 @@
+ # Spec 001 — WMS operativo con editor visual y almacén 3D
+ 
+-Estado: base y enmienda 01 aprobadas por el usuario; pendiente de cierre de las
+-decisiones abiertas antes del plan técnico.
++Estado: base, enmienda 01 y perfil de validación de DA-1 aprobados por el usuario;
++pendiente de cierre de DA-2 a DA-7 antes del plan técnico.
+ 
+ ## Contexto y objetivo
+ 
+@@ -27,8 +27,9 @@
+ El usuario aprobó la base de esta especificación y la enmienda 01 que corrige
+ errores detectados en su revisión. Las correcciones se identifican en
+ «Historial de cambios». Las decisiones que no pueden cerrarse con el contexto
+-disponible se identifican como DA-1 a DA-7 en «Dudas abiertas»; no se consideran
++disponible se identifican como DA-2 a DA-7 en «Dudas abiertas»; no se consideran
+ resueltas por aprobar el alcance general ni por solicitar estas correcciones.
++DA-1 está resuelta mediante el perfil de validación aceptado por el usuario.
+ 
+ ### Definiciones funcionales
+ 
+@@ -226,8 +227,8 @@
+ - RF-33: EL SISTEMA permitirá consultar inventario y ubicaciones mediante una
+   lista aunque la representación 3D no esté disponible.
+ 
+-La actualización de otras sesiones sin recarga requiere el objetivo pendiente
+-en DA-1. El bloqueo de una ubicación no cancela reservas que ya existían; el
++La actualización de otras sesiones sin recarga se verificará conforme a
++RNF-14. El bloqueo de una ubicación no cancela reservas que ya existían; el
+ tratamiento de esas operaciones y de las salidas desde ubicaciones bloqueadas
+ queda pendiente de DA-7.
+ 
+@@ -384,8 +385,9 @@
+ - RF-90: EL SISTEMA tratará como texto los valores de catálogo que podrían
+   interpretarse como fórmulas al abrir una exportación en una hoja de cálculo.
+ 
+-Los límites de archivo y volumen, las variantes de Excel admitidas y el
+-comportamiento para actualizar productos existentes requieren DA-1 y DA-2.
++Los límites de archivo y volumen son los del perfil de validación aprobado.
++Las variantes de Excel admitidas y el comportamiento para actualizar productos
++existentes requieren resolver DA-2.
+ La importación de pedidos, distribuciones físicas o historial antiguo no está
+ incluida en esta primera propuesta.
+ 
+@@ -498,6 +500,15 @@
+ RF-120 se aplica a una nueva operación de despacho; la repetición de una
+ operación ya confirmada conserva el comportamiento de RF-110. Estas
+ salvaguardas no resuelven la política de despachos parciales pendiente en DA-4.
++
++### Límites de importación acordados — H10
++
++- RF-122: SI una importación supera 20 MB o 20.000 registros de datos,
++  ENTONCES EL SISTEMA rechazará su aplicación sin modificar datos de negocio.
++
++Para este límite, 20 MB equivalen a 20.000.000 bytes; los registros de datos no
++incluyen la fila de encabezados. Un archivo que cumple estos límites sigue
++sujeto al resto de validaciones de importación.
+ 
+ ## Requisitos no funcionales
+ 
+@@ -521,13 +532,55 @@
+   instalación conservando los datos existentes.
+ - RNF-10: EL SISTEMA permitirá completar las pruebas de la demostración sin
+   utilizar datos reales de terceros ni efectuar cobros reales.
+-- RNF-11: EL SISTEMA cumplirá los objetivos de volumen, concurrencia,
+-  rendimiento y tamaño de pantalla que se acuerden al resolver DA-1.
++- RNF-11: EL SISTEMA permitirá completar los flujos de validación con el perfil
++  de volumen y concurrencia aprobado en esta especificación.
+ - RNF-12: EL SISTEMA permitirá identificar las referencias utilizadas para el
+   diseño de la landing y los módulos visuales conforme a la constitución.
+-
+-RNF-11 no es verificable hasta resolver DA-1. No se afirma todavía soporte
+-demostrado para una escala concreta de almacén mediano o grande.
++- RNF-13: EL SISTEMA responderá a las consultas y confirmaciones habituales en
++  un máximo de 2 segundos para al menos el 95 % de las solicitudes medidas en
++  el entorno de referencia y con el perfil aprobado.
++- RNF-14: CUANDO se confirme un cambio de inventario, EL SISTEMA lo mostrará en
++  las consultas activas de otras sesiones conectadas en un máximo de 5 segundos
++  en el entorno de referencia.
++- RNF-15: CUANDO se abra la vista 3D de un almacén del perfil aprobado,
++  EL SISTEMA la dejará disponible para navegar en un máximo de 5 segundos en
++  el entorno de referencia.
++- RNF-16: CUANDO se procese una importación válida de hasta 20 MB y 20.000
++  registros de datos, EL SISTEMA completará su procesamiento en un máximo de
++  60 segundos de trabajo acumulado, excluyendo el tiempo que el usuario tarde
++  en revisar y confirmar la previsualización, en el entorno de referencia.
++- RNF-17: EL SISTEMA permitirá utilizar el editor visual en escritorio desde
++  una ventana de 1280 × 720 píxeles.
++- RNF-18: EL SISTEMA permitirá consultar inventario y realizar las operaciones
++  autorizadas de almacén en móvil desde una ventana de 360 × 800 píxeles.
++
++### Perfil de validación aprobado — DA-1 resuelta
++
++| Aspecto | Objetivo de la primera entrega |
++|---|---:|
++| Almacenes por empresa | 10 |
++| Productos por empresa | 50.000 SKU |
++| Ubicaciones por almacén | 20.000 |
++| Usuarios concurrentes por empresa | 50 |
++| Historial de movimientos por empresa | 100.000 |
++| Archivo de importación | Hasta 20 MB |
++| Registros de datos por importación | Hasta 20.000 |
++
++Las consultas y confirmaciones habituales comprenden la consulta de catálogo,
++inventario, ubicaciones, pedidos e historial, y la confirmación de recepciones,
++movimientos internos, reservas, preparaciones, despachos y ajustes. La carga
++inicial 3D y las importaciones tienen los objetivos específicos de RNF-15 y
++RNF-16. El tiempo de espera para una acción humana no forma parte de las
++mediciones de procesamiento.
++
++El plan documentará el entorno de referencia, los datos y la carga de trabajo
++con los que se medirán estos objetivos. Son objetivos de validación aceptados,
++no capacidades ya demostradas ni límites comerciales de suscripción. El editor
++se validará en escritorio; la consulta y las operaciones se validarán también
++en móvil.
++
++RNF-11 y RNF-13 a RNF-18 requerirán resultados de medición antes de declarar
++cumplido el perfil de esta entrega.
+ 
+ ## Casos límite
+ 
+@@ -565,6 +618,8 @@
+ | Conteo desactualizado por un movimiento posterior | Rechazar el ajuste basado en la referencia anterior; RF-70. |
+ | Ajuste que afectaría reservas | Rechazar el ajuste; RF-69. |
+ | Archivo vacío, corrupto o de formato no admitido | Rechazar la importación con motivo; RF-81 a RF-83. |
++| Importación que supera 20 MB o 20.000 registros de datos | Rechazar la aplicación sin modificar datos de negocio; RF-122. |
++| Importación de exactamente 20 MB o 20.000 registros de datos | Evaluar el archivo con las demás validaciones; el valor límite por sí solo no lo rechaza; RF-122. |
+ | Archivo con filas inválidas o duplicadas | No aplicar la importación; RF-82. |
+ | Importación repetida tras perder la respuesta | No duplicar efectos; RF-87, RF-102. |
+ | Reintentos concurrentes de una operación con igual empresa, referencia y datos | Conservar un único resultado confirmado sin duplicar efectos; RF-87, RF-102, RF-110. |
+@@ -581,7 +636,7 @@
+ | Reinicio después de una operación confirmada | Conservar el resultado; RF-104. |
+ | Respaldo inválido o incompatible | No sustituir datos válidos; detalle del procedimiento pendiente del plan y su verificación. |
+ | Rangos de fechas e instalaciones en zonas horarias distintas | Zona horaria, límites del intervalo y presentación pendientes de DA-2. |
+-| Volumen que exceda lo validado | Umbrales y respuesta pendientes de DA-1. |
++| Volumen que exceda el perfil de validación | No considerarlo capacidad demostrada de esta entrega; el perfil no impone un bloqueo comercial por licencia. |
+ 
+ ## Fuera de alcance
+ 
+@@ -645,13 +700,17 @@
+   sin perder el borrador de la sesión cuyo guardado se rechazó.
+ - CF-16: Las pruebas de despacho repetido y concurrente impiden consumir más
+   existencias, reservas o preparación que las correspondientes al pedido.
++- CF-17: Las mediciones identifican el entorno y los datos utilizados para
++  verificar los objetivos de volumen, concurrencia, latencia, actualización,
++  importación y carga inicial 3D aprobados.
++- CF-18: La revisión de interfaz incluye el editor a 1280 × 720 y la consulta
++  y las operaciones móviles a 360 × 800.
+ 
+ ## Dudas abiertas
+ 
+-- **DA-1 — Escala y plataformas.** [NECESITA ACLARACIÓN: ¿qué volúmenes de
+-  almacenes por empresa, SKU, ubicaciones, operaciones y usuarios concurrentes
+-  deben validarse; qué tamaños máximos de importación, tiempos de respuesta,
+-  frecuencia de actualización entre sesiones y dispositivos se exigirán?]
++- **DA-1 — Escala y plataformas: resuelta.** El usuario aceptó el perfil de
++  validación, sus objetivos temporales y los tamaños de pantalla descritos en
++  los requisitos no funcionales.
+ - **DA-2 — Reglas de datos y archivos.** [NECESITA ACLARACIÓN: ¿qué unidades y
+   cantidades fraccionarias se admitirán, habrá conversiones de presentaciones,
+   qué límites tendrán nombres y códigos, qué zona horaria regirá las consultas
+@@ -703,3 +762,19 @@
+ - No se modifica la constitución ni se amplía «Fuera de alcance». No existen
+   plan, tareas ni implementación de la aplicación que actualizar por esta
+   enmienda.
++
++### 2026-10-29 — Enmienda 02: perfil de validación aceptado
++
++- DA-1 se cierra con las cifras y objetivos aceptados explícitamente por el
++  usuario: 10 almacenes, 50.000 SKU y 50 usuarios concurrentes por empresa;
++  20.000 ubicaciones por almacén; 100.000 movimientos de historial por empresa;
++  importaciones de hasta 20 MB y 20.000 registros de datos.
++- RNF-11 pasa a referirse al perfil concreto. Se añaden RNF-13 a RNF-18 para
++  expresar por separado los objetivos temporales y tamaños de pantalla.
++- Se añade RF-122 para rechazar importaciones que excedan los límites
++  acordados, con dos casos límite para el exceso y el valor exacto admitido.
++- Se añaden CF-17 y CF-18 para exigir mediciones reproducibles y las
++  comprobaciones de pantalla acordadas.
++- Se conserva la numeración existente y la constitución permanece intacta.
++- DA-2 a DA-7 continúan abiertas. No se generan plan, tareas ni código de la
++  aplicación mientras queden estas decisiones por cerrar.

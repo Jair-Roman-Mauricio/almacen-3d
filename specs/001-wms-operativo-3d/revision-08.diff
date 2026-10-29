@@ -1,0 +1,169 @@
+--- spec-antes-da7.md
++++ spec.md (DA-7 aceptada)
+@@ -1,7 +1,7 @@
+ # Spec 001 — WMS operativo con editor visual y almacén 3D
+ 
+-Estado: base, enmienda 01 y decisiones DA-1 a DA-6 aprobadas por el usuario;
+-pendiente de cierre de DA-7 antes del plan técnico.
++Estado: base, enmienda 01 y decisiones DA-1 a DA-7 aprobadas por el usuario;
++sin decisiones abiertas de la revisión inicial; lista para el plan técnico.
+ 
+ ## Contexto y objetivo
+ 
+@@ -26,9 +26,8 @@
+ 
+ El usuario aprobó la base de esta especificación y la enmienda 01 que corrige
+ errores detectados en su revisión. Las correcciones se identifican en
+-«Historial de cambios». Las decisiones que no pueden cerrarse con el contexto
+-disponible se identifica como DA-7 en «Dudas abiertas»; no se considera resuelta
+-por aprobar el alcance general ni por solicitar estas correcciones.
++«Historial de cambios». Las decisiones DA-1 a DA-7 de la revisión inicial
++fueron resueltas mediante propuestas aceptadas explícitamente por el usuario.
+ DA-1 está resuelta mediante el perfil de validación aceptado por el usuario.
+ DA-2 está resuelta mediante las reglas de datos e importación aceptadas.
+ DA-3 está resuelta mediante el registro SaaS, el asistente local y el acceso por
+@@ -39,6 +38,8 @@
+ salida, stock en tránsito y recepción confirmada en destino.
+ DA-6 está resuelta mediante límites de contención, rechazo de solapamientos y
+ bloqueo de cambios geométricos sobre elementos ocupados o con trabajo pendiente.
++DA-7 está resuelta mediante inmovilización de la ubicación bloqueada,
++conservación de compromisos y desbloqueo exclusivo del administrador con motivo.
+ 
+ ### Definiciones funcionales
+ 
+@@ -150,6 +151,7 @@
+ |---|---|---|---|
+ | Consultar inventario, mapa y tareas | Sí | Sí | Sí |
+ | Gestionar perfil de la empresa, almacenes y distribución | Sí | No | No |
++| Bloquear o desbloquear ubicaciones | Sí | No | No |
+ | Gestionar usuarios y sus roles | Sí | No | No |
+ | Gestionar catálogo y umbrales de stock bajo | Sí | Sí | No |
+ | Crear pedidos y realizar reservas | Sí | Sí | No |
+@@ -300,8 +302,8 @@
+ 
+ La actualización de otras sesiones sin recarga se verificará conforme a
+ RNF-14. El bloqueo de una ubicación no cancela reservas que ya existían; el
+-tratamiento de esas operaciones y de las salidas desde ubicaciones bloqueadas
+-queda pendiente de DA-7.
++trabajo físico de esas reservas queda suspendido hasta que el administrador
++desbloquee la ubicación conforme a la política aprobada de DA-7.
+ 
+ ### Catálogo y cantidades — H4
+ 
+@@ -859,7 +861,7 @@
+ El stock en tránsito no aparece como si ya estuviera físicamente en el origen
+ o destino. Las recepciones reducen su saldo pendiente; mientras exista saldo
+ por recibir, el traslado no se considera recibido por completo. El tratamiento
+-de salidas desde ubicaciones bloqueadas se concretará con DA-7. Este flujo no
++de salidas desde ubicaciones bloqueadas aplica la inmovilización de DA-7. Este flujo no
+ incluye transportistas, seguimiento por GPS ni reversión de etapas confirmadas.
+ 
+ Ejemplo de validación: con 100 unidades en origen y ninguna en destino,
+@@ -912,6 +914,45 @@
+ descendientes. No se eliminan existencias ni operaciones para permitir un
+ cambio geométrico. Las reglas de edición desactualizada de RF-116 y RF-117
+ continúan aplicándose.
++
++### Ubicaciones bloqueadas y desbloqueo — H2, H4, H5, H6, H7, H8, H19
++
++- RF-200: SI una nueva recepción, reserva, movimiento físico, preparación,
++  despacho o etapa física de traslado afecta una ubicación bloqueada,
++  ENTONCES EL SISTEMA rechazará su confirmación.
++- RF-201: CUANDO se bloquee una ubicación con reservas o trabajo pendiente,
++  EL SISTEMA conservará esos compromisos sin cancelarlos automáticamente.
++- RF-202: MIENTRAS una ubicación esté bloqueada, EL SISTEMA permitirá sus
++  consultas, conteos y ajustes con los permisos y validaciones ya definidos.
++- RF-203: SI se intenta confirmar un ajuste en una ubicación bloqueada sin
++  motivo o que deja existencias por debajo de sus reservas, ENTONCES EL SISTEMA
++  rechazará el ajuste.
++- RF-204: CUANDO un administrador indique un motivo y confirme el desbloqueo
++  de una ubicación de su empresa, EL SISTEMA la habilitará para nuevas
++  operaciones sujetas a las validaciones vigentes.
++- RF-205: SI se intenta desbloquear una ubicación sin motivo o sin rol de
++  administrador de su empresa, ENTONCES EL SISTEMA rechazará la acción.
++- RF-206: CUANDO se confirme un desbloqueo, EL SISTEMA conservará su autor,
++  fecha, ubicación y motivo en el historial.
++- RF-207: CUANDO se desbloquee una ubicación, EL SISTEMA mantendrá pendientes
++  sus operaciones abiertas hasta que un usuario autorizado las confirme.
++
++### Política de bloqueo aprobada — DA-7 resuelta
++
++La ubicación bloqueada queda inmovilizada para entradas, nuevas reservas,
++movimientos físicos, preparación, despachos y traslados. Esto incluye trabajo
++de reservas creadas antes del bloqueo. Consultas, conteos y ajustes autorizados
++siguen disponibles, sin liberar reservas ni omitir sus restricciones.
++
++Solo el administrador de la empresa puede desbloquear, indicando un motivo
++registrado en el historial. El desbloqueo no ejecuta operaciones pendientes
++automáticamente: cada confirmación vuelve a comprobar permisos, asignación y
++existencias actuales. Reintentar una operación ya confirmada antes del bloqueo
++devuelve su resultado registrado conforme a RF-110; no constituye un nuevo
++movimiento físico ni vuelve a aplicar sus efectos.
++
++La comprobación del bloqueo se realiza al confirmar la operación. Un formulario
++abierto antes de bloquear la ubicación no permite eludir la inmovilización.
+ 
+ ## Requisitos no funcionales
+ 
+@@ -1031,7 +1072,13 @@
+ | Dos administradores guardan ediciones basadas en la misma distribución anterior | Conservar el primer guardado válido y rechazar el desactualizado manteniendo su borrador; RF-116, RF-117. |
+ | Buscar un producto inexistente | Mostrar ausencia de resultados; RF-29. |
+ | Lienzo 3D no disponible | Permitir la alternativa operativa; RF-33, RNF-6. |
+-| Ubicación bloqueada con reservas anteriores | No cancelar automáticamente la reserva; preparación, despacho y salidas pendientes de DA-7. |
++| Ubicación bloqueada con reservas anteriores | Conservar las reservas y rechazar nuevas confirmaciones de preparación o despacho hasta el desbloqueo; RF-200, RF-201. |
++| Salida o entrada de movimiento interno o traslado con ubicación bloqueada | Rechazar la etapa sin aplicar efectos parciales; RF-48, RF-185, RF-200. |
++| Conteo o ajuste de una ubicación bloqueada | Aplicar los permisos y restricciones normales, incluido motivo y protección de reservas; RF-202, RF-203. |
++| Formulario abierto antes de bloquear la ubicación | Rechazar la nueva confirmación mientras el bloqueo siga vigente; RF-200. |
++| Desbloqueo sin motivo o por supervisor u operario | Rechazar la acción; RF-205. |
++| Desbloqueo válido con trabajo pendiente | Registrar el motivo y conservar el trabajo para confirmación posterior, sin ejecutarlo automáticamente; RF-204, RF-206, RF-207. |
++| Reintento de una operación confirmada antes del bloqueo | Devolver el resultado registrado sin aplicar otra vez el movimiento; RF-110. |
+ | Dos reservas simultáneas de la última cantidad disponible | No confirmar ambas si exceden el stock; RF-103. |
+ | Mover una cantidad mayor que la disponible no reservada | Rechazar el movimiento completo sin cambiar las cantidades; RF-47, RF-48. |
+ | Cancelar pedido ya preparado o despachado | Rechazar la cancelación; RF-63. |
+@@ -1182,6 +1229,12 @@
+   cambios de estado posteriores a abrir el editor.
+ - CF-34: Un cambio geométrico válido conserva identidades y cantidades; una
+   edición que contiene un cambio inválido conserva la distribución anterior.
++- CF-35: Las pruebas de bloqueo rechazan entradas y salidas físicas, incluso
++  con reservas anteriores o formularios abiertos antes del bloqueo.
++- CF-36: Se comprueban consultas, conteos y ajustes autorizados en una ubicación
++  bloqueada sin omitir la protección de reservas ni los motivos exigidos.
++- CF-37: Se verifica que solo el administrador desbloquea con motivo e
++  historial y que el desbloqueo no ejecuta automáticamente trabajo pendiente.
+ 
+ ## Dudas abiertas
+ 
+@@ -1207,9 +1260,14 @@
+   límites de contención, el rechazo de solapamientos, el bloqueo de movimiento,
+   redimensionado o eliminación de elementos ocupados o con trabajo pendiente,
+   y la conservación de identificadores y cantidades en cambios válidos.
+-- **DA-7 — Operaciones sobre ubicaciones bloqueadas.** [NECESITA ACLARACIÓN:
+-  ¿se permitirán preparar y despachar reservas anteriores al bloqueo; qué
+-  salidas o movimientos desde una ubicación bloqueada estarán permitidos?]
++- **DA-7 — Operaciones sobre ubicaciones bloqueadas: resuelta.** El usuario
++  aceptó la inmovilización de entradas y salidas físicas, conservación de
++  reservas y trabajo pendiente, consultas y controles autorizados, y
++  desbloqueo exclusivo del administrador con motivo e historial.
++
++No quedan decisiones abiertas de las DA-1 a DA-7 identificadas en la revisión
++inicial. Las capacidades y mediciones exigidas no se consideran implementadas
++ni verificadas por el hecho de haber aprobado esta especificación.
+ 
+ ## Historial de cambios
+ 
+@@ -1324,3 +1382,15 @@
+ - Se añaden los casos límite y CF-32 a CF-34 para comprobar las reglas.
+ - Los RF y RNF anteriores conservan sus identificadores y contenidos. La
+   constitución permanece intacta. Solo DA-7 continúa abierta.
++
++### 2026-10-29 — Enmienda 08: política de ubicaciones bloqueadas aceptada
++
++- DA-7 se cierra con la política aceptada explícitamente por el usuario.
++- Se añaden RF-200 a RF-207 para inmovilización, conservación de compromisos,
++  consultas y controles autorizados, y desbloqueo por administrador con motivo
++  e historial, sin ejecución automática del trabajo pendiente.
++- Se añade la capacidad de bloqueo y desbloqueo del administrador a la matriz;
++  se precisan los textos y casos que todavía remitían a DA-7.
++- Se añaden CF-35 a CF-37 para verificar la política. Los RF y RNF anteriores
++  mantienen sus identificadores y contenido; la constitución permanece intacta.
++- Las decisiones iniciales están cerradas y se continúa con el plan técnico.

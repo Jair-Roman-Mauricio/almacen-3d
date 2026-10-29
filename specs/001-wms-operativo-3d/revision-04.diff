@@ -1,0 +1,259 @@
+--- spec-antes-da3
++++ spec-da3-aceptada
+@@ -1,7 +1,7 @@
+ # Spec 001 — WMS operativo con editor visual y almacén 3D
+ 
+-Estado: base, enmienda 01 y decisiones DA-1 y DA-2 aprobadas por el usuario;
+-pendiente de cierre de DA-3 a DA-7 antes del plan técnico.
++Estado: base, enmienda 01 y decisiones DA-1 a DA-3 aprobadas por el usuario;
++pendiente de cierre de DA-4 a DA-7 antes del plan técnico.
+ 
+ ## Contexto y objetivo
+ 
+@@ -27,15 +27,23 @@
+ El usuario aprobó la base de esta especificación y la enmienda 01 que corrige
+ errores detectados en su revisión. Las correcciones se identifican en
+ «Historial de cambios». Las decisiones que no pueden cerrarse con el contexto
+-disponible se identifican como DA-3 a DA-7 en «Dudas abiertas»; no se consideran
++disponible se identifican como DA-4 a DA-7 en «Dudas abiertas»; no se consideran
+ resueltas por aprobar el alcance general ni por solicitar estas correcciones.
+ DA-1 está resuelta mediante el perfil de validación aceptado por el usuario.
+ DA-2 está resuelta mediante las reglas de datos e importación aceptadas.
++DA-3 está resuelta mediante el registro SaaS, el asistente local y el acceso por
++código de empresa, correo y contraseña aceptados por el usuario.
+ 
+ ### Definiciones funcionales
+ 
+ - **Empresa:** organización a la que pertenecen usuarios, almacenes y datos
+   operativos. Un usuario actúa en el contexto de una empresa.
++- **Código de empresa:** código que identifica una empresa al iniciar sesión;
++  es único dentro de una instalación del servicio, ignorando mayúsculas y
++  espacios exteriores.
++- **Identificador de acceso del usuario:** correo de su cuenta dentro de una
++  empresa. El mismo correo puede corresponder a cuentas distintas en empresas
++  diferentes; la validación del acceso siempre incluye el código de empresa.
+ - **Almacén:** instalación física perteneciente a una empresa.
+ - **Distribución del almacén:** representación de zonas, pasillos, racks,
+   niveles y ubicaciones con sus dimensiones y posición.
+@@ -84,12 +92,15 @@
+ 
+ ## Usuarios / actores
+ 
+-- **Visitante:** conoce el producto, compara las dos modalidades y accede a la
+-  demostración.
++- **Visitante:** conoce el producto, compara las dos modalidades, registra una
++  empresa en la modalidad SaaS y accede a la demostración.
+ - **Administrador de empresa:** gestiona la configuración, los usuarios y las
+   operaciones de su empresa.
+ - **Supervisor:** organiza el trabajo y controla el inventario de su empresa.
+ - **Operario:** ejecuta el trabajo de almacén autorizado y registra conteos.
++- **Responsable de instalación:** completa el asistente inicial de una
++  instalación local; esta actividad inicial no constituye un rol adicional
++  con acceso global a empresas.
+ 
+ ### Permisos de la primera entrega
+ 
+@@ -112,8 +123,10 @@
+ | Consultar indicadores y exportar reportes | Sí | Sí | No |
+ | Importar catálogo o existencias iniciales | Sí | No | No |
+ 
+-El procedimiento de alta inicial de empresas y administradores queda pendiente
+-de DA-3. La asignación de trabajo a operarios concretos queda pendiente de DA-4.
++El alta inicial se realiza por el formulario SaaS o el asistente de instalación
++local, según la modalidad. Los usuarios adicionales los crea el administrador
++de su empresa. La asignación de trabajo a operarios concretos queda pendiente
++de DA-4.
+ 
+ ## Historias de usuario
+ 
+@@ -147,13 +160,18 @@
+   para continuar utilizando el WMS después de un reinicio o restauración.
+ - H15: Como administrador quiero crear usuarios de mi empresa con un rol
+   permitido para que el equipo pueda utilizar el WMS con los permisos acordados.
++- H16: Como visitante quiero registrar una empresa con su primer administrador
++  para comenzar a utilizar la modalidad SaaS de demostración.
++- H17: Como responsable de instalación quiero configurar la empresa y su primer
++  administrador para iniciar el uso de una instalación local.
+ 
+ ## Requisitos funcionales (criterios de aceptación en EARS)
+ 
+ ### Acceso, empresa y permisos — H1
+ 
+-- RF-1: CUANDO una persona presente credenciales válidas de un usuario activo,
+-  EL SISTEMA iniciará una sesión en el contexto de su empresa.
++- RF-1: CUANDO una persona presente un código de empresa, correo y contraseña
++  que correspondan a un usuario activo de esa empresa, EL SISTEMA iniciará una
++  sesión en el contexto de esa empresa.
+ - RF-2: SI las credenciales no permiten iniciar sesión, ENTONCES EL SISTEMA
+   informará del rechazo sin conceder acceso al área operativa.
+ - RF-3: CUANDO un usuario cierre su sesión, EL SISTEMA impedirá continuar
+@@ -479,17 +497,17 @@
+ ### Alta de usuarios de una empresa existente — H1, H15
+ 
+ - RF-113: CUANDO un administrador registre un usuario válido con nombre,
+-  identificador de acceso y rol permitido, EL SISTEMA lo incorporará a la
++  correo, contraseña y rol permitido, EL SISTEMA lo incorporará a la
+   empresa de la sesión del administrador.
+-- RF-114: SI el identificador de acceso de un nuevo usuario ya existe en esa
++- RF-114: SI el correo de un nuevo usuario ya existe en esa
+   empresa ignorando mayúsculas y espacios exteriores, ENTONCES EL SISTEMA
+   rechazará la creación duplicada.
+ - RF-115: SI el rol indicado al crear o modificar un usuario no es
+   administrador, supervisor u operario, ENTONCES EL SISTEMA rechazará la acción.
+ 
+-El acceso inicial y las credenciales de los usuarios se concretarán al resolver
+-DA-3; estos requisitos no habilitan el registro público ni crean empresas
+-adicionales.
++RF-113 a RF-115 describen el alta de usuarios de una empresa existente. El alta
++inicial de una empresa y su administrador se define en los requisitos de
++registro SaaS y configuración local de esta especificación.
+ 
+ ### Ediciones concurrentes de la distribución — H2
+ 
+@@ -578,16 +596,82 @@
+ | Productos existentes | Actualización del nombre por SKU conservando código, unidad y existencias. |
+ 
+ Los nombres comprenden los de empresa, almacenes, elementos de su distribución,
+-productos y personas. Los códigos de negocio comprenden los SKU y códigos de
+-almacén y elementos de su distribución; no son las credenciales de acceso,
+-cuyas reglas se concretarán en DA-3. Los espacios exteriores se retiran antes
+-de comprobar nombres y códigos; no se aceptan espacios internos en los códigos.
++productos y personas. Los códigos de negocio comprenden los códigos de empresa,
++SKU, almacenes y elementos de su distribución. El correo y la contraseña no son
++códigos de negocio y no están limitados por RF-128. Los espacios exteriores se
++retiran antes de comprobar nombres y códigos; no se aceptan espacios internos
++en los códigos.
+ 
+ El registro de cero en un conteo continúa permitido. Las reglas de enteros y
+ precisión se aplican también a los conteos e importaciones. La actualización
+ del nombre por importación no permite cambiar la unidad base ni convertir las
+ existencias de un producto existente. Los detalles del formato de intercambio
+ se documentarán en el contrato del plan sin cambiar estas reglas.
++
++### Registro SaaS y primer administrador — H1, H16
++
++- RF-139: CUANDO un visitante complete un registro válido de empresa en la
++  modalidad SaaS, EL SISTEMA creará la empresa con el código y nombre
++  registrados.
++- RF-140: CUANDO se confirme el registro SaaS de una empresa, EL SISTEMA creará
++  su primer usuario administrador con el nombre, correo y contraseña
++  registrados en ese proceso.
++- RF-141: SI no se puede completar el alta conjunta de empresa y primer
++  administrador, ENTONCES EL SISTEMA dejará sin aplicar ese registro.
++- RF-142: SI el código de empresa solicitado ya existe en la instalación
++  ignorando mayúsculas y espacios exteriores, ENTONCES EL SISTEMA rechazará
++  el registro sin modificar la empresa existente.
++- RF-143: CUANDO se confirme el registro de empresa y primer administrador,
++  EL SISTEMA mostrará el código de empresa necesario para iniciar sesión.
++
++### Configuración inicial de instalación local — H1, H17
++
++- RF-144: CUANDO se inicie una instalación local que todavía no tenga empresa
++  configurada, EL SISTEMA mostrará el asistente de configuración inicial.
++- RF-145: CUANDO se complete válidamente el asistente local, EL SISTEMA creará
++  la empresa con el código y nombre indicados.
++- RF-146: CUANDO se confirme la configuración inicial local, EL SISTEMA creará
++  el primer administrador de esa empresa con el nombre, correo y contraseña
++  indicados en el asistente.
++- RF-147: SI falla el alta conjunta de empresa y primer administrador local,
++  ENTONCES EL SISTEMA dejará sin aplicar esa configuración inicial.
++- RF-148: SI se intenta confirmar de nuevo la configuración inicial de una
++  instalación local que ya tiene empresa configurada, ENTONCES EL SISTEMA
++  rechazará esa nueva configuración sin reemplazar la existente.
++
++### Acceso por empresa y cuentas de demostración — H1, H12, H15, H16, H17
++
++- RF-149: EL SISTEMA validará el correo y contraseña exclusivamente contra
++  las cuentas de la empresa identificada por el código de inicio de sesión.
++- RF-150: SI falta el código de empresa, correo o contraseña requeridos en un
++  alta o inicio de sesión, ENTONCES EL SISTEMA rechazará esa acción.
++- RF-151: SI el correo indicado al crear una cuenta no tiene formato de correo
++  electrónico, ENTONCES EL SISTEMA rechazará su creación.
++- RF-152: EL SISTEMA permitirá completar el registro SaaS, la configuración
++  local, el alta de usuarios y el acceso sin depender del envío de correos.
++- RF-153: EL SISTEMA dispondrá de empresas ficticias precargadas en el entorno
++  de demostración.
++- RF-154: EL SISTEMA dispondrá de cuentas ficticias precargadas para probar
++  los roles administrador, supervisor y operario en la demostración.
++- RF-155: CUANDO se consulten las instrucciones de acceso a la demostración,
++  EL SISTEMA mostrará código de empresa, correo y contraseña únicamente de las
++  cuentas ficticias precargadas como cuentas demostrativas.
++
++### Alta y acceso aprobados — DA-3 resuelta
++
++| Modalidad o actor | Funcionamiento acordado |
++|---|---|
++| SaaS | Formulario para registrar la empresa y su primer administrador, sin cobro real durante la demostración. |
++| Instalación local | Asistente inicial para crear la empresa y su primer administrador. |
++| Equipo | El administrador de la empresa crea los usuarios con sus roles y credenciales de acceso. |
++| Inicio de sesión | Código de empresa, correo y contraseña. |
++| Demostración | Empresas y cuentas ficticias precargadas para probar los tres roles, sin dependencia del envío de correos. |
++
++El formulario SaaS y el asistente local usan las mismas reglas de empresa,
++identidad y permisos; su disponibilidad depende de la modalidad configurada.
++El alta SaaS no autoriza modificar empresas existentes ni asignarse acceso a
++ellas. Los datos utilizados en las pruebas de esta primera entrega serán
++sintéticos conforme a la constitución.
+ 
+ ## Requisitos no funcionales
+ 
+@@ -668,6 +752,14 @@
+ | Empresa sin almacenes | Mostrar estado vacío con acceso a la creación según permisos; RF-6, RF-10, RNF-7. |
+ | Almacén sin distribución ni inventario | Mostrar el estado vacío correspondiente sin crear existencias; RF-24, RNF-7. |
+ | Usuario sin sesión, desactivado o de otra empresa | Rechazar el acceso; RF-4, RF-5, RF-8. |
++| Mismo correo en empresas distintas | Validar cada cuenta dentro de la empresa indicada por su código; RF-1, RF-114, RF-149. |
++| Código de empresa, correo o contraseña ausentes | Rechazar el alta o acceso que requiera esos datos; RF-150. |
++| Correo de formato inválido al crear una cuenta | Rechazar la creación; RF-151. |
++| Registro SaaS con código de empresa existente | Rechazar sin modificar la empresa existente; RF-142. |
++| Dos registros SaaS concurrentes con el mismo código | Confirmar como máximo un registro y conservar su empresa y administrador; RF-141, RF-142. |
++| Fallo entre el alta de empresa y el primer administrador | No conservar un alta incompleta; RF-141, RF-147. |
++| Dos sesiones intentan finalizar el asistente local | No reemplazar la configuración que ya quedó confirmada; RF-147, RF-148. |
++| Reinicio de una instalación local ya configurada | Mantener la empresa y su administrador existentes; RF-104, RF-148. |
+ | Último administrador activo | Impedir su desactivación o pérdida de rol; RF-9. |
+ | Código duplicado con mayúsculas o espacios exteriores | Rechazar el duplicado en su ámbito; RF-17, RF-35. |
+ | Nombre vacío o mayor a 160 caracteres | Rechazar el guardado; RF-127. |
+@@ -799,6 +891,12 @@
+   actualizaciones de nombre, duplicados y cambios de unidad rechazados.
+ - CF-21: Las comprobaciones de fechas incluyen ambos días extremos del rango
+   según la zona de la empresa, aunque el dispositivo use otra zona horaria.
++- CF-22: El registro SaaS se verifica con empresa y administrador creados
++  conjuntamente, rechazo de códigos duplicados y separación entre empresas.
++- CF-23: El asistente local se verifica sin conexión a internet, conservando la
++  configuración ante reinicios o intentos de alta inicial repetidos.
++- CF-24: La demostración permite acceder con los tres roles usando las cuentas
++  ficticias precargadas sin envío obligatorio de correos.
+ 
+ ## Dudas abiertas
+ 
+@@ -808,9 +906,10 @@
+ - **DA-2 — Reglas de datos y archivos: resuelta.** El usuario aceptó las reglas
+   de cantidades, unidades, dimensiones, nombres, códigos, fechas, formatos y
+   actualizaciones de catálogo descritas en esta especificación.
+-- **DA-3 — Alta y acceso inicial.** [NECESITA ACLARACIÓN: ¿cómo se crearán las
+-  empresas y su primer administrador en esta primera versión; habrá registro
+-  del visitante o alta inicial controlada para la demostración?]
++- **DA-3 — Alta y acceso inicial: resuelta.** El usuario aceptó el formulario
++  SaaS, el asistente de instalación local, el alta de equipo por administrador,
++  el acceso con código de empresa, correo y contraseña, y las cuentas ficticias
++  de demostración sin dependencia del envío de correos.
+ - **DA-4 — Trabajo de salida.** [NECESITA ACLARACIÓN: ¿se permitirán reservas,
+   preparación y despachos parciales; las tareas se asignarán a un operario o
+   estarán disponibles para cualquier operario autorizado de la empresa?]
+@@ -885,3 +984,17 @@
+   estas reglas. Se conservan los identificadores y requisitos no afectados.
+ - El resto de decisiones DA-3 a DA-7 continúa abierto; la constitución
+   permanece sin cambios.
++
++### 2026-10-29 — Enmienda 04: alta y acceso inicial aceptados
++
++- DA-3 se cierra con el funcionamiento aceptado explícitamente por el usuario.
++- Se añaden H16 y H17 para el registro SaaS y la configuración local, y
++  RF-139 a RF-155 para altas conjuntas, duplicados, asistente inicial, acceso
++  por empresa y cuentas de demostración sin dependencia de correo.
++- RF-1 concreta el acceso con código de empresa, correo y contraseña.
++  RF-113 y RF-114 concretan el correo como identificador de cuenta dentro de
++  la empresa y la creación de usuarios con credenciales por el administrador.
++- Se añaden definiciones, casos límite y CF-22 a CF-24 para comprobar el alta,
++  el acceso y la demostración acordados.
++- Se conserva la numeración existente y la constitución permanece intacta.
++  DA-4 a DA-7 siguen abiertas; no se generan plan ni tareas todavía.

@@ -1,0 +1,10 @@
+packages:
+  - apps/*
+  - packages/*
+
+saveExact: true
+engineStrict: true
+verifyDepsBeforeRun: error
+allowBuilds:
+  esbuild@0.18.20 || 0.25.12 || 0.28.2: true
+  fsevents@2.3.3: true
