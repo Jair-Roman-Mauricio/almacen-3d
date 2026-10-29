@@ -1,0 +1,13 @@
+CREATE INDEX stock_tenant_product ON app.stock_balances (tenant_id,warehouse_id,product_id,location_id);
+CREATE INDEX history_tenant_time ON app.inventory_entries (tenant_id,occurred_at,id);
+CREATE INDEX history_tenant_warehouse_time ON app.inventory_entries (tenant_id,warehouse_id,occurred_at,id);
+CREATE INDEX history_tenant_product_time ON app.inventory_entries (tenant_id,product_id,occurred_at,id);
+CREATE INDEX layout_parent_lookup ON app.layout_elements (tenant_id,warehouse_id,parent_id,id);
+CREATE INDEX orders_assignee_cursor ON app.orders (tenant_id,warehouse_id,assigned_operator_id,created_at,id);
+CREATE INDEX counts_tenant_time ON app.counts (tenant_id,warehouse_id,recorded_at,id);
+CREATE INDEX counts_tenant_position ON app.counts (tenant_id,warehouse_id,product_id,location_id,recorded_at,id);
+CREATE INDEX audit_tenant_time ON app.audit_events (tenant_id,occurred_at,id);
+CREATE INDEX audit_tenant_entity ON app.audit_events (tenant_id,entity_id,occurred_at,id);
+CREATE INDEX transfers_source_work ON app.transfer_lines (tenant_id,source_warehouse_id,source_location_id,transfer_id,id);
+CREATE INDEX imports_state_cursor ON app.import_jobs (tenant_id,state,created_at,id);
+CREATE INDEX outbox_unpublished_cursor ON app.change_outbox (tenant_id,created_at,id) WHERE published_at IS NULL;

@@ -8,6 +8,8 @@
 | [Estado](estado.md) | Qué funciona, qué falta y próxima tarea |
 | [Desarrollo](desarrollo.md) | Herramientas, bases, comandos y diagnóstico |
 | [Arquitectura](arquitectura.md) | Módulos y límites implementados |
+| [Persistencia](persistencia.md) | Tablas, restricciones, contexto y roles PostgreSQL |
+| [Consultas e índices](reportes/consultas-fase-02.md) | Planes ejecutados y límites de la evidencia |
 | [Contribución](../CONTRIBUTING.md) | Reglas para cambios y revisiones |
 
 ## Acuerdo SDD
@@ -24,6 +26,7 @@ Las revisiones `revision-*.md` y `revision-*.diff` de la carpeta de la spec docu
 
 - [Ejecución inicial T001–T010](evidencias/fase-00.md): pruebas y decisiones del primer bloque.
 - [Ejecución T011–T019](evidencias/fase-01.md): reglas puras, rojo/verde y verificación final.
+- [Ejecución T020–T031](evidencias/fase-02.md): migraciones, aislamiento y privilegios con PostgreSQL real.
 - [Enmienda pnpm y GitHub](cambios/001-pnpm-github.md): cambios técnicos autorizados y revalidación.
 - [Historial de entregas](../CHANGELOG.md).
 

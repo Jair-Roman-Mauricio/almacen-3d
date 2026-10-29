@@ -134,51 +134,51 @@ Tras la aprobación de estas tareas, se propone comenzar **T001–T010 (fase 0)*
 
 ## Fase 2 — Persistencia y aislamiento
 
-- [ ] **T020 Migra empresa, instalación, equipo y sesiones.** Primero escribe y ejecuta su prueba en rojo. Añade tablas y unicidades del ámbito de acceso sin introducir cuentas globales.
+- [x] **T020 Migra empresa, instalación, equipo y sesiones.** Primero escribe y ejecuta su prueba en rojo. Añade tablas y unicidades del ámbito de acceso sin introducir cuentas globales.
   RF: RF-1, RF-9, RF-113, RF-114, RF-139, RF-140, RF-144, RF-145, RF-146, RF-149 · Dep.: T008, T012 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-SET/esquema-identidad incluyendo correo repetido en empresas distintas y código global de empresa único.
 
-- [ ] **T021 Migra almacenes y elementos físicos.** Primero escribe y ejecuta su prueba en rojo. Añade jerarquía, versión de layout, claves de ámbito y códigos de ubicación.
+- [x] **T021 Migra almacenes y elementos físicos.** Primero escribe y ejecuta su prueba en rojo. Añade jerarquía, versión de layout, claves de ámbito y códigos de ubicación.
   RF: RF-10, RF-17, RF-18, RF-22, RF-31 · Dep.: T020, T017 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/esquema-ambito al impedir padres o ubicaciones de otro almacén/empresa.
 
-- [ ] **T022 Migra productos y umbrales.** Primero escribe y ejecuta su prueba en rojo. Define unidad base, clave normalizada de SKU y umbral opcional por almacén.
+- [x] **T022 Migra productos y umbrales.** Primero escribe y ejecuta su prueba en rojo. Define unidad base, clave normalizada de SKU y umbral opcional por almacén.
   RF: RF-34, RF-35, RF-36, RF-75, RF-125 · Dep.: T021, T011 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CAT/esquema-producto con unicidad por empresa y conservación de identidad.
 
-- [ ] **T023 Migra posiciones y libro de inventario.** Primero escribe y ejecuta su prueba en rojo. Crea saldos exactos, revisión física, asientos y restricciones no negativas.
+- [x] **T023 Migra posiciones y libro de inventario.** Primero escribe y ejecuta su prueba en rojo. Crea saldos exactos, revisión física, asientos y restricciones no negativas.
   RF: RF-37, RF-39, RF-40, RF-70, RF-71 · Dep.: T022 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-INV/restricciones-db al rechazar físico negativo o reservado superior al físico sin redondear.
 
-- [ ] **T024 Migra pedidos y asignaciones de stock.** Primero escribe y ejecuta su prueba en rojo. Crea líneas y allocations con claves compuestas y acumulados del plan.
+- [x] **T024 Migra pedidos y asignaciones de stock.** Primero escribe y ejecuta su prueba en rojo. Crea líneas y allocations con claves compuestas y acumulados del plan.
   RF: RF-50, RF-56, RF-118, RF-119, RF-160, RF-163 · Dep.: T023 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-OUT/esquema-pedido con relaciones de línea/producto/ubicación limitadas a su empresa y almacén.
 
-- [ ] **T025 Migra traslados y sus recepciones.** Primero escribe y ejecuta su prueba en rojo. Persiste líneas y etapas con origen/destino y cantidades exactas.
+- [x] **T025 Migra traslados y sus recepciones.** Primero escribe y ejecuta su prueba en rojo. Persiste líneas y etapas con origen/destino y cantidades exactas.
   RF: RF-171, RF-172, RF-174, RF-179, RF-180 · Dep.: T024 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-TRA/esquema-traslado al impedir extremos ajenos y saldo recibido mayor que salido.
 
-- [ ] **T026 Migra conteos y ajustes.** Primero escribe y ejecuta su prueba en rojo. Guarda observado, físico y revisión de referencia por producto/ubicación.
+- [x] **T026 Migra conteos y ajustes.** Primero escribe y ejecuta su prueba en rojo. Guarda observado, físico y revisión de referencia por producto/ubicación.
   RF: RF-64, RF-66, RF-69, RF-70, RF-109 · Dep.: T025 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CNT/esquema-conteo sin permitir referencias cruzadas de producto/ubicación.
 
-- [ ] **T027 Migra comandos, auditoría y outbox.** Primero escribe y ejecuta su prueba en rojo. Define referencia única por empresa, resultado persistente y registros de cambio.
+- [x] **T027 Migra comandos, auditoría y outbox.** Primero escribe y ejecuta su prueba en rojo. Define referencia única por empresa, resultado persistente y registros de cambio.
   RF: RF-71, RF-72, RF-87, RF-102, RF-110, RF-111, RNF-14 · Dep.: T026 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CMD/esquema-comando con referencia repetible entre empresas pero única dentro de una empresa.
 
-- [ ] **T028 Migra trabajos y filas de importación.** Primero escribe y ejecuta su prueba en rojo. Persiste staging, huellas, validaciones y estado sin tocar tablas operativas.
+- [x] **T028 Migra trabajos y filas de importación.** Primero escribe y ejecuta su prueba en rojo. Persiste staging, huellas, validaciones y estado sin tocar tablas operativas.
   RF: RF-80, RF-81, RF-88 · Dep.: T027 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-EXC/staging-aislado al guardar preview sin alterar catálogo ni stock.
 
-- [ ] **T029 Aísla el contexto de conexión y repositorios.** Primero escribe y ejecuta su prueba en rojo. Introduce contexto de empresa obligatorio por transacción y claves de repositorio acotadas.
+- [x] **T029 Aísla el contexto de conexión y repositorios.** Primero escribe y ejecuta su prueba en rojo. Introduce contexto de empresa obligatorio por transacción y claves de repositorio acotadas.
   RF: RF-5, RNF-2 · Dep.: T028 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ISO/pool-contexto alternando dos empresas, rollback y petición sin contexto.
 
-- [ ] **T030 Aplica RLS y privilegios mínimos.** Primero escribe y ejecuta su prueba en rojo. Activa políticas y separa rol de aplicación, provisión y migraciones.
+- [x] **T030 Aplica RLS y privilegios mínimos.** Primero escribe y ejecuta su prueba en rojo. Activa políticas y separa rol de aplicación, provisión y migraciones.
   RF: RF-5, RF-72, RNF-2 · Dep.: T029 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ISO/rls-sin-bypass incluyendo claves foráneas cruzadas y denegación de UPDATE/DELETE de asientos.
 
-- [ ] **T031 Añade índices de las consultas previstas.** Versiona índices por empresa y cursores estables de las entidades del plan.
+- [x] **T031 Añade índices de las consultas previstas.** Versiona índices por empresa y cursores estables de las entidades del plan.
   RF: RF-11, RF-27, RF-28, RF-38, RF-73, RF-89, RNF-11, RNF-13 · Dep.: T030 · Est.: 25 min.
   Hecho cuando: El informe de consultas identifica índices utilizables para SKU, ubicación, stock e historial dentro de cada empresa.
 

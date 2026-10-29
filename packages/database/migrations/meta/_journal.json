@@ -8,7 +8,83 @@
       "when": 1793232000000,
       "tag": "0000_infrastructure",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1793232000001,
+      "tag": "0001_identity",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793232000002,
+      "tag": "0002_warehouses",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793232000003,
+      "tag": "0003_catalogue",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1793232000004,
+      "tag": "0004_inventory",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1793232000005,
+      "tag": "0005_outbound",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1793232000006,
+      "tag": "0006_transfers",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1793232000007,
+      "tag": "0007_counts",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1793232000008,
+      "tag": "0008_commands",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1793232000009,
+      "tag": "0009_imports",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1793232000010,
+      "tag": "0010_row_security",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1793232000011,
+      "tag": "0011_query_indexes",
+      "breakpoints": true
     }
   ]
 }
-

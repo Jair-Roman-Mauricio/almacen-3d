@@ -10,7 +10,7 @@ Dos aplicaciones y cuatro paquetes compartidos, con un monolito modular de negoc
 | `apps/web` | Next App Router y `/health` | Sin páginas ni componentes de producto |
 | `packages/domain` | Cantidades exactas, identificadores, fechas, saldos, geometría y alertas | No importa frameworks, SQL ni red |
 | `packages/contracts` | Esquemas compartidos y formato de errores | No accede a datos |
-| `packages/database` | Conexiones, transacciones, migraciones y guard de pruebas | Efectos PostgreSQL fuera del dominio |
+| `packages/database` | Esquema, contexto/repositorio, RLS, transacciones, migraciones y guard de pruebas | Efectos PostgreSQL fuera del dominio |
 | `packages/ui` | Base de paquete reservada a componentes futuros | No importa database |
 
 ESLint y `tools/check-boundaries.mjs` verifican importaciones permitidas y prohibidas. El grafo de build compila dependencias antes de consumidores. Las dependencias internas declaran `workspace:*`.
@@ -23,14 +23,18 @@ La ruta de salud no comprueba por sí sola la disponibilidad de todas las futura
 
 ## Persistencia
 
-PostgreSQL local tiene servicios, credenciales y volúmenes separados para desarrollo y pruebas. Las migraciones usan un rol distinto al de aplicación, una única conexión, advisory lock de sesión y comprobación de hashes del diario aplicado. Repetir la migración no reaplica versiones. La migración inicial es técnica; no crea tablas de negocio.
+PostgreSQL local tiene servicios, credenciales y volúmenes separados para desarrollo y pruebas. Las migraciones usan un rol distinto al de aplicación, una única conexión, advisory lock de sesión y comprobación de hashes del diario aplicado. Repetir la migración no reaplica versiones. El diario incluye la base técnica y 11 migraciones de negocio/aislamiento/índices: 23 tablas de empresa, control de instalación y diario de Drizzle.
 
 `withTransaction` abre una transacción READ COMMITTED, confirma en éxito y revierte ante error. Si falla el rollback, descarta la conexión para evitar devolverla contaminada al pool. Las pruebas comprueban el comportamiento con PostgreSQL real.
 
 ## Reglas puras disponibles
 
-T011–T019 incorporan cantidades en milésimas BigInt, normalización Unicode, fechas en zona IANA, saldos de pedidos/traslados, geometría exacta con decimal.js y alertas. Las funciones no escriben datos. Ver [evidencia](evidencias/fase-01.md).
+La fase 1 añade valores de cantidad en milésimas BigInt y reglas por unidad, normalización Unicode, días civiles en zona IANA, saldos y estados de salida/tránsito, cajas geométricas exactas con decimal.js y alertas de stock. Las transformaciones no escriben datos ni sustituyen permisos o transacciones. [La evidencia](evidencias/fase-01.md) describe los criterios y resultados.
+
+## Persistencia y contexto implementados
+
+La fase 2 incorpora claves compuestas de ámbito, restricciones sin redondeo, revisión física, comandos/auditoría/outbox y staging. `withTenantTransaction` fija la empresa localmente y caduca el contexto al terminar; el repositorio filtra por esa empresa. RLS forzada y privilegios por tabla/columna añaden una segunda barrera. [Persistencia](persistencia.md) detalla roles y límites; [la evidencia](evidencias/fase-02.md) registra pruebas reales y el [informe de índices](reportes/consultas-fase-02.md) sus planes.
 
 ## Pendiente según el plan
 
-Las sesiones, RLS de negocio, inventario, idempotencia operativa, outbox/SSE, importaciones, editor y visor 3D se implementarán en sus tareas. No se atribuyen esas capacidades a los helpers actuales. Las mediciones, restauración y equivalencia completa SaaS/local también están pendientes de evidencia.
+Las sesiones operativas, servicios de inventario, idempotencia operativa, dispatcher outbox/SSE, importaciones, editor y visor 3D se implementarán en sus tareas. No se atribuyen esas capacidades a los helpers actuales. Las mediciones, restauración y equivalencia completa SaaS/local también están pendientes de evidencia.

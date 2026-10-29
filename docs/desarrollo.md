@@ -23,6 +23,7 @@ Con Docker Engine disponible:
 ```sh
 node scripts/setup-env.mjs
 docker compose --env-file .env -f infra/compose.postgres.yml up -d --wait
+node scripts/pnpm-local.mjs run db:roles
 node scripts/pnpm-local.mjs run db:migrate
 node scripts/pnpm-local.mjs run db:migrate --test
 ```
@@ -32,9 +33,9 @@ node scripts/pnpm-local.mjs run db:migrate --test
 | Desarrollo | 127.0.0.1:55432 | almacen_dev |
 | Pruebas | 127.0.0.1:55433 | almacen_test |
 
-`setup-env.mjs` conserva un `.env` existente. El rol `alm_app` no es superusuario, no omite RLS y no crea esquemas. `alm_migrator` aplica migraciones con otra credencial. Las tablas y políticas de negocio pertenecen a tareas posteriores. El diario inicial solo verifica la infraestructura.
+`setup-env.mjs` conserva valores existentes y completa las credenciales de provisión ausentes. El rol `alm_app` no es superusuario, no omite RLS y no crea esquemas. `alm_migrator` aplica migraciones con otra credencial. `alm_provision` tiene una credencial independiente y no puede consultar inventario; su adaptador de acceso/alta se implementará después. El diario tiene 12 versiones; RLS está forzada en las 23 tablas de empresa. Ver [persistencia y aislamiento](persistencia.md).
 
-El guard de pruebas exige una base terminada en `_test`, distinta del destino de desarrollo y sin parámetros de URL. Las fixtures de integración crean esquemas propios y los eliminan al terminar. No ejecutar pruebas contra bases de trabajo reales.
+El guard de pruebas exige una base terminada en `_test`, distinta del destino de desarrollo y sin parámetros de URL. Las fixtures iniciales crean esquemas propios. Las pruebas de negocio/RLS crean bases `phase2_<uuid>_test` mediante bootstrap, aplican el diario real y eliminan solo esas bases al terminar; usan `PG_TEST_BOOTSTRAP_PASSWORD` para esa preparación. No ejecutar pruebas contra bases de trabajo reales.
 
 Para detener los contenedores conservando los volúmenes:
 
@@ -42,7 +43,7 @@ Para detener los contenedores conservando los volúmenes:
 docker compose --env-file .env -f infra/compose.postgres.yml stop
 ```
 
-Los cambios de contraseña de `.env` no reconfiguran automáticamente roles de un volumen ya inicializado. No borrar volúmenes para resolverlo: revisar credenciales y permisos de esa instalación.
+Los cambios de contraseña de `.env` no reconfiguran automáticamente roles de un volumen ya inicializado. No borrar volúmenes para resolverlo: revisar credenciales y permisos de esa instalación. `db:roles` prepara la nueva credencial de provisión en volúmenes existentes sin sustituir los de desarrollo/pruebas.
 
 ## Comprobaciones disponibles
 

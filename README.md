@@ -4,7 +4,7 @@ Sistema de gestión de almacenes (WMS) en desarrollo para empresas con almacenes
 
 Se construye siguiendo **Specification Driven Development (SDD)**: requisitos, contratos, plan, tareas y evidencia verificable antes de dar una capacidad por terminada.
 
-> **Estado al 29/10/2026:** base técnica completada, **19 de 214 tareas**. Hay compilación web/API, rutas de salud, migraciones y reglas puras de cantidades, fechas, saldos, tránsito, geometría y alertas. La interfaz operativa, el editor 3D y la landing todavía no están implementados. Este repositorio documenta el desarrollo; aún no ofrece una demo del WMS.
+> **Estado al 29/10/2026:** base técnica completada, **31 de 214 tareas**. Hay compilación web/API, rutas de salud, reglas puras y un esquema de negocio con restricciones, contexto transaccional, RLS e índices. La interfaz operativa, el editor 3D y la landing todavía no están implementados. Este repositorio documenta el desarrollo; aún no ofrece una demo del WMS.
 
 ## Producto previsto
 
@@ -41,11 +41,12 @@ node scripts/setup-pnpm.mjs
 node scripts/pnpm-local.mjs install --frozen-lockfile
 node scripts/setup-env.mjs
 docker compose --env-file .env -f infra/compose.postgres.yml up -d --wait
+node scripts/pnpm-local.mjs run db:roles
 node scripts/pnpm-local.mjs run db:migrate
 node scripts/pnpm-local.mjs run db:migrate --test
 ```
 
-Los descargadores comprueban la integridad de las herramientas y las guardan en `.tools/`; no cambian instalaciones globales. `setup-env.mjs` genera credenciales aleatorias y conserva un `.env` existente. **No subir `.env` al repositorio.**
+Los descargadores comprueban la integridad de las herramientas y las guardan en `.tools/`; no cambian instalaciones globales. `setup-env.mjs` genera credenciales aleatorias, conserva los valores existentes y completa los de provisión ausentes. **No subir `.env` al repositorio.**
 
 ## Verificación
 
@@ -59,9 +60,7 @@ node scripts/pnpm-local.mjs run build
 
 Si Node y pnpm ya coinciden con las versiones fijadas y están en `PATH`, se puede usar directamente `pnpm install --frozen-lockfile` y `pnpm run <script>`.
 
-Las pruebas actuales cubren validación inicial de cantidades, protección de la base de pruebas, rollback real y contrato de errores HTTP. No acreditan todavía el WMS completo. Los resultados ejecutados de la migración a pnpm están en [la evidencia técnica](docs/cambios/001-pnpm-github.md).
-
-La fase 1 está verificada con **149 pruebas unitarias y 16 de integración aprobadas**, más 11 comprobaciones de arquitectura. Ver [su evidencia](docs/evidencias/fase-01.md).
+Las pruebas actuales cubren cantidades exactas, normalización Unicode, fechas de empresa, saldos de pedidos/traslados, geometría, alertas, protección de la base de pruebas, rollback real y contrato de errores HTTP. No acreditan todavía el WMS completo. Resultado vigente: **149 pruebas unitarias y 49 de integración aprobadas**, más 11 comprobaciones de arquitectura. Ver [fase 2](docs/evidencias/fase-02.md), [fase 1](docs/evidencias/fase-01.md) y [migración a pnpm](docs/cambios/001-pnpm-github.md).
 
 ## Estructura
 
@@ -82,7 +81,7 @@ investigacion/  Investigación de mercado inicial
 - [Índice documental](docs/README.md) y [estado del proyecto](docs/estado.md).
 - [Constitución](docs/constitution.md) y [flujo SDD](docs/flujo-sdd.md).
 - [Especificación](specs/001-wms-operativo-3d/spec.md), [contratos](specs/001-wms-operativo-3d/contratos.md), [plan](specs/001-wms-operativo-3d/plan.md) y [tareas](specs/001-wms-operativo-3d/tasks.md).
-- [Arquitectura](docs/arquitectura.md), [desarrollo local](docs/desarrollo.md) y [contribución](CONTRIBUTING.md).
+- [Arquitectura](docs/arquitectura.md), [persistencia y aislamiento](docs/persistencia.md), [índices y consultas](docs/reportes/consultas-fase-02.md), [desarrollo local](docs/desarrollo.md) y [contribución](CONTRIBUTING.md).
 - [Investigación de mercado](investigacion/mercado-almacen-3d.md) y [referencias de diseño](specs/001-wms-operativo-3d/referencias-ui.md).
 
 La interfaz comienza en T119; el editor y visor 3D, en T141. Actualmente solo existen comprobaciones de salud, por lo que no hay una vista previa visual que mostrar. El despliegue de la aplicación en Railway requiere una indicación posterior expresa.

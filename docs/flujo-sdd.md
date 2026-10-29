@@ -89,7 +89,7 @@ afectadas y se mantiene la trazabilidad; no se reinicia el proyecto completo.
 - El usuario aprobó las tareas y la ejecución continua de T001–T010 mediante
   «apruebo».
 - `implementacion-sdd`: bloque T001–T010 completado con evidencia en
-  `docs/evidencias/fase-00.md`; siguiente pendiente T020 tras cerrar T011–T019.
+  `docs/evidencias/fase-00.md`; completado posteriormente con T011–T019; siguiente pendiente T020.
 - Se corrigieron los hallazgos 13 a 19 y se cerraron los hallazgos 1 a 12 con
   DA-1 a DA-7. Los 19 hallazgos de la revisión inicial tienen resolución documentada.
 - La especificación está en `specs/001-wms-operativo-3d/spec.md`.
@@ -121,3 +121,11 @@ afectadas y se mantiene la trazabilidad; no se reinicia el proyecto completo.
 ## Ejecución continua autorizada: T011–T019 — 29/10/2026
 
 El usuario pidió continuar las nueve tareas de forma seguida. Se completaron sus ciclos de pruebas/implementación y se marcaron únicamente sus casillas. [Evidencia de la fase 1](evidencias/fase-01.md): 149 unitarias y 16 de integración pasadas, 11 comprobaciones de capas, tipos y build correctos. El acuerdo de spec/plan/contratos/constitución permanece intacto. T020 no se inicia; las pantallas continúan pendientes de sus fases. No se realizó commit/push o despliegue en este bloque.
+
+## Ejecución continua autorizada: T020–T031 — 29/10/2026
+
+El usuario pidió completar el bloque seguido y confirmó que no se use Supabase. Se implementaron migraciones, contexto/repositorios, RLS/roles e índices usando PostgreSQL local. [Evidencia de fase 2](evidencias/fase-02.md): 149 unitarias y 49 de integración pasadas, 11 comprobaciones de arquitectura, tipos/build correctos, migraciones aplicadas e idempotentes en desarrollo/pruebas. Spec, plan, contratos y constitución se conservan. Siguiente: T032, no iniciada. No hubo commit/push, despliegue o UI en este bloque.
+
+## Versionado y publicación solicitados — 29/10/2026
+
+El usuario solicitó subir los cambios versionados de forma profesional. Se separan los bloques en commits de dominio (T011–T019) y persistencia/aislamiento (T020–T031), con evidencia y documentación. Esta publicación de código no despliega la aplicación ni cambia el siguiente bloque pendiente. Los cierres anteriores sin commit/push describen el estado al terminar cada ejecución, antes de esta solicitud.
