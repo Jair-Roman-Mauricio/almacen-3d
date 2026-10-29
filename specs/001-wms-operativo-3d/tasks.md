@@ -96,39 +96,39 @@ Tras la aprobación de estas tareas, se propone comenzar **T001–T010 (fase 0)*
 
 ## Fase 1 — Valores y reglas puras
 
-- [ ] **T011 Implementa cantidades exactas y unidades.** Primero escribe y ejecuta su prueba en rojo. Amplía validación por unidad y la representación BigInt sin convertir a Number ni redondear.
+- [x] **T011 Implementa cantidades exactas y unidades.** Primero escribe y ejecuta su prueba en rojo. Amplía validación por unidad y la representación BigInt sin convertir a Number ni redondear.
   RF: RF-43, RF-51, RF-107, RF-108, RF-123, RF-124, RF-125, RF-182 · Dep.: T006 · Est.: 30 min.
   Hecho cuando: `pnpm run test:unit` pasa U-VAL/precision-unidades con enteros, cero de conteo, tres decimales y exceso de precisión.
 
-- [ ] **T012 Normaliza nombres y códigos.** Primero escribe y ejecuta su prueba en rojo. Implementa Unicode, recorte exterior, gramática y longitudes de la especificación.
+- [x] **T012 Normaliza nombres y códigos.** Primero escribe y ejecuta su prueba en rojo. Implementa Unicode, recorte exterior, gramática y longitudes de la especificación.
   RF: RF-17, RF-35, RF-114, RF-127, RF-128, RF-142 · Dep.: T006 · Est.: 25 min.
   Hecho cuando: `pnpm run test:unit` pasa U-VAL/nombres-codigos con 160/64 caracteres, longitudes excedidas y claves equivalentes por mayúsculas.
 
-- [ ] **T013 Calcula filtros en la zona de empresa.** Primero escribe y ejecuta su prueba en rojo. Implementa zona por defecto, validación IANA e intervalo de días completos sin asumir días de 24 horas.
+- [x] **T013 Calcula filtros en la zona de empresa.** Primero escribe y ejecuta su prueba en rojo. Implementa zona por defecto, validación IANA e intervalo de días completos sin asumir días de 24 horas.
   RF: RF-129, RF-130, RF-131, RF-132, RF-133 · Dep.: T006 · Est.: 25 min.
   Hecho cuando: `pnpm run test:unit` pasa U-VAL/fechas-empresa en America/Lima y una zona con cambio horario, incluyendo ambos extremos.
 
-- [ ] **T014 Calcula saldos por línea y asignación.** Primero escribe y ejecuta su prueba en rojo. Define pendientes de reservar/preparar/despachar conservando unidad y saldos parciales.
+- [x] **T014 Calcula saldos por línea y asignación.** Primero escribe y ejecuta su prueba en rojo. Define pendientes de reservar/preparar/despachar conservando unidad y saldos parciales.
   RF: RF-54, RF-57, RF-59, RF-60, RF-118, RF-119, RF-156, RF-157, RF-158, RF-159, RF-160 · Dep.: T011 · Est.: 25 min.
   Hecho cuando: `pnpm run test:unit` pasa U-BAL/saldos-linea con solicitado 100 y un avance de 40 sin mantener reservas consumidas.
 
-- [ ] **T015 Deriva el estado completo del pedido.** Primero escribe y ejecuta su prueba en rojo. Evalúa todas las líneas, sin mezclar unidades ni cancelar saldos por cuenta propia.
+- [x] **T015 Deriva el estado completo del pedido.** Primero escribe y ejecuta su prueba en rojo. Evalúa todas las líneas, sin mezclar unidades ni cancelar saldos por cuenta propia.
   RF: RF-62, RF-63, RF-120, RF-161, RF-162 · Dep.: T014 · Est.: 25 min.
   Hecho cuando: `pnpm run test:unit` pasa U-BAL/estado-pedido con líneas de unidades diferentes y estados parcial, completo y cancelable.
 
-- [ ] **T016 Modela el saldo en tránsito.** Primero escribe y ejecuta su prueba en rojo. Define salida, recibido y tránsito por línea con conservación por producto.
+- [x] **T016 Modela el saldo en tránsito.** Primero escribe y ejecuta su prueba en rojo. Define salida, recibido y tránsito por línea con conservación por producto.
   RF: RF-174, RF-177, RF-178, RF-180, RF-181, RF-184, RF-186 · Dep.: T011 · Est.: 25 min.
   Hecho cuando: `pnpm run test:unit` pasa U-BAL/traslado-100-20 con total constante y tránsito no reservable.
 
-- [ ] **T017 Valida jerarquía y dimensiones exactas.** Primero escribe y ejecuta su prueba en rojo. Define cajas relativas en metros con precisión de cálculo derivada de sus valores.
+- [x] **T017 Valida jerarquía y dimensiones exactas.** Primero escribe y ejecuta su prueba en rojo. Define cajas relativas en metros con precisión de cálculo derivada de sus valores.
   RF: RF-15, RF-16, RF-126, RF-189, RF-194 · Dep.: T006, T012 · Est.: 30 min.
   Hecho cuando: `pnpm run test:unit` pasa U-GEO/jerarquia-contencion con valores inválidos, contenedores anidados y coordenadas de muchos dígitos.
 
-- [ ] **T018 Detecta solo los solapamientos prohibidos.** Primero escribe y ejecuta su prueba en rojo. Comprueba interiores por tipo/contenedor y permite compartir únicamente bordes.
+- [x] **T018 Detecta solo los solapamientos prohibidos.** Primero escribe y ejecuta su prueba en rojo. Comprueba interiores por tipo/contenedor y permite compartir únicamente bordes.
   RF: RF-190, RF-191, RF-192, RF-193, RF-198 · Dep.: T017 · Est.: 30 min.
   Hecho cuando: `pnpm run test:unit` pasa U-GEO/colisiones con zonas, racks, pasillos y ubicaciones, sin tratar padre-hijo ni bordes como colisión.
 
-- [ ] **T019 Deriva disponibilidad y alertas.** Primero escribe y ejecuta su prueba en rojo. Define disponible operativo con bloqueo y umbral opcional por producto/almacén.
+- [x] **T019 Deriva disponibilidad y alertas.** Primero escribe y ejecuta su prueba en rojo. Define disponible operativo con bloqueo y umbral opcional por producto/almacén.
   RF: RF-37, RF-40, RF-75, RF-76, RF-77, RF-78, RF-79, RF-178, RF-201 · Dep.: T011 · Est.: 25 min.
   Hecho cuando: `pnpm run test:unit` pasa U-BAL/disponibilidad-alerta en valores bajo/igual/sobre umbral, ausencia de umbral y ubicación bloqueada.
 

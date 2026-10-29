@@ -18,7 +18,7 @@
 
 - Constitución → especificación/clarificación → plan → tareas → implementación
   por bloque autorizado → validación. No adelantar pantallas por tener Next listo.
-- Estado: T001–T010 completadas; T011 es la siguiente tarea funcional pendiente.
+- Estado: T001–T019 completadas; T020 es la siguiente tarea funcional pendiente.
   Consultar tasks.md y docs/estado.md para conocer el estado vigente.
 - Pruebas primero para comportamiento. Marcar tareas únicamente al cumplir su
   criterio con evidencia ejecutada; no sustituir PostgreSQL por mocks en carreras.

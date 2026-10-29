@@ -8,7 +8,7 @@ Dos aplicaciones y cuatro paquetes compartidos, con un monolito modular de negoc
 |---|---|---|
 | `apps/api` | Arranque Nest, salud, validación y errores | Punto de entrada HTTP; sin operaciones WMS todavía |
 | `apps/web` | Next App Router y `/health` | Sin páginas ni componentes de producto |
-| `packages/domain` | Validación pura inicial de cantidades | No importa frameworks, SQL ni red |
+| `packages/domain` | Cantidades exactas, identificadores, fechas, saldos, geometría y alertas | No importa frameworks, SQL ni red |
 | `packages/contracts` | Esquemas compartidos y formato de errores | No accede a datos |
 | `packages/database` | Conexiones, transacciones, migraciones y guard de pruebas | Efectos PostgreSQL fuera del dominio |
 | `packages/ui` | Base de paquete reservada a componentes futuros | No importa database |
@@ -26,6 +26,10 @@ La ruta de salud no comprueba por sí sola la disponibilidad de todas las futura
 PostgreSQL local tiene servicios, credenciales y volúmenes separados para desarrollo y pruebas. Las migraciones usan un rol distinto al de aplicación, una única conexión, advisory lock de sesión y comprobación de hashes del diario aplicado. Repetir la migración no reaplica versiones. La migración inicial es técnica; no crea tablas de negocio.
 
 `withTransaction` abre una transacción READ COMMITTED, confirma en éxito y revierte ante error. Si falla el rollback, descarta la conexión para evitar devolverla contaminada al pool. Las pruebas comprueban el comportamiento con PostgreSQL real.
+
+## Reglas puras disponibles
+
+T011–T019 incorporan cantidades en milésimas BigInt, normalización Unicode, fechas en zona IANA, saldos de pedidos/traslados, geometría exacta con decimal.js y alertas. Las funciones no escriben datos. Ver [evidencia](evidencias/fase-01.md).
 
 ## Pendiente según el plan
 

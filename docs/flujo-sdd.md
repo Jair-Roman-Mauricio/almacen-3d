@@ -89,7 +89,7 @@ afectadas y se mantiene la trazabilidad; no se reinicia el proyecto completo.
 - El usuario aprobó las tareas y la ejecución continua de T001–T010 mediante
   «apruebo».
 - `implementacion-sdd`: bloque T001–T010 completado con evidencia en
-  `docs/evidencias/fase-00.md`; siguiente pendiente T011, todavía no iniciada.
+  `docs/evidencias/fase-00.md`; siguiente pendiente T020 tras cerrar T011–T019.
 - Se corrigieron los hallazgos 13 a 19 y se cerraron los hallazgos 1 a 12 con
   DA-1 a DA-7. Los 19 hallazgos de la revisión inicial tienen resolución documentada.
 - La especificación está en `specs/001-wms-operativo-3d/spec.md`.
@@ -117,3 +117,7 @@ afectadas y se mantiene la trazabilidad; no se reinicia el proyecto completo.
 - `implementacion-sdd/SKILL.md` (catálogo local; no incluido en este repositorio)
 - `validator-sdd/SKILL.md` (catálogo local; no incluido en este repositorio)
 - `new-specs-sdd/SKILL.md` (catálogo local; no incluido en este repositorio)
+
+## Ejecución continua autorizada: T011–T019 — 29/10/2026
+
+El usuario pidió continuar las nueve tareas de forma seguida. Se completaron sus ciclos de pruebas/implementación y se marcaron únicamente sus casillas. [Evidencia de la fase 1](evidencias/fase-01.md): 149 unitarias y 16 de integración pasadas, 11 comprobaciones de capas, tipos y build correctos. El acuerdo de spec/plan/contratos/constitución permanece intacto. T020 no se inicia; las pantallas continúan pendientes de sus fases. No se realizó commit/push o despliegue en este bloque.

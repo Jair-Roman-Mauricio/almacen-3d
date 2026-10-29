@@ -2,7 +2,7 @@
 
 Actualizado el 29/10/2026. Fuente de progreso: [tasks.md](../specs/001-wms-operativo-3d/tasks.md), con evidencia en [fase 0](evidencias/fase-00.md) y [revalidación pnpm](cambios/001-pnpm-github.md).
 
-## Implementado: T001–T010
+## Implementado: T001–T019
 
 - Workspace de seis paquetes/aplicaciones, TypeScript y límites automáticos de capas.
 - Runtime local fijado; gestión exclusiva con pnpm y dependencias internas `workspace:*`.
@@ -14,11 +14,12 @@ Actualizado el 29/10/2026. Fuente de progreso: [tasks.md](../specs/001-wms-opera
 
 **No hay aún tablas de negocio, sesiones, operaciones de inventario, pantallas, editor 3D ni landing.** El contrato inicial HTTP no acredita autorización ni aislamiento multiempresa completo.
 
+La fase 1 incorpora cantidades exactas, normalización Unicode, fechas de empresa, saldos de pedidos/traslados, geometría y alertas. Verificación: 149 unitarias y 16 de integración aprobadas; [evidencia](evidencias/fase-01.md).
+
 ## Hitos pendientes
 
 | Tareas | Contenido |
 |---|---|
-| T011–T019 | Valores exactos y reglas puras |
 | T020–T118 | Persistencia, acceso, operaciones, archivos y sincronización |
 | T119–T140 | Fundamentos UI y primeras pantallas |
 | T141–T153 | Editor visual y visor 3D |
@@ -26,7 +27,7 @@ Actualizado el 29/10/2026. Fuente de progreso: [tasks.md](../specs/001-wms-opera
 | T177–T182 | Landing, modalidades y demostración |
 | T183–T214 | Instalación, recuperación, mediciones y QA final |
 
-La siguiente tarea funcional es **T011: cantidades exactas y unidades**. La preparación de GitHub y pnpm es mantenimiento técnico solicitado, no avance de estas tareas. Solo T001–T010 están marcadas.
+La siguiente tarea funcional es **T020: migrar empresa, instalación, equipo y sesiones**. La preparación de GitHub y pnpm es mantenimiento técnico solicitado, no avance de estas tareas. Solo T001–T019 están marcadas.
 
 ## Vista previa y publicación
 

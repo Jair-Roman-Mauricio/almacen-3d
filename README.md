@@ -4,7 +4,7 @@ Sistema de gestión de almacenes (WMS) en desarrollo para empresas con almacenes
 
 Se construye siguiendo **Specification Driven Development (SDD)**: requisitos, contratos, plan, tareas y evidencia verificable antes de dar una capacidad por terminada.
 
-> **Estado al 29/10/2026:** base técnica completada, **10 de 214 tareas**. Hay compilación web/API, rutas de salud, migraciones y pruebas iniciales. La interfaz operativa, el editor 3D y la landing todavía no están implementados. Este repositorio documenta el desarrollo; aún no ofrece una demo del WMS.
+> **Estado al 29/10/2026:** base técnica completada, **19 de 214 tareas**. Hay compilación web/API, rutas de salud, migraciones y reglas puras de cantidades, fechas, saldos, tránsito, geometría y alertas. La interfaz operativa, el editor 3D y la landing todavía no están implementados. Este repositorio documenta el desarrollo; aún no ofrece una demo del WMS.
 
 ## Producto previsto
 
@@ -60,6 +60,8 @@ node scripts/pnpm-local.mjs run build
 Si Node y pnpm ya coinciden con las versiones fijadas y están en `PATH`, se puede usar directamente `pnpm install --frozen-lockfile` y `pnpm run <script>`.
 
 Las pruebas actuales cubren validación inicial de cantidades, protección de la base de pruebas, rollback real y contrato de errores HTTP. No acreditan todavía el WMS completo. Los resultados ejecutados de la migración a pnpm están en [la evidencia técnica](docs/cambios/001-pnpm-github.md).
+
+La fase 1 está verificada con **149 pruebas unitarias y 16 de integración aprobadas**, más 11 comprobaciones de arquitectura. Ver [su evidencia](docs/evidencias/fase-01.md).
 
 ## Estructura
 
