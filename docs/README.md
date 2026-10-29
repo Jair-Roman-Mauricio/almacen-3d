@@ -11,6 +11,7 @@
 | [Persistencia](persistencia.md) | Tablas, restricciones, contexto y roles PostgreSQL |
 | [Consultas e índices](reportes/consultas-fase-02.md) | Planes ejecutados y límites de la evidencia |
 | [Contribución](../CONTRIBUTING.md) | Reglas para cambios y revisiones |
+| [Versionado](versionado.md) | Ramas, pull requests, tags y releases |
 
 ## Acuerdo SDD
 
