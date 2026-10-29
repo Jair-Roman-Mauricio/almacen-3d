@@ -28,6 +28,28 @@
 - Commit/push requieren autorización. La publicación inicial del repositorio fue
   solicitada expresamente; no implica autorización para desplegar en Railway.
 
+## Ramas, pull requests y releases
+
+- main conserva los hitos integrados; dev es la rama de integración. Crear cada
+  rama de trabajo desde dev actualizada, con el prefijo `feature/` y un nombre
+  descriptivo, por ejemplo `feature/t032-t037-transactions`.
+- Implementar cada bloque autorizado en su feature. Publicar esa rama y abrir
+  un pull request hacia dev, con alcance, tareas SDD, validación real y límites.
+  También los ajustes de documentación/proceso se realizan mediante feature.
+- No crear commits de trabajo ni hacer push directamente a dev o main. La
+  incorporación feature → dev y la promoción dev → main se realizan por PR y
+  requieren indicación del usuario. No fusionar automáticamente.
+- Un bloque cohesivo puede compartir feature; no crear una rama por archivo.
+  Mantener commits revisables con Conventional Commits.
+- Las releases marcan hitos verificados y se basan en tags del commit aprobado
+  de main. No crear tags, releases o despliegues sin solicitud expresa. Para
+  entregas incompletas usar prerelease cuando se autorice y describir pendientes.
+- Conservar los commits ya publicados en main. No reescribir historia, revertir
+  o mover retrospectivamente esos commits sin petición explícita.
+- Consultar docs/versionado.md. La creación inicial de dev parte de main sin
+  modificarla; no constituye autorización para hacer futuros pushes de trabajo
+  directamente a una rama de integración.
+
 ## UI/UX
 
 - Antes de escribir UI leer impeccable, design-taste-frontend,

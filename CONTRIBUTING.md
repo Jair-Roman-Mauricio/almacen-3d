@@ -12,3 +12,16 @@ Este proyecto sigue SDD. Antes de cambiar comportamiento, leer [constitución](d
 Para UI son obligatorios las skills de diseño, referencias Awwwards por módulo y QA con Playwright en escritorio/móvil indicados en [AGENTS.md](AGENTS.md). No se exige ni se permite la integración NotebookLM retirada.
 
 No incluir credenciales, `.env`, datos reales, builds, dependencias o capturas ajenas. La publicación del código no autoriza desplegar la aplicación ni efectuar cobros. Consultar [desarrollo local](docs/desarrollo.md) para los comandos vigentes. La licencia de reutilización está pendiente de definición.
+
+## Versionado y revisión
+
+Crear una rama `feature/<nombre>` desde dev actualizada antes de editar. Un
+bloque SDD cohesivo puede compartir feature. Publicar la feature y abrir un pull
+request hacia dev; no hacer commits de trabajo ni push directo a dev o main.
+La promoción dev → main usa otro PR. Cada fusión requiere indicación del usuario.
+Este flujo se aplica también a documentación y ajustes de proceso.
+
+El PR explica problema y resultado, tareas SDD cubiertas, pruebas realmente
+ejecutadas y limitaciones. Usar Conventional Commits. Las releases se reservan
+para hitos aprobados de main; una prerelease identifica una entrega aún no
+preparada para producción. Ver [política de versionado](docs/versionado.md).
