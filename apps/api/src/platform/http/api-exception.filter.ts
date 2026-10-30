@@ -1,3 +1,4 @@
+import { DomainError } from '@almacen/domain';
 import { randomUUID } from 'node:crypto';
 import { Catch, HttpException, Logger } from '@nestjs/common';
 import type { ArgumentsHost, ExceptionFilter } from '@nestjs/common';
@@ -8,6 +9,7 @@ import type { ErrorPayload } from './api-exception.js';
 export interface RequestContext extends Request { requestId?: string }
 
 const internal = { code: 'INTERNAL_ERROR', message: 'No se pudo completar la solicitud.' };
+const domainStatuses:Record<string,number>={INVALID_NAME:422,INVALID_CODE:422,INVALID_EMAIL:422,INVALID_TIME_ZONE:422,INVALID_ROLE:422,REQUIRED_FIELD:422,INVALID_REFERENCE:400,SESSION_INVALID:401,INVALID_CREDENTIALS:401,FORBIDDEN:403,CSRF_INVALID:403,ORIGIN_INVALID:403,NOT_FOUND:404,RESULT_NOT_RECORDED:404,MODE_UNAVAILABLE:404,COMPANY_CODE_EXISTS:409,EMAIL_EXISTS:409,ALREADY_CONFIGURED:409,LAST_ACTIVE_ADMIN:409,REFERENCE_REUSED:409,TEMPORARY_FAILURE:503};
 const statusErrors: Record<number, { code: string; message: string }> = {
   400: { code: 'INVALID_INPUT', message: 'Revisa los datos enviados.' },
   401: { code: 'SESSION_INVALID', message: 'Inicia sesión para continuar.' },
@@ -29,10 +31,11 @@ export class ApiExceptionFilter implements ExceptionFilter {
     const request = context.getRequest<RequestContext>();
     const response = context.getResponse<Response>();
     const requestId = request.requestId ?? randomUUID();
-    const status = exception instanceof HttpException ? exception.getStatus() : 500;
+    const domain=exception instanceof DomainError&&domainStatuses[exception.code]?exception:null;
+    const status = exception instanceof HttpException ? exception.getStatus() : domain?domainStatuses[domain.code]!:500;
     const payload: ErrorPayload = exception instanceof ApiException
       ? exception.payload
-      : { ...(statusErrors[status] ?? internal), details: [] };
+      : domain?{code:domain.code,message:domain.message,details:domain.details.field?[{field:domain.details.field,reason:domain.message}]:[]}: { ...(statusErrors[status] ?? internal), details: [] };
     if (status >= 500) this.logger.error(`Fallo interno en solicitud ${requestId}`);
     response.setHeader('X-Request-ID', requestId);
     response.status(status).json({ error: { ...payload, requestId } });

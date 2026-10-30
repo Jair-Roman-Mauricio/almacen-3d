@@ -10,3 +10,4 @@ export * from './transfer-line.js';
 export * from './geometry.js';
 export * from './collisions.js';
 export * from './availability.js';
+export * from './canonical-command.js';

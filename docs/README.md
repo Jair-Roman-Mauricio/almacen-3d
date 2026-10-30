@@ -27,6 +27,7 @@ Las revisiones `revision-*.md` y `revision-*.diff` de la carpeta de la spec docu
 - [Ejecución inicial T001–T010](evidencias/fase-00.md): pruebas y decisiones del primer bloque.
 - [Ejecución T011–T019](evidencias/fase-01.md): reglas puras, rojo/verde y verificación final.
 - [Ejecución T020–T031](evidencias/fase-02.md): migraciones, aislamiento y privilegios con PostgreSQL real.
+- [Ejecución T032–T052](evidencias/fase-03-04.md): transacciones, altas, sesiones y equipo con carreras reales.
 - [Enmienda pnpm y GitHub](cambios/001-pnpm-github.md): cambios técnicos autorizados y revalidación.
 - [Historial de entregas](../CHANGELOG.md).
 

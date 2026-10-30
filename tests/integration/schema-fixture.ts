@@ -3,7 +3,7 @@ import pg from 'pg';
 import { runMigrations } from '../../packages/database/dist/migrate.js';
 import { assertTestDatabaseTarget } from '../../packages/database/dist/test-target.js';
 export interface SchemaFixture { owner: pg.Pool; app: pg.Pool; provision: pg.Pool | undefined; close(): Promise<void> }
-export async function createSchemaFixture(): Promise<SchemaFixture> {
+export async function createSchemaFixture(options: { appMax?: number; provisionMax?: number } = {}): Promise<SchemaFixture> {
   const testUrl = process.env.TEST_MIGRATION_URL!;
   assertTestDatabaseTarget(testUrl, process.env.DATABASE_MIGRATION_URL!);
   if (!process.env.PG_TEST_BOOTSTRAP_PASSWORD) throw new Error('Falta la credencial local de bootstrap de pruebas.');
@@ -15,13 +15,22 @@ export async function createSchemaFixture(): Promise<SchemaFixture> {
   const appUrl = new URL(process.env.TEST_DATABASE_URL!); appUrl.pathname = '/' + name;
   await bootstrap.query(`CREATE DATABASE "${name}" OWNER alm_migrator`);
   const owner = new pg.Pool({ connectionString: ownerUrl.toString(), max: 1 });
-  const app = new pg.Pool({ connectionString: appUrl.toString(), max: 1 });
+  const app = new pg.Pool({ connectionString: appUrl.toString(), max: options.appMax ?? 1 });
   const provisionUrl = process.env.TEST_PROVISION_URL ? new URL(process.env.TEST_PROVISION_URL) : undefined;
   if (provisionUrl) provisionUrl.pathname = '/' + name;
-  const provision = provisionUrl ? new pg.Pool({connectionString:provisionUrl.toString(),max:1}) : undefined;
+  const provision = provisionUrl ? new pg.Pool({connectionString:provisionUrl.toString(),max:options.provisionMax??1}) : undefined;
   async function close(): Promise<void> {
     await app.end(); await provision?.end(); await owner.end();
-    try { await bootstrap.query(`DROP DATABASE "${name}" WITH (FORCE)`); }
+    try {
+      // Pool.end closes sockets; wait for PostgreSQL to observe their exit.
+      let idle=false;
+      for(let attempt=0;attempt<100;attempt++){
+        const count=(await bootstrap.query('SELECT count(*)::int AS n FROM pg_stat_activity WHERE datname=$1',[name])).rows[0].n;
+        if(count===0){idle=true;break;}await new Promise(done=>setTimeout(done,5));
+      }
+      if(!idle)throw new Error('La base temporal conserva conexiones; no se fuerza su terminación.');
+      await bootstrap.query(`DROP DATABASE "${name}"`);
+    }
     finally { await bootstrap.end(); }
   }
   try { await runMigrations(ownerUrl.toString()); }
