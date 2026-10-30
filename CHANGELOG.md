@@ -1,5 +1,19 @@
 # Historial de entregas
 
+## 2026-10-30 — Reportes, archivos, avisos y demo
+
+- T096–T118: indicadores, umbrales y alertas derivados de cantidades operativas.
+- CSV/XLSX con plantillas, staging, preview, validación persistida y aplicación
+  asíncrona íntegra; huellas/reintentos, revalidación y recuperación tras interrupción.
+- Exportación filtrada segura y cantidades exactas; límites inclusivos de 20 MB/20.000 filas.
+- Publicador único de outbox y SSE por empresa con comprobación de sesión vigente.
+- Seed demo explícito, repetible y protegido frente a bases con datos no demo;
+  manifiesto público limitado a cuentas ficticias precargadas.
+- 152 unitarias y 189 de integración (341 pruebas); lint, tipos y build correctos.
+- Cuatro migraciones nuevas (22 totales), RLS forzada en 24 tablas de empresa.
+- Dependencias previstas: ExcelJS 4.4.0 y csv-parse 7.0.3; instalación congelada comprobada.
+- [Evidencia de ejecución](docs/evidencias/fase-09-10.md). Siguiente: T119; UI no iniciada.
+
 ## 2026-10-30 — Pedidos, traslados y ajustes
 
 - T073–T095: pedidos, reservas parciales, asignación, picking, despacho y cancelación protegida.
@@ -52,4 +66,4 @@
 - Documentación de arquitectura, preparación, estado y contribución.
 - Repositorio público autorizado para mostrar el desarrollo; aplicación todavía local.
 
-Estado actual: 95/214 tareas completadas; la siguiente es T096. Las pantallas comienzan en T119. Esta entrega documenta una base en desarrollo y no constituye una versión de producción del WMS.
+Estado actual: 118/214 tareas completadas; la siguiente es T119. Las pantallas comienzan en T119. Esta entrega documenta una base en desarrollo y no constituye una versión de producción del WMS.

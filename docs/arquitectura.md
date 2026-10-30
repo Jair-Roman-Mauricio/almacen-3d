@@ -6,7 +6,7 @@ Dos aplicaciones y cuatro paquetes compartidos, con un monolito modular de negoc
 
 | Módulo | Responsabilidad actual | Límite |
 |---|---|---|
-| `apps/api` | Arranque Nest, salud, acceso/equipo, geometría/inventario, salidas/traslados/conteos, comandos, validación y errores | Punto de entrada HTTP; Operaciones HTTP; reportes/archivos/sincronización pendientes |
+| `apps/api` | Arranque Nest, salud, acceso/equipo, geometría/inventario, salidas/traslados/conteos, comandos, validación y errores | Punto de entrada HTTP; Operaciones HTTP; reportes, archivos, avisos y demo disponibles |
 | `apps/web` | Next App Router y `/health` | Sin páginas ni componentes de producto |
 | `packages/domain` | Cantidades exactas, identificadores, fechas, saldos, geometría y alertas | No importa frameworks, SQL ni red |
 | `packages/contracts` | Esquemas compartidos y formato de errores | No accede a datos |
@@ -23,7 +23,7 @@ La ruta de salud no comprueba por sí sola la disponibilidad de todas las futura
 
 ## Persistencia
 
-PostgreSQL local tiene servicios, credenciales y volúmenes separados para desarrollo y pruebas. Las migraciones usan un rol distinto al de aplicación, una única conexión, advisory lock de sesión y comprobación de hashes del diario aplicado. Repetir la migración no reaplica versiones. El diario incluye 18 versiones de base, negocio, aislamiento, índices y acceso: 23 tablas de empresa, control de instalación y diario de Drizzle.
+PostgreSQL local tiene servicios, credenciales y volúmenes separados para desarrollo y pruebas. Las migraciones usan un rol distinto al de aplicación, una única conexión, advisory lock de sesión y comprobación de hashes del diario aplicado. Repetir la migración no reaplica versiones. El diario incluye 22 versiones de base, negocio, aislamiento, índices y acceso: 24 tablas de empresa, marcadores demo, control de instalación y diario de Drizzle.
 
 `withTransaction` abre una transacción READ COMMITTED, confirma en éxito y revierte ante error. Si falla el rollback, descarta la conexión para evitar devolverla contaminada al pool. Las pruebas comprueban el comportamiento con PostgreSQL real.
 
@@ -86,6 +86,30 @@ motivo y delta en la misma confirmación. Las consultas no ejecutan efectos.
 [Evidencia de fases 7–8](evidencias/fase-07-08.md): carreras de permisos/saldos,
 reintentos históricos, ABA, aislamiento y reconciliación integrada del libro.
 
+## Reportes, archivos y avisos implementados
+
+`reporting` cuenta entidades/operaciones sin mezclar unidades y deriva alertas de
+stock disponible frente al umbral. `exchange` separa staging, validación e intención
+pendiente. Un trabajador Node lee CSV/XLSX y aplica trabajos con el rol `alm_app`,
+contexto RLS y permisos actuales. El ejecutor solo permite continuar una intención
+pendiente desde ese adaptador interno; efectos y resultado siguen confirmándose juntos.
+
+Los SKU se serializan antes de bloquear productos; stock inicial sigue el orden de
+almacén, ubicaciones, productos y saldos. Un rechazo o fallo revierte el lote completo.
+Las descargas leen sus filas en una sola sentencia MVCC, con zona de empresa estable,
+y preservan filtros y cantidades exactas. La exportación abarca todas las coincidencias.
+
+`changes` revisa pendientes cada segundo bajo un único publicador PostgreSQL.
+No usa un máximo de secuencia: marca publicado después de emitir. SSE solo lleva
+ámbitos; cada envío comprueba sesión bajo la barrera de permisos. El navegador
+no mantiene una conexión PostgreSQL ni decide confirmaciones con esos avisos.
+La reconexión emite `ready` con `refresh:true`; la invalidación de UI corresponde a T129.
+
+El seed usa provisión limitada para marcar exclusivamente empresas/cuentas ficticias
+y después ejecuta servicios operativos normales con referencias deterministas.
+Puede repetirse sin resetear operaciones y rechaza bases que ya contienen datos no demo.
+Ver [evidencia de fases 9–10](evidencias/fase-09-10.md).
+
 ## Pendiente según el plan
 
-Reportes, importación/exportación, dispatcher outbox/SSE, editor y visor 3D se implementarán en sus tareas. No se atribuyen esas capacidades a los helpers actuales. Las mediciones, restauración y equivalencia completa SaaS/local también están pendientes de evidencia.
+El editor y visor 3D, las pantallas operativas y la landing se implementarán en sus tareas. Las mediciones, restauración y equivalencia completa SaaS/local también están pendientes de evidencia.

@@ -33,7 +33,7 @@ node scripts/pnpm-local.mjs run db:migrate --test
 | Desarrollo | 127.0.0.1:55432 | almacen_dev |
 | Pruebas | 127.0.0.1:55433 | almacen_test |
 
-`setup-env.mjs` conserva valores existentes y completa las credenciales de provisión ausentes. El rol `alm_app` no es superusuario, no omite RLS y no crea esquemas. `alm_migrator` aplica migraciones con otra credencial. `alm_provision` tiene una credencial independiente y no puede consultar inventario; ejecuta únicamente las funciones limitadas de alta SaaS/setup local. El diario tiene 18 versiones; RLS está forzada en las 23 tablas de empresa. Ver [persistencia y aislamiento](persistencia.md).
+`setup-env.mjs` conserva valores existentes y completa las credenciales de provisión ausentes. El rol `alm_app` no es superusuario, no omite RLS y no crea esquemas. `alm_migrator` aplica migraciones con otra credencial. `alm_provision` tiene una credencial independiente y no puede consultar inventario; ejecuta únicamente las funciones limitadas de alta SaaS/setup local y seed demo explícito. El diario tiene 22 versiones; RLS está forzada en las 24 tablas de empresa. Ver [persistencia y aislamiento](persistencia.md).
 
 El guard de pruebas exige una base terminada en `_test`, distinta del destino de desarrollo y sin parámetros de URL. Las fixtures iniciales crean esquemas propios. Las pruebas de negocio/RLS crean bases `phase2_<uuid>_test` mediante bootstrap, aplican el diario real y eliminan solo esas bases al terminar; usan `PG_TEST_BOOTSTRAP_PASSWORD` para esa preparación. No ejecutar pruebas contra bases de trabajo reales.
 
@@ -186,3 +186,54 @@ Tras timeout, consultar `/operations/:reference` y reintentar con la misma
 referencia si corresponde. Desbloquear o reasignar no ejecuta avances pendientes.
 Ver [evidencia de fases 7–8](evidencias/fase-07-08.md). No hay todavía pantallas de
 producto para estos flujos; la prueba funcional actual se realiza por HTTP.
+
+## Reportes e intercambio de archivos
+
+- `GET /dashboard?warehouseId=UUID&from=YYYY-MM-DD&to=YYYY-MM-DD` cuenta entidades
+  y operaciones en días de la zona de empresa. `PUT /thresholds` acepta cero;
+  `GET /alerts?warehouseId=UUID` devuelve alertas activas con disponible y umbral.
+- `GET /imports/templates/catalogue?format=csv` y `initial_stock?format=xlsx`
+  descargan ejemplos sintéticos. Usar las columnas exactas de [contratos](../specs/001-wms-operativo-3d/contratos.md).
+- `POST /imports` usa multipart: `file`, `kind=catalogue|initial_stock` y
+  `warehouseId` únicamente para stock. Cookie, Origin y CSRF son obligatorios.
+  El archivo admite hasta 20.000.000 bytes y 20.000 registros de datos, inclusive.
+- Consultar `/imports/:id` y `/imports/:id/rows?limit=50`; cuando termine parsing,
+  validar con `POST /imports/:id/validation` y `{}`. Nada de esto aplica negocio.
+- Confirmar explícitamente con `POST /imports/:id/application`, `{contentHash}` y
+  una referencia UUID. El 202 indica trabajo pendiente; conservar referencia y
+  job para consultar el resultado persistido. Un fallo deja el lote sin aplicar.
+- `/exports/inventory` y `/exports/history` aceptan sus filtros activos y
+  `format=csv|xlsx`. La descarga incluye todas las coincidencias, sin paginación;
+  conserva encabezados al estar vacía. XLSX incluye `Consulta`; CSV, el encabezado
+  `X-Export-Filters` con JSON codificado y nombre descriptivo de filtros.
+
+Importación requiere administrador; reportes y descargas permiten administrador y
+supervisor. El trabajador Node arranca al encontrar trabajos pendientes y los
+recupera al reiniciar; no requiere un proveedor externo de colas. SSE en `/changes`
+solo avisa de ámbitos, exige sesión actual y cierra acceso revocado. Un `ready`
+con `refresh:true` indica refrescar consultas al conectar/reconectar. La web
+conectará esas invalidaciones en su tarea posterior; hoy se verifica por HTTP.
+
+## Demostración explícita
+
+Usar una base nueva dedicada a demo, migrada, o una ya marcada por ese seed.
+El comando rechaza una instalación con empresas previas no identificadas como demo.
+No se ejecuta al instalar, compilar o iniciar normalmente la API.
+
+```sh
+DEMO_MODE=true node scripts/pnpm-local.mjs run db:seed:demo
+DEMO_MODE=true node scripts/pnpm-local.mjs exec node --env-file=.env apps/api/dist/main.js
+```
+
+La modalidad procede de `INSTALLATION_MODE`. SaaS precarga `DEMO-ROBOTICA` y
+`DEMO-COMERCIO`; local configura solo `DEMO-ROBOTICA` y cierra su setup inicial.
+Cada empresa contiene almacenes, piezas/kg, reservas, despacho parcial, tránsito,
+recepción parcial, conteo/ajuste, bloqueo y alerta. Repetir el comando conserva
+operaciones: no es un reset de la demostración.
+
+Solo con demo habilitada y precargada, `GET /public/demo-access` devuelve las cuentas
+ficticias `admin@demo.example.test`, `supervisor@demo.example.test` y
+`operator@demo.example.test`, con contraseña pública de demostración
+`DemoAlmacen3D!2026` y sus códigos de empresa. Fuera de demo devuelve 404. El
+endpoint usa el manifiesto sintético y sus marcadores, nunca contraseñas reales.
+Los datos y credenciales de ejemplo son ficticios; aún no existe una página `/demo`.

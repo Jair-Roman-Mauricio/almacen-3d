@@ -3,16 +3,16 @@
 Actualizado el 30/10/2026. Fuente de progreso: [tasks.md](../specs/001-wms-operativo-3d/tasks.md).
 Evidencia: [fase 0](evidencias/fase-00.md), [pnpm](cambios/001-pnpm-github.md),
 [fase 1](evidencias/fase-01.md), [fase 2](evidencias/fase-02.md) y
-[fases 3–4](evidencias/fase-03-04.md) y [fases 5–6](evidencias/fase-05-06.md) y [fases 7–8](evidencias/fase-07-08.md).
+[fases 3–4](evidencias/fase-03-04.md) y [fases 5–6](evidencias/fase-05-06.md) y [fases 7–8](evidencias/fase-07-08.md) y [fases 9–10](evidencias/fase-09-10.md).
 
-## Implementado: T001–T095
+## Implementado: T001–T118
 
 - Workspace Next/Nest con TypeScript, runtime fijado y gestión exclusiva con pnpm.
-- PostgreSQL local separado para desarrollo/pruebas, roles distintos y 18
+- PostgreSQL local separado para desarrollo/pruebas, roles distintos y 22
   migraciones con integridad e idempotencia comprobadas.
 - Cantidades exactas, normalización Unicode, fechas IANA, reglas puras de
   inventario/pedidos/tránsito y geometría.
-- Esquema con claves de ámbito, RLS forzada en 23 tablas e índices de consultas.
+- Esquema con claves de ámbito, RLS forzada en 24 tablas e índices de consultas.
 - Unidad de trabajo y protocolo de bloqueos, comando atómico, replay y auditoría
   con autor/fecha/referencia. Resultados confirmados inmutables.
 - Registro SaaS y setup local conjuntos; exclusión concurrente y recuperación al
@@ -32,27 +32,29 @@ Evidencia: [fase 0](evidencias/fase-00.md), [pnpm](cambios/001-pnpm-github.md),
   protección de reservas y referencia física que detecta A→B→A.
 - Reconciliación integrada de libro, físico, reservado y tránsito tras combinar flujos.
 
-Verificación vigente: **311 pruebas aprobadas** (152 unitarias y 159 de integración),
+- Indicadores y alertas; CSV/XLSX con preview, validación y aplicación asíncrona atómica.
+- Exportación segura de consultas, outbox/SSE por empresa y seed demo explícito recuperable.
+
+Verificación vigente: **341 pruebas aprobadas** (152 unitarias y 189 de integración),
 11 comprobaciones de arquitectura, instalación congelada, lint, tipos y build
 correctos. Las pruebas de concurrencia usan PostgreSQL real; la auditoría de acceso
 alterna dos empresas sobre una misma conexión reutilizada.
 
 El backend implementado se puede utilizar por HTTP. **La interfaz del producto,
-los reportes/archivos/sincronización, el editor 3D y la landing siguen pendientes.**
+el editor 3D y la landing siguen pendientes.**
 No se presenta este bloque como un WMS completo ni como una versión de producción.
 
 ## Hitos pendientes
 
 | Tareas | Contenido |
 |---|---|
-| T096–T118 | Reportes, archivos y sincronización |
 | T119–T140 | Fundamentos UI y primeras pantallas |
 | T141–T153 | Editor visual y visor 3D |
 | T154–T176 | Operaciones y reportes en pantalla |
 | T177–T182 | Landing, modalidades y demostración |
 | T183–T214 | Instalación, recuperación, mediciones y QA final |
 
-Siguiente tarea: **T096 — consultar indicadores reales del almacén**, no iniciada.
+Siguiente tarea: **T119 — contexto de producto para diseño**, no iniciada.
 La equivalencia operativa completa SaaS/local, restauración y mediciones del perfil
 grande aún requieren sus pruebas posteriores.
 

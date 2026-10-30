@@ -162,3 +162,14 @@ Se completaron pedidos/reservas/picking/despachos, traslados y conteos/ajustes e
 repetibles. Se conservaron spec, plan, contratos y constitución; solo se marcaron
 T073–T095. Las comprobaciones que pasaron con protecciones previas se registran
 como verificación directa. No se inicia T096, UI o despliegue ni se fusionan ramas.
+
+## Ejecución continua autorizada: T096–T118 — 30/10/2026
+
+Se completaron indicadores/alertas, CSV/XLSX, importación atómica con trabajador,
+exportación filtrada, outbox/SSE y datos demo en
+`feature/t096-t118-reports-imports-sync-demo`, basada en T095 y dependiente del PR #5.
+[Evidencia de fases 9–10](evidencias/fase-09-10.md): 152 unitarias y 189 de integración,
+11 controles de capas, lint, tipos/build e instalación congelada. Hay 22 migraciones;
+las 18 previas y los acuerdos aprobados se conservan. Solo se marcan T096–T118.
+Se registran los errores de fixture y las verificaciones directas sin fabricar rojos.
+T119 no se inicia; UI, despliegue, fusiones y releases no se adelantan.
