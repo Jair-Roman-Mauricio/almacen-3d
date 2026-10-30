@@ -9,3 +9,4 @@ export * from './orders.js';
 export * from './transfers.js';
 export * from './counts.js';
 export * from './exchange.js';
+export type * from './web-models.js';

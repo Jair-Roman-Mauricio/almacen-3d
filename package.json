@@ -14,6 +14,7 @@
     "@nestjs/common": "12.3.2",
     "@nestjs/core": "12.3.2",
     "@nestjs/testing": "12.3.2",
+    "@playwright/cli": "0.1.22",
     "@types/node": "24.19.2",
     "@types/pg": "8.23.1",
     "@types/supertest": "7.2.1",
@@ -34,6 +35,8 @@
     "test:integration": "node scripts/workspaces.mjs backend && tsc -p tsconfig.fixtures.json && node --env-file=.env node_modules/vitest/vitest.mjs run --config vitest.integration.config.ts",
     "preinstall": "node scripts/check-package-manager.mjs",
     "db:roles": "node --env-file=.env scripts/setup-db-roles.mjs",
-    "db:seed:demo": "node scripts/workspaces.mjs backend && node --env-file=.env apps/api/dist/demo/seed-cli.js"
+    "db:seed:demo": "node scripts/workspaces.mjs backend && node --env-file=.env apps/api/dist/demo/seed-cli.js",
+    "test:flows": "node scripts/workspaces.mjs backend && pnpm --filter @almacen/ui run build && node --env-file=.env scripts/test-flows.mjs",
+    "preview:local": "node scripts/workspaces.mjs backend && pnpm --filter @almacen/ui run build && node --env-file=.env scripts/test-flows.mjs --preview"
   }
 }
