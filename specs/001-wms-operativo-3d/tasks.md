@@ -548,93 +548,93 @@ Tras la aprobación de estas tareas, se propone comenzar **T001–T010 (fase 0)*
 
 ## Fase 11 — Fundamentos de interfaz
 
-- [ ] **T119 Consolida el contexto de producto para diseño.** Aplica el flujo Impeccable sobre respuestas aprobadas y registra PRODUCT.md sin reabrir público, stack o alcance.
+- [x] **T119 Consolida el contexto de producto para diseño.** Aplica el flujo Impeccable sobre respuestas aprobadas y registra PRODUCT.md sin reabrir público, stack o alcance.
   RF: RF-91, RF-92, RF-97, RNF-12 · Dep.: T118 · Est.: 25 min.
   Hecho cuando: PRODUCT.md contiene plataforma web, usuarios, capacidades, exclusiones y evidencia sintética coherentes con la spec aprobada.
 
-- [ ] **T120 Concreta la dirección de landing y aplicación.** Lee las skills obligatorias, formula dirección original y contrástala con el MCP; registra tokens previstos y superficies persuade/operate.
+- [x] **T120 Concreta la dirección de landing y aplicación.** Lee las skills obligatorias, formula dirección original y contrástala con el MCP; registra tokens previstos y superficies persuade/operate.
   RF: RF-91, RF-92, RNF-12 · Dep.: T119 · Est.: 30 min.
   Hecho cuando: El contrato de dirección enlaza referencias MCP inspeccionadas y decisiones de composición, tipografía, estados y responsive para ambas superficies.
 
-- [ ] **T121 Prepara los flujos de navegador reproducibles.** Conecta Playwright CLI, base demo aislada, snapshots y recogida de capturas/consola mediante test:flows.
+- [x] **T121 Prepara los flujos de navegador reproducibles.** Conecta Playwright CLI, base demo aislada, snapshots y recogida de capturas/consola mediante test:flows.
   RF: RF-4, RNF-4, RNF-5, RNF-7 · Dep.: T120, T004, T117 · Est.: 25 min.
   Hecho cuando: `pnpm run test:flows` abre el servidor local con sesión de prueba y guarda un informe de navegador en output/playwright sin depender de servicios externos.
 
-- [ ] **T122 Implementa fuentes locales y tokens compartidos.** Primero escribe y ejecuta su prueba en rojo. Conecta Tailwind, tipografía autoalojada y estados semánticos del contrato visual.
+- [x] **T122 Implementa fuentes locales y tokens compartidos.** Primero escribe y ejecuta su prueba en rojo. Conecta Tailwind, tipografía autoalojada y estados semánticos del contrato visual.
   RF: RF-30, RF-97, RNF-1, RNF-5, RNF-12 · Dep.: T121, T120 · Est.: 25 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/tokens-locales con fuentes cargadas sin red externa y contraste/foco registrados en capturas desktop/móvil.
 
-- [ ] **T123 Construye campos accesibles y validación visible.** Primero escribe y ejecuta su prueba en rojo. Implementa etiquetas, errores y presentación exacta de cantidades sin Number ni placeholder como etiqueta.
+- [x] **T123 Construye campos accesibles y validación visible.** Primero escribe y ejecuta su prueba en rojo. Implementa etiquetas, errores y presentación exacta de cantidades sin Number ni placeholder como etiqueta.
   RF: RF-107, RF-108, RF-123, RF-124, RF-127, RF-128, RNF-1, RNF-4, RNF-5, RNF-7 · Dep.: T122, T011, T012 · Est.: 25 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/formulario-accesible por teclado con nombres accesibles y errores de campo legibles.
 
-- [ ] **T124 Integra menús y diálogos con foco.** Primero escribe y ejecuta su prueba en rojo. Configura Radix y feedback mínimo según animate, incluyendo reduced motion y cierre/interrupción.
+- [x] **T124 Integra menús y diálogos con foco.** Primero escribe y ejecuta su prueba en rojo. Configura Radix y feedback mínimo según animate, incluyendo reduced motion y cierre/interrupción.
   RF: RF-20, RNF-4, RNF-5, RNF-7 · Dep.: T123 · Est.: 25 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/dialogo-foco con Escape, retorno al activador y movimiento reducido sin errores de consola.
 
-- [ ] **T125 Construye listas y estados de consulta reutilizables.** Primero escribe y ejecuta su prueba en rojo. Define tablas paginadas, vacío, sin coincidencias, carga, error y sin permiso como estados distintos.
+- [x] **T125 Construye listas y estados de consulta reutilizables.** Primero escribe y ejecuta su prueba en rojo. Define tablas paginadas, vacío, sin coincidencias, carga, error y sin permiso como estados distintos.
   RF: RF-29, RF-33, RNF-4, RNF-5, RNF-6, RNF-7, RNF-18 · Dep.: T123, T124 · Est.: 30 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/lista-estados en 1280×720 y 360×800 con filtros y contenido legibles.
 
-- [ ] **T126 Conecta Next con la API del mismo origen.** Primero escribe y ejecuta su prueba en rojo. Implementa proxy HTTP/SSE y propagación segura de cookie sin lógica de inventario en Next.
+- [x] **T126 Conecta Next con la API del mismo origen.** Primero escribe y ejecuta su prueba en rojo. Implementa proxy HTTP/SSE y propagación segura de cookie sin lógica de inventario en Next.
   RF: RF-1, RF-3, RF-4, RF-5, RF-32, RNF-2, RNF-14 · Dep.: T010, T046, T116, T004 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ACC/proxy-mismo-origen y I-SYNC/proxy-stream sin almacenar datos operativos en caché compartida.
 
-- [ ] **T127 Conecta sesión y navegación por permiso.** Primero escribe y ejecuta su prueba en rojo. Añade proveedor de sesión y entrada protegida con datos actuales de empresa/usuario.
+- [x] **T127 Conecta sesión y navegación por permiso.** Primero escribe y ejecuta su prueba en rojo. Añade proveedor de sesión y entrada protegida con datos actuales de empresa/usuario.
   RF: RF-1, RF-3, RF-4, RF-6, RF-7, RF-8, RNF-2, RNF-7 · Dep.: T126, T124 · Est.: 25 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/sesion-protegida con sesión ausente/revocada y permiso cambiado sin acceso anterior persistente.
 
-- [ ] **T128 Gestiona referencias y resultados inciertos en el cliente.** Primero escribe y ejecuta su prueba en rojo. Implementa estado de confirmación, consulta de referencia y reenvío explícito sin cola offline.
+- [x] **T128 Gestiona referencias y resultados inciertos en el cliente.** Primero escribe y ejecuta su prueba en rojo. Implementa estado de confirmación, consulta de referencia y reenvío explícito sin cola offline.
   RF: RF-99, RF-100, RF-101, RF-102, RF-110, RF-111, RF-112, RNF-7 · Dep.: T127, T051, T123 · Est.: 30 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/resultado-incierto con respuesta perdida, consulta posterior y misma referencia al reintentar.
 
-- [ ] **T129 Conecta caché por empresa e invalidación SSE.** Primero escribe y ejecuta su prueba en rojo. Introduce QueryClient y ámbitos/filtros, vaciando datos al cerrar sesión o cambiar identidad.
+- [x] **T129 Conecta caché por empresa e invalidación SSE.** Primero escribe y ejecuta su prueba en rojo. Introduce QueryClient y ámbitos/filtros, vaciando datos al cerrar sesión o cambiar identidad.
   RF: RF-5, RF-32, RNF-2, RNF-14 · Dep.: T127, T126, T063 · Est.: 30 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/cache-sesiones mostrando un cambio de otra sesión y ningún dato de la identidad anterior.
 
-- [ ] **T130 Compone navegación operativa y contexto de almacén.** Primero escribe y ejecuta su prueba en rojo. Implementa shell responsive con selector de empresa/almacén y acceso permitido a cada módulo.
+- [x] **T130 Compone navegación operativa y contexto de almacén.** Primero escribe y ejecuta su prueba en rojo. Implementa shell responsive con selector de empresa/almacén y acceso permitido a cada módulo.
   RF: RF-6, RF-11, RF-97, RNF-1, RNF-4, RNF-5, RNF-7, RNF-18 · Dep.: T129, T125, T128, T053 · Est.: 30 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/shell-vacio con empresa sin almacenes, roles y navegación usable a 360×800.
 
 ## Fase 12 — Acceso, administración y catálogo en pantalla
 
-- [ ] **T131 Construye el acceso por código, correo y contraseña.** Primero escribe y ejecuta su prueba en rojo. Conecta el formulario y el cierre de sesión con mensajes genéricos de credencial.
+- [x] **T131 Construye el acceso por código, correo y contraseña.** Primero escribe y ejecuta su prueba en rojo. Conecta el formulario y el cierre de sesión con mensajes genéricos de credencial.
   RF: RF-1, RF-2, RF-3, RF-149, RF-150, RNF-1, RNF-4, RNF-5, RNF-7, RNF-18 · Dep.: T130, T123, T044 · Est.: 25 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/acceso-tres-campos en escritorio/móvil con rechazo y cierre verificables.
 
-- [ ] **T132 Construye el registro SaaS.** Primero escribe y ejecuta su prueba en rojo. Presenta empresa y primer administrador con validación y confirmación del código de acceso.
+- [x] **T132 Construye el registro SaaS.** Primero escribe y ejecuta su prueba en rojo. Presenta empresa y primer administrador con validación y confirmación del código de acceso.
   RF: RF-139, RF-140, RF-141, RF-142, RF-143, RF-150, RF-151, RF-152, RNF-1, RNF-4, RNF-5, RNF-7 · Dep.: T131, T041 · Est.: 30 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/registro-saas con código existente rechazado y alta válida que permite iniciar sesión.
 
-- [ ] **T133 Construye la configuración inicial local.** Primero escribe y ejecuta su prueba en rojo. Conecta estado de instalación y asistente con resultado de alta conjunta.
+- [x] **T133 Construye la configuración inicial local.** Primero escribe y ejecuta su prueba en rojo. Conecta estado de instalación y asistente con resultado de alta conjunta.
   RF: RF-144, RF-145, RF-146, RF-147, RF-148, RF-150, RF-151, RF-152, RNF-1, RNF-4, RNF-5, RNF-7 · Dep.: T132, T043 · Est.: 25 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/setup-local al conservar instalación configurada después de reabrir y bloquear segundo envío.
 
-- [ ] **T134 Construye el perfil y la zona de empresa.** Primero escribe y ejecuta su prueba en rojo. Conecta nombre/zona con validación y presentación de fechas de la empresa.
+- [x] **T134 Construye el perfil y la zona de empresa.** Primero escribe y ejecuta su prueba en rojo. Conecta nombre/zona con validación y presentación de fechas de la empresa.
   RF: RF-127, RF-129, RF-130, RF-131, RNF-1, RNF-4, RNF-5, RNF-7 · Dep.: T133, T050, T128 · Est.: 25 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/perfil-zona con zona válida persistida y error visible ante valor inválido.
 
-- [ ] **T135 Presenta equipo y creación de cuentas.** Primero escribe y ejecuta su prueba en rojo. Conecta lista/formulario de alta con rol y credenciales gestionadas por administrador.
+- [x] **T135 Presenta equipo y creación de cuentas.** Primero escribe y ejecuta su prueba en rojo. Conecta lista/formulario de alta con rol y credenciales gestionadas por administrador.
   RF: RF-6, RF-113, RF-114, RF-115, RF-150, RF-151, RF-152, RNF-1, RNF-4, RNF-5, RNF-7 · Dep.: T134, T047, T125 · Est.: 25 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/equipo-alta con correo duplicado y rol inválido mostrados junto a sus campos.
 
-- [ ] **T136 Conecta cambios de rol y desactivación.** Primero escribe y ejecuta su prueba en rojo. Presenta acciones de equipo y rechazo de último administrador con permisos actualizados.
+- [x] **T136 Conecta cambios de rol y desactivación.** Primero escribe y ejecuta su prueba en rojo. Presenta acciones de equipo y rechazo de último administrador con permisos actualizados.
   RF: RF-7, RF-8, RF-9, RF-115, RNF-1, RNF-4, RNF-5, RNF-7 · Dep.: T135, T049 · Est.: 25 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/equipo-cambio con rechazo de último admin y revocación de acciones en una segunda sesión.
 
-- [ ] **T137 Construye lista y creación de almacenes.** Primero escribe y ejecuta su prueba en rojo. Conecta selector, formulario de dimensiones y vacío según permiso.
+- [x] **T137 Construye lista y creación de almacenes.** Primero escribe y ejecuta su prueba en rojo. Conecta selector, formulario de dimensiones y vacío según permiso.
   RF: RF-10, RF-11, RF-127, RF-128, RNF-1, RNF-4, RNF-5, RNF-7, RNF-18 · Dep.: T136, T053, T130 · Est.: 25 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/almacenes con empresa vacía, creación válida y selección del almacén correspondiente.
 
-- [ ] **T138 Construye consulta y alta de productos.** Primero escribe y ejecuta su prueba en rojo. Conecta búsqueda paginada y formulario SKU/nombre/unidad con roles de catálogo.
+- [x] **T138 Construye consulta y alta de productos.** Primero escribe y ejecuta su prueba en rojo. Conecta búsqueda paginada y formulario SKU/nombre/unidad con roles de catálogo.
   RF: RF-34, RF-35, RF-123, RF-124, RF-125, RF-127, RF-128, RNF-1, RNF-4, RNF-5, RNF-7, RNF-18 · Dep.: T137, T054, T125 · Est.: 25 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/catalogo-alta con SKU normalizado duplicado rechazado y unidad base visible.
 
-- [ ] **T139 Conecta edición y retirada de productos.** Primero escribe y ejecuta su prueba en rojo. Permite cambiar nombre y muestra impedimentos de eliminación sin borrar historia.
+- [x] **T139 Conecta edición y retirada de productos.** Primero escribe y ejecuta su prueba en rojo. Permite cambiar nombre y muestra impedimentos de eliminación sin borrar historia.
   RF: RF-36, RF-41, RF-72, RNF-1, RNF-4, RNF-5, RNF-7 · Dep.: T138, T055 · Est.: 25 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/catalogo-edicion con identidad conservada y eliminación con stock rechazada.
 
-- [ ] **T140 Construye la lista operativa de inventario.** Primero escribe y ejecuta su prueba en rojo. Conecta cantidades por ubicación/producto y totales con filtros y alternativa accesible al 3D.
+- [x] **T140 Construye la lista operativa de inventario.** Primero escribe y ejecuta su prueba en rojo. Conecta cantidades por ubicación/producto y totales con filtros y alternativa accesible al 3D.
   RF: RF-26, RF-33, RF-37, RF-38, RNF-1, RNF-4, RNF-5, RNF-6, RNF-7, RNF-18 · Dep.: T139, T063, T129 · Est.: 30 min.
   Hecho cuando: `pnpm run test:flows` pasa E-UI/inventario-lista con varios SKU por ubicación y filtros usables a 360×800.
 

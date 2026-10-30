@@ -7,11 +7,11 @@ Dos aplicaciones y cuatro paquetes compartidos, con un monolito modular de negoc
 | Módulo | Responsabilidad actual | Límite |
 |---|---|---|
 | `apps/api` | Arranque Nest, salud, acceso/equipo, geometría/inventario, salidas/traslados/conteos, comandos, validación y errores | Punto de entrada HTTP; Operaciones HTTP; reportes, archivos, avisos y demo disponibles |
-| `apps/web` | Next App Router y `/health` | Sin páginas ni componentes de producto |
+| `apps/web` | Next App Router, proxy HTTP/SSE y primeras pantallas | Solo contracts/ui; negocio y permisos finales en Nest |
 | `packages/domain` | Cantidades exactas, identificadores, fechas, saldos, geometría y alertas | No importa frameworks, SQL ni red |
 | `packages/contracts` | Esquemas compartidos y formato de errores | No accede a datos |
 | `packages/database` | Esquema, contexto/repositorio, RLS, transacciones, migraciones y guard de pruebas | Efectos PostgreSQL fuera del dominio |
-| `packages/ui` | Base de paquete reservada a componentes futuros | No importa database |
+| `packages/ui` | Tokens, controles, Radix y tablas responsive | Sin reglas de inventario ni acceso a datos |
 
 ESLint y `tools/check-boundaries.mjs` verifican importaciones permitidas y prohibidas. El grafo de build compila dependencias antes de consumidores. Las dependencias internas declaran `workspace:*`.
 
@@ -113,3 +113,29 @@ Ver [evidencia de fases 9–10](evidencias/fase-09-10.md).
 ## Pendiente según el plan
 
 El editor y visor 3D, las pantallas operativas y la landing se implementarán en sus tareas. Las mediciones, restauración y equivalencia completa SaaS/local también están pendientes de evidencia.
+
+
+## Cliente operativo y proxy implementados
+
+Next sirve acceso/registro/setup, contexto de empresa/almacén, configuración,
+equipo, catálogo e inventario. La ruta `/api/v1/[...path]` hace proxy de un destino
+fijo: propaga solo encabezados necesarios, cookies y cancelación/streaming; no
+introduce autorización de negocio ni caché compartida. Las respuestas son
+`no-store`. El proceso web no necesita credenciales PostgreSQL.
+
+SessionProvider vuelve a comprobar identidad/permisos al recuperar foco,
+reconectar o recibir cambios. Un QueryClient por empresa/usuario/rol separa datos;
+claves incluyen recurso, almacén, filtros y cursor. SSE invalida para releer REST.
+No se actualizan cantidades optimistamente. Las medidas/cantidades siguen siendo
+strings; la presentación agrupa dígitos mediante BigInt sin conversión binaria.
+
+Cada acción genera un UUID y conserva su resultado incierto. Reenvío explícito
+usa el cuerpo original en memoria; persistencia local solo guarda metadatos de
+referencia/ruta/método. Un aviso recupera referencias de formularios desmontados,
+incluidas filas retiradas. Nunca se reconstruye una orden al reabrir.
+
+Playwright CLI usa Chrome, API y PostgreSQL reales con datos sintéticos privados.
+Los casos de transporte pierden/alteran respuestas después de confirmar el
+servidor: no sustituyen su inventario por un mock. La evidencia del bloque está
+en [fases 11–12](evidencias/fase-11-12.md). Editor/visor 3D y operaciones/reportes
+en pantalla permanecen en sus fases posteriores.

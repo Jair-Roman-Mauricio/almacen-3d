@@ -173,3 +173,16 @@ exportación filtrada, outbox/SSE y datos demo en
 las 18 previas y los acuerdos aprobados se conservan. Solo se marcan T096–T118.
 Se registran los errores de fixture y las verificaciones directas sin fabricar rojos.
 T119 no se inicia; UI, despliegue, fusiones y releases no se adelantan.
+
+
+## Ejecución continua autorizada: T119–T140 — 30/10/2026
+
+Se completaron fundamentos de interfaz y pantallas de acceso/administración,
+almacenes, catálogo e inventario en `feature/t119-t140-interface-access-catalogue`,
+basada en T118 y dependiente del PR #6. El usuario eligió código directo y SaaS
+familiar claro/azul, delegando referencias y manteniendo Radix/Tailwind. La
+[evidencia de fases 11–12](evidencias/fase-11-12.md) registra 152 unitarias,
+191 de integración, 22 flujos SaaS y una ejecución local vacía, más lint, tipos,
+build, instalación congelada y 11 controles de capas. Se preservan los acuerdos
+y las 22 migraciones; solo se marcan T119–T140. T141, editor/visor 3D y landing
+no se inician. Los cambios siguen feature → PR a dev; no hay fusión ni despliegue.

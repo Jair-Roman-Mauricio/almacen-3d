@@ -1,5 +1,15 @@
 # Historial de entregas
 
+## 2026-10-30 — Fundamentos UI y primeras pantallas
+
+- T119–T140: dirección SaaS familiar clara/azul y componentes Radix/Tailwind con Manrope local.
+- Acceso, registro SaaS/setup local, empresa/zona, equipo y permisos vigentes.
+- Almacenes con dimensiones exactas, catálogo paginado e inventario por ubicación/totales responsive.
+- Proxy HTTP/SSE del mismo origen, caché por identidad/almacén y recuperación de referencias sin cola offline.
+- 152 unitarias, 191 de integración, 22 flujos SaaS y una ejecución local vacía; controles de calidad correctos.
+- Vista previa local aislada; las 22 migraciones y acuerdos aprobados se conservan.
+- [Evidencia de ejecución](docs/evidencias/fase-11-12.md). Siguiente: T141, editor/visor 3D todavía no iniciado.
+
 ## 2026-10-30 — Reportes, archivos, avisos y demo
 
 - T096–T118: indicadores, umbrales y alertas derivados de cantidades operativas.
@@ -66,4 +76,4 @@
 - Documentación de arquitectura, preparación, estado y contribución.
 - Repositorio público autorizado para mostrar el desarrollo; aplicación todavía local.
 
-Estado actual: 118/214 tareas completadas; la siguiente es T119. Las pantallas comienzan en T119. Esta entrega documenta una base en desarrollo y no constituye una versión de producción del WMS.
+Estado actual: 140/214 tareas completadas; la siguiente es T141. Las primeras pantallas ya están disponibles. Esta entrega documenta una base en desarrollo y no constituye una versión de producción del WMS.

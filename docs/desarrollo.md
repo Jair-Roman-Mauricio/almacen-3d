@@ -51,11 +51,13 @@ Los cambios de contraseña de `.env` no reconfiguran automáticamente roles de u
 node scripts/pnpm-local.mjs run lint
 node scripts/pnpm-local.mjs run test:unit
 node scripts/pnpm-local.mjs run test:integration
+node scripts/pnpm-local.mjs run test:flows
+node scripts/pnpm-local.mjs run test:flows --case t133 --local --empty
 node scripts/pnpm-local.mjs run typecheck
 node scripts/pnpm-local.mjs run build
 ```
 
-Integración y typecheck compilan sus dependencias y fixtures. El build recorre paquetes compartidos antes de apps. Ninguno de esos comandos realiza seed de negocio. Los comandos `dev`, `test:flows`, `test:modes`, `test:load` y `test:recovery` del plan todavía no están implementados.
+Integración y typecheck compilan sus dependencias y fixtures. El build recorre paquetes compartidos antes de apps. Los flujos cargan explícitamente un seed ficticio en una base privada y la eliminan al terminar; los demás comandos de comprobación no realizan seed de negocio. Los comandos `dev`, `test:modes`, `test:load` y `test:recovery` siguen pendientes.
 
 ## Diagnóstico HTTP opcional
 
@@ -66,7 +68,7 @@ node scripts/pnpm-local.mjs exec node --env-file=.env apps/api/dist/main.js
 node scripts/pnpm-local.mjs --filter @almacen/web run start --port 3000
 ```
 
-API: `http://127.0.0.1:3001/api/v1/health`. Next: `http://127.0.0.1:3000/health`. La API también ofrece acceso y equipo por HTTP; Next solo tiene una ruta técnica, sin páginas del WMS. Usar Ctrl+C para cerrar cada proceso. Esta entrega no deja esos servidores abiertos.
+API: `http://127.0.0.1:3001/api/v1/health`. Next: `http://127.0.0.1:3000/health`. Next ofrece `/acceso`, `/registro`, `/configuracion-inicial` y las pantallas `/app`. El proxy usa `API_UPSTREAM_URL` (por defecto `http://127.0.0.1:3001`), solo en servidor. `APP_ORIGIN` de la API debe coincidir exactamente con el origen de Next. Usar Ctrl+C para cerrar cada proceso.
 
 ## Diagnóstico de fallos
 
@@ -211,8 +213,7 @@ Importación requiere administrador; reportes y descargas permiten administrador
 supervisor. El trabajador Node arranca al encontrar trabajos pendientes y los
 recupera al reiniciar; no requiere un proveedor externo de colas. SSE en `/changes`
 solo avisa de ámbitos, exige sesión actual y cierra acceso revocado. Un `ready`
-con `refresh:true` indica refrescar consultas al conectar/reconectar. La web
-conectará esas invalidaciones en su tarea posterior; hoy se verifica por HTTP.
+con `refresh:true` indica refrescar consultas al conectar/reconectar. La web conecta esas invalidaciones con TanStack Query y vuelve a consultar la sesión; los comandos siguen usando REST.
 
 ## Demostración explícita
 
@@ -237,3 +238,33 @@ ficticias `admin@demo.example.test`, `supervisor@demo.example.test` y
 `DemoAlmacen3D!2026` y sus códigos de empresa. Fuera de demo devuelve 404. El
 endpoint usa el manifiesto sintético y sus marcadores, nunca contraseñas reales.
 Los datos y credenciales de ejemplo son ficticios; aún no existe una página `/demo`.
+
+
+## Vista previa de la interfaz
+
+Después de preparar Docker y roles, ejecutar:
+
+```sh
+node scripts/pnpm-local.mjs run preview:local
+```
+
+Compila web/API, crea una base privada de pruebas, aplica sus migraciones y carga
+el seed ficticio explícito. Imprime una dirección `http://127.0.0.1:PUERTO/acceso`.
+No sustituye `almacen_dev` ni publica en Internet. Ctrl+C cierra web/API y elimina
+esa base privada. Los cambios de esta vista previa son temporales; para trabajar
+sobre una instalación persistente usar el arranque manual anterior.
+
+Acceso público ficticio: código `DEMO-ROBOTICA` o `DEMO-COMERCIO`, correo
+`admin@demo.example.test` y contraseña `DemoAlmacen3D!2026`. También existen
+`supervisor@demo.example.test` y `operator@demo.example.test` con esa contraseña.
+
+La interfaz permite acceso/cierre, registro SaaS/setup local, perfil/zona,
+equipo, almacenes, catálogo e inventario por ubicación o totales. Las pantallas
+posteriores y la landing no se adelantan. `/ui-fixtures` devuelve 404 salvo que
+se habilite expresamente `WMS_UI_FIXTURES=true` en el harness de pruebas.
+
+Los flujos requieren Chrome instalado. `pnpm run test:flows --case t140` filtra
+casos; `--local --empty --case t133` comprueba una instalación local vacía. Usan
+API/PostgreSQL reales, puertos de loopback disponibles y build de producción.
+No ejecutar simultáneamente comandos que escriban `.next` o `dist`. El harness
+retira URLs y contraseñas de base de datos del proceso Next; la web no las necesita.

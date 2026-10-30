@@ -4,7 +4,7 @@ Sistema de gestión de almacenes (WMS) en desarrollo para empresas con almacenes
 
 Se construye siguiendo **Specification Driven Development (SDD)**: requisitos, contratos, plan, tareas y evidencia verificable antes de dar una capacidad por terminada.
 
-> **Estado al 30/10/2026:** **118 de 214 tareas** completadas. El backend permite acceso/equipo, almacenes, catálogo, geometría persistida, inventario, pedidos/reservas/picking/despachos, traslados, conteos/ajustes, reportes, archivos CSV/XLSX, avisos entre sesiones y datos demo con trazabilidad e aislamiento. La interfaz operativa, el editor 3D y la landing continúan pendientes; todavía no ofrece una demo visual del WMS.
+> **Estado al 30/10/2026:** **140 de 214 tareas** completadas. El backend permite acceso/equipo, almacenes, catálogo, geometría persistida, inventario, pedidos/reservas/picking/despachos, traslados, conteos/ajustes, reportes, archivos CSV/XLSX, avisos entre sesiones y datos demo con trazabilidad e aislamiento. La interfaz ya permite acceso, registro SaaS/setup local, empresa/equipo, almacenes, catálogo e inventario. El editor/visor 3D, las pantallas de operaciones/reportes y la landing siguen pendientes.
 
 ## Producto previsto
 
@@ -14,7 +14,7 @@ Se construye siguiendo **Specification Driven Development (SDD)**: requisitos, c
 - Modalidad SaaS con suscripción e infraestructura mantenida por el proveedor.
 - Modalidad local en infraestructura del cliente, con instalación y servicios asociados.
 
-Las capacidades visuales continúan pendientes de implementación; reportes, importación/exportación y avisos ya están disponibles por HTTP. El núcleo de negocio será compartido entre ambas modalidades. Los datos de demostración son sintéticos y los cobros, simulados en esta etapa.
+Las primeras pantallas operativas ya usan la API real; reportes e importación/exportación siguen disponibles por HTTP y tendrán su interfaz en el bloque posterior. El núcleo de negocio será compartido entre ambas modalidades. Los datos de demostración son sintéticos y los cobros, simulados en esta etapa.
 
 ## Base técnica
 
@@ -25,7 +25,8 @@ Las capacidades visuales continúan pendientes de implementación; reportes, imp
 | Web | Next.js 16.4.3, React 19.3.1, TypeScript |
 | API | NestJS 12.3.2, ESM, TypeScript |
 | Datos | PostgreSQL 18.6, pg y Drizzle |
-| Verificación | Vitest, Supertest, ESLint y TypeScript |
+| Interfaz | Radix, Tailwind, TanStack Query/Table, React Hook Form y Zod |
+| Verificación | Vitest, Supertest, Playwright CLI, ESLint y TypeScript |
 
 La instalación local no requiere cuentas de servicios cloud. El [plan técnico](specs/001-wms-operativo-3d/plan.md) identifica también las tecnologías previstas para fases futuras.
 
@@ -54,19 +55,21 @@ Los descargadores comprueban la integridad de las herramientas y las guardan en 
 node scripts/pnpm-local.mjs run lint
 node scripts/pnpm-local.mjs run test:unit
 node scripts/pnpm-local.mjs run test:integration
+node scripts/pnpm-local.mjs run test:flows
+node scripts/pnpm-local.mjs run test:flows --case t133 --local --empty
 node scripts/pnpm-local.mjs run typecheck
 node scripts/pnpm-local.mjs run build
 ```
 
 Si Node y pnpm ya coinciden con las versiones fijadas y están en `PATH`, se puede usar directamente `pnpm install --frozen-lockfile` y `pnpm run <script>`.
 
-Las pruebas actuales cubren reglas puras, persistencia, bloqueos concurrentes, rollback real, idempotencia, altas SaaS/locales, sesiones, permisos actuales, acceso cruzado, geometría, recepciones/movimientos, salidas parciales, traslados, ajustes y reconciliación de físico/reservado/tránsito. No acreditan todavía el WMS completo. Resultado vigente: **152 pruebas unitarias y 189 de integración aprobadas**, más 11 comprobaciones de arquitectura. Ver [fases 9–10](docs/evidencias/fase-09-10.md), [fases 7–8](docs/evidencias/fase-07-08.md), [fases 5–6](docs/evidencias/fase-05-06.md), [fases 3–4](docs/evidencias/fase-03-04.md), [fase 2](docs/evidencias/fase-02.md), [fase 1](docs/evidencias/fase-01.md) y [migración a pnpm](docs/cambios/001-pnpm-github.md).
+Las pruebas actuales cubren reglas puras, persistencia, bloqueos concurrentes, rollback real, idempotencia, altas SaaS/locales, sesiones, permisos actuales, acceso cruzado, geometría, recepciones/movimientos, salidas parciales, traslados, ajustes y reconciliación de físico/reservado/tránsito. No acreditan todavía el WMS completo. Resultado vigente: **152 pruebas unitarias, 191 de integración y 22 flujos SaaS aprobados**, más una ejecución local vacía y 11 comprobaciones de arquitectura. Los flujos usan Chrome y PostgreSQL reales. Ver [fases 11–12](docs/evidencias/fase-11-12.md), [fases 9–10](docs/evidencias/fase-09-10.md), [fases 7–8](docs/evidencias/fase-07-08.md), [fases 5–6](docs/evidencias/fase-05-06.md), [fases 3–4](docs/evidencias/fase-03-04.md), [fase 2](docs/evidencias/fase-02.md), [fase 1](docs/evidencias/fase-01.md) y [migración a pnpm](docs/cambios/001-pnpm-github.md).
 
 ## Estructura
 
 ```text
 apps/api/       API NestJS
-apps/web/       Base Next.js; solo ruta técnica /health
+apps/web/       Next.js: acceso y primeras pantallas operativas
 packages/       domain, contracts, database y ui
 infra/          PostgreSQL local y roles separados
 scripts/        Preparación y ejecución reproducible
@@ -86,7 +89,7 @@ investigacion/  Investigación de mercado inicial
 
 La carga demo es explícita y requiere una instalación vacía o ya identificada como demo: ver [guía local](docs/desarrollo.md#demostración-explícita).
 
-La interfaz comienza en T119; el editor y visor 3D, en T141. El backend de acceso, geometría e inventario implementado se puede probar por HTTP según la guía local; todavía no hay una vista previa visual. El despliegue de la aplicación en Railway requiere una indicación posterior expresa.
+Para ver la interfaz con datos ficticios aislados, ejecutar `node scripts/pnpm-local.mjs run preview:local` y abrir la dirección de loopback que imprime. La [guía local](docs/desarrollo.md#vista-previa-de-la-interfaz) explica credenciales y cierre. El editor y visor 3D comienzan en T141. El despliegue de la aplicación en Railway requiere una indicación posterior expresa.
 
 ## Licencia
 
