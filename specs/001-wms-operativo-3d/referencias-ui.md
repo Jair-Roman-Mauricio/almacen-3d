@@ -100,3 +100,33 @@ tokens/componentes implementados → captura desktop/móvil cuando aplique →
 estados/interacciones/consola → corrección y comprobación. Evidencias propias en
 `output/playwright/`; control D-REF de trazabilidad. La presencia de esta tabla
 no acredita por sí sola RNF-12 de la aplicación terminada.
+
+## T120 y T131–T140 — 30/10/2026
+
+Dirección elegida por el usuario: **SaaS familiar claro con acento azul** y código
+directo. Delegó referencias de acabado manteniendo Radix/Tailwind. Se toman
+jerarquía/compactación de Linear y formularios/configuración de GitHub como bar de
+calidad, sin importar sus sistemas ni copiar su composición. Producto confirmado
+en [PRODUCT.md](../../apps/web/PRODUCT.md); contrato por superficie en
+`apps/web/.impeccable/` y tokens implementados/documentados al cierre.
+
+MCP consultado de nuevo mediante stdio: preferencias, búsqueda SaaS (99/48/45),
+get_analysis 48/45/29 y perfil SaaS posterior a la propuesta. Se inspeccionaron sus
+capturas externas. El perfil sigue resolviendo a fintech: no se adoptan pagos ni
+calculadoras. Las búsquedas dashboard, login, administration, catalogue, warehouse
+e inventory no aportaron un patrón WMS utilizable; se registran como límites,
+no como diseños ficticios encontrados. Las referencias 48/45/29 aportan contraste,
+jerarquía y vínculo con el objeto, no autoridad sobre permisos o tablas.
+
+| Módulo de este bloque | Consulta MCP / referencia | Decisión original |
+|---|---|---|
+| Acceso/registro/setup | login + análisis 48 | Formulario etiquetado, código de empresa explícito y validación visible; sin héroe comercial |
+| Empresa/equipo | administration + 48 | Configuración en secciones y tabla, acciones según rol y estado actual |
+| Almacenes | warehouse + 45/29 | Código, dimensiones en metros y selección persistente; sin preview geométrica falsa |
+| Catálogo | catalogue + 48 | SKU, nombre y unidad; edición conserva identidad, retirada explica bloqueo |
+| Inventario | inventory + 29/48 | Ubicación y cantidades exactas comparables; filas móviles etiquetadas |
+| Fundamentos | preferencias + análisis 48/45 | Sistema único de controles, foco, estados semánticos y tipografía local |
+
+Se mantiene la prohibición de degradados de texto, blobs, cifras decorativas,
+destellos y grids de features. Carruseles, escenas oscuras o efectos de scroll de
+marketing no pasan a las tablas de trabajo. No se usó NotebookLM ni se creó Figma.
