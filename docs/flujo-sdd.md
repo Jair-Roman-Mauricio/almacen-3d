@@ -151,3 +151,14 @@ PR todavía espera integración. [Evidencia de fases 5–6](evidencias/fase-05-0
 migraciones repetibles correctos. Se conservaron spec, plan, contratos y
 constitución; se marcaron solo T053–T072. La dependencia del PR anterior queda
 expresada en la revisión. No se fusionan ramas ni se inicia T073 o UI.
+
+
+## Ejecución continua autorizada: T073–T095 — 30/10/2026
+
+Se completaron pedidos/reservas/picking/despachos, traslados y conteos/ajustes en
+`feature/t073-t095-outbound-transfers-counts`, basada en T072 y dependiente del PR #4.
+[Evidencia de fases 7–8](evidencias/fase-07-08.md): 152 unitarias y 159 de integración,
+11 controles de capas, lint, tipos/build, instalación congelada y migraciones
+repetibles. Se conservaron spec, plan, contratos y constitución; solo se marcaron
+T073–T095. Las comprobaciones que pasaron con protecciones previas se registran
+como verificación directa. No se inicia T096, UI o despliegue ni se fusionan ramas.

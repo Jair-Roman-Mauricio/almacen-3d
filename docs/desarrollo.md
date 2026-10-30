@@ -119,6 +119,13 @@ Rutas implementadas bajo `/api/v1`:
 | `POST /receipts`, `POST /internal-moves` | Confirmaciones físicas con `lines` y referencia |
 | `POST /locations/:id/block`, `POST /locations/:id/unblock` | Solo admin; desbloqueo con motivo |
 | `GET /history`, `GET /audit` | Admin/supervisor; filtros de días en zona de empresa |
+| `GET/POST /orders`, `GET /orders/:id` | Pedidos y saldos por línea; lista con `warehouseId` obligatorio |
+| `POST /orders/:id/reservations`, `PUT /orders/:id/assignment` | Reservas parciales y asignación a operario activo |
+| `POST /orders/:id/preparations`, `/dispatches`, `/cancellation` | Avances parciales y cancelación bajo sus restricciones |
+| `GET/POST /transfers`, `GET /transfers/:id` | Traslados declarados, todavía sin consumir físico |
+| `POST /transfers/:id/departure`, `/receipts` | Salida declarada completa y recepciones parciales explícitas |
+| `GET/POST /counts`, `GET /counts/:id` | Observado/físico/revisión/diferencia; lista por `warehouseId` |
+| `POST /counts/:id/adjustment` | Ajuste con motivo por admin/supervisor, referencia vigente y reservas protegidas |
 
 Las mutaciones públicas requieren `Origin: <APP_ORIGIN>` y JSON. Las protegidas
 requieren además la cookie opaca y `X-CSRF-Token`, recibido al iniciar/consultar
@@ -152,3 +159,30 @@ omitir un elemento solicita retirarlo, sujeto a stock/trabajo de descendientes.
 Un conflicto no sustituye el borrador: recuperar o revisar la distribución actual.
 Los cambios físicos se confirman mediante operaciones; no hay un PATCH directo
 de cantidades. Consultar [evidencia de fases 5–6](evidencias/fase-05-06.md).
+
+
+## Flujos de salida y corrección
+
+Pedidos y traslados usan las mismas referencias UUID, cookie, CSRF y Origin que
+las recepciones. Las cantidades son cadenas decimales exactas; no enviar números
+binarios de JSON ni campos de control/empresa ajenos al contrato.
+
+1. Crear pedido con `code`, `warehouseId` y `lines:[{productId,quantity}]`.
+2. Reservar con `lines:[{orderLineId,sourceLocationId,quantity}]`; tomar los IDs de
+   las líneas devueltas, conservando sus reservas/asignaciones de stock.
+3. Asignar con `{operatorId}` y preparar `lines:[{allocationId,quantity}]`. El
+   operario requiere asignación actual; admin/supervisor conservan permiso.
+4. Despachar cantidades explícitas de esas asignaciones. Cada parcial confirma
+   todo su lote o lo revierte, y deja el pendiente para otra acción con otra referencia.
+5. Para traslado, registrar la ruta y confirmar todas las cantidades declaradas
+   con `transferLineId`; recibirlas explícitamente con `targetLocationId`. El
+   tránsito sigue separado de físico y disponible hasta confirmar cada recepción.
+6. Registrar conteo con `{warehouseId,locationId,productId,observed}`. El ajuste
+   posterior solo recibe `{reason}`: el cliente no sustituye observado, revisión
+   o reservas. Si el físico cambió, registrar un conteo nuevo.
+
+Una referencia nueva representa otra acción; no reutilizarla para otros datos.
+Tras timeout, consultar `/operations/:reference` y reintentar con la misma
+referencia si corresponde. Desbloquear o reasignar no ejecuta avances pendientes.
+Ver [evidencia de fases 7–8](evidencias/fase-07-08.md). No hay todavía pantallas de
+producto para estos flujos; la prueba funcional actual se realiza por HTTP.

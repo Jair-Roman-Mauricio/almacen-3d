@@ -6,7 +6,7 @@ Dos aplicaciones y cuatro paquetes compartidos, con un monolito modular de negoc
 
 | Módulo | Responsabilidad actual | Límite |
 |---|---|---|
-| `apps/api` | Arranque Nest, salud, acceso/equipo, geometría/inventario, comandos, validación y errores | Punto de entrada HTTP; recepciones/movimientos/historial; salidas posteriores pendientes |
+| `apps/api` | Arranque Nest, salud, acceso/equipo, geometría/inventario, salidas/traslados/conteos, comandos, validación y errores | Punto de entrada HTTP; Operaciones HTTP; reportes/archivos/sincronización pendientes |
 | `apps/web` | Next App Router y `/health` | Sin páginas ni componentes de producto |
 | `packages/domain` | Cantidades exactas, identificadores, fechas, saldos, geometría y alertas | No importa frameworks, SQL ni red |
 | `packages/contracts` | Esquemas compartidos y formato de errores | No accede a datos |
@@ -69,6 +69,23 @@ la auditoría conserva los hechos administrativos y sus motivos.
 [Evidencia de fases 5–6](evidencias/fase-05-06.md): aislamiento HTTP completo del
 bloque, carreras de editor/stock/bloqueos y reconciliación de cantidades exactas.
 
+## Salidas, traslados y ajustes implementados
+
+Los módulos `orders`, `transfers` y `counts` componen los modelos puros de
+líneas/estados con el mismo contexto de empresa y ejecutor de comandos. Las
+acciones bloquean almacenes antes del pedido/traslado/conteo y sus posiciones.
+La barrera de permisos evita confirmar con un rol revocado; la fila de pedido
+serializa reservas, asignación, preparación y despacho.
+
+Los asientos de reserva no cambian físico; el despacho consume físico/reserva y
+preparación juntos. El traslado declara ruta, cambia físico por tránsito al
+salir y lo reintegra al destino al recibir. El conteo fija físico/revisión sin
+modificarlos; el ajuste compara esa revisión y las reservas actuales, y conserva
+motivo y delta en la misma confirmación. Las consultas no ejecutan efectos.
+
+[Evidencia de fases 7–8](evidencias/fase-07-08.md): carreras de permisos/saldos,
+reintentos históricos, ABA, aislamiento y reconciliación integrada del libro.
+
 ## Pendiente según el plan
 
-Pedidos, picking, despachos, traslados/conteos por HTTP, dispatcher outbox/SSE, importaciones, editor y visor 3D se implementarán en sus tareas. No se atribuyen esas capacidades a los helpers actuales. Las mediciones, restauración y equivalencia completa SaaS/local también están pendientes de evidencia.
+Reportes, importación/exportación, dispatcher outbox/SSE, editor y visor 3D se implementarán en sus tareas. No se atribuyen esas capacidades a los helpers actuales. Las mediciones, restauración y equivalencia completa SaaS/local también están pendientes de evidencia.

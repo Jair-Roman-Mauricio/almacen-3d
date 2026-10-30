@@ -29,6 +29,7 @@ Las revisiones `revision-*.md` y `revision-*.diff` de la carpeta de la spec docu
 - [Ejecución T020–T031](evidencias/fase-02.md): migraciones, aislamiento y privilegios con PostgreSQL real.
 - [Ejecución T032–T052](evidencias/fase-03-04.md): transacciones, altas, sesiones y equipo con carreras reales.
 - [Ejecución T053–T072](evidencias/fase-05-06.md): almacenes, catálogo, geometría e inventario con reconciliación y carreras.
+- [Ejecución T073–T095](evidencias/fase-07-08.md): salidas parciales, traslados, conteos/ajustes y reconciliación integrada.
 - [Enmienda pnpm y GitHub](cambios/001-pnpm-github.md): cambios técnicos autorizados y revalidación.
 - [Historial de entregas](../CHANGELOG.md).
 

@@ -75,7 +75,7 @@ La migración fija los rangos L/N del runtime y los 28 pares de compatibilidad, 
 
 Ver [evidencia de fase 2](evidencias/fase-02.md) e [informe de consultas](reportes/consultas-fase-02.md). Las pruebas crean bases `phase2_<uuid>_test`, aplican el diario real y eliminan solo esas bases. El bootstrap también se verificó en un contenedor PostgreSQL vacío y sin red publicada.
 
-Hay acceso/equipo por HTTP y funciones limitadas de credencial/provisión; hay almacenes, catálogo, geometría, recepciones/movimientos e historial; faltan salidas/traslados/conteos HTTP, dispatcher SSE, parser CSV/XLSX y UI. RLS SQL y los índices actuales no acreditan esas tareas ni los objetivos de rendimiento del perfil grande.
+Hay acceso/equipo por HTTP y funciones limitadas de credencial/provisión; hay almacenes, catálogo, geometría, recepciones/movimientos e historial; también hay salidas, traslados y conteos/ajustes HTTP; faltan reportes/archivos, dispatcher SSE y UI. RLS SQL y los índices actuales no acreditan esas tareas ni los objetivos de rendimiento del perfil grande.
 
 
 La fase 3 añade un trigger que rechaza reescribir comandos confirmados y un
@@ -97,3 +97,18 @@ saldos vacíos bajo el lock de ubicación y confirman cantidades, revisión fís
 asientos y resultado juntos. Los bloqueos no modifican reservas ni avances.
 El [informe ejecutado](evidencias/fase-05-06.md) registra las carreras y la
 reconciliación SQL independiente del libro contra saldos.
+
+
+## Fases 7–8: saldos de salida, tránsito y correcciones
+
+No cambian tablas ni migraciones: las 18 versiones existentes ya contemplaban
+pedidos/líneas/asignaciones, traslados/recibos y conteos/ajustes con sus FK de ámbito.
+Los servicios validan y bloquean las referencias antes de escribir los acumulados.
+No se usa la credencial de mantenimiento para el tráfico HTTP normal.
+
+El físico y reservado por posición reconcilian con sus deltas del libro; el
+tránsito por traslado/producto reconcilia con `departed-received`. La cancelación
+libera reserva sin disminuir físico. El ajuste conserva la referencia de conteo
+original y registra otra confirmación con su motivo; no sobrescribe observaciones.
+La [evidencia ejecutada](evidencias/fase-07-08.md) incluye pruebas con roles reales,
+fallos intermedios, conexiones distintas y un flujo combinado con reconciliación SQL.

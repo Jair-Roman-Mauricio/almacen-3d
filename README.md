@@ -4,7 +4,7 @@ Sistema de gestión de almacenes (WMS) en desarrollo para empresas con almacenes
 
 Se construye siguiendo **Specification Driven Development (SDD)**: requisitos, contratos, plan, tareas y evidencia verificable antes de dar una capacidad por terminada.
 
-> **Estado al 29/10/2026:** **72 de 214 tareas** completadas. El backend permite alta/acceso por empresa, equipo, almacenes, catálogo, distribuciones geométricas, recepciones, movimientos internos, bloqueos e historial, con transacciones e aislamiento. La interfaz operativa, el editor 3D y la landing continúan pendientes; aún no ofrece una demo visual del WMS.
+> **Estado al 30/10/2026:** **95 de 214 tareas** completadas. El backend permite acceso/equipo, almacenes, catálogo, geometría persistida, inventario, pedidos/reservas/picking/despachos, traslados, conteos y ajustes con trazabilidad e aislamiento. La interfaz operativa, el editor 3D y la landing continúan pendientes; todavía no ofrece una demo visual del WMS.
 
 ## Producto previsto
 
@@ -14,7 +14,7 @@ Se construye siguiendo **Specification Driven Development (SDD)**: requisitos, c
 - Modalidad SaaS con suscripción e infraestructura mantenida por el proveedor.
 - Modalidad local en infraestructura del cliente, con instalación y servicios asociados.
 
-Las operaciones de pedidos, picking, despachos, traslados y conteos, y las capacidades visuales continúan pendientes de implementación. El núcleo de negocio será compartido entre ambas modalidades. Los datos de demostración serán sintéticos y los cobros, simulados en esta etapa.
+Reportes, importación/exportación, sincronización y capacidades visuales continúan pendientes de implementación. El núcleo de negocio será compartido entre ambas modalidades. Los datos de demostración serán sintéticos y los cobros, simulados en esta etapa.
 
 ## Base técnica
 
@@ -60,7 +60,7 @@ node scripts/pnpm-local.mjs run build
 
 Si Node y pnpm ya coinciden con las versiones fijadas y están en `PATH`, se puede usar directamente `pnpm install --frozen-lockfile` y `pnpm run <script>`.
 
-Las pruebas actuales cubren reglas puras, persistencia, bloqueos concurrentes, rollback real, idempotencia, altas SaaS/locales, sesiones, permisos actuales, acceso cruzado, geometría, recepciones/movimientos y reconciliación del inventario. No acreditan todavía el WMS completo. Resultado vigente: **152 pruebas unitarias y 121 de integración aprobadas**, más 11 comprobaciones de arquitectura. Ver [fases 5–6](docs/evidencias/fase-05-06.md), [fases 3–4](docs/evidencias/fase-03-04.md), [fase 2](docs/evidencias/fase-02.md), [fase 1](docs/evidencias/fase-01.md) y [migración a pnpm](docs/cambios/001-pnpm-github.md).
+Las pruebas actuales cubren reglas puras, persistencia, bloqueos concurrentes, rollback real, idempotencia, altas SaaS/locales, sesiones, permisos actuales, acceso cruzado, geometría, recepciones/movimientos, salidas parciales, traslados, ajustes y reconciliación de físico/reservado/tránsito. No acreditan todavía el WMS completo. Resultado vigente: **152 pruebas unitarias y 159 de integración aprobadas**, más 11 comprobaciones de arquitectura. Ver [fases 7–8](docs/evidencias/fase-07-08.md), [fases 5–6](docs/evidencias/fase-05-06.md), [fases 3–4](docs/evidencias/fase-03-04.md), [fase 2](docs/evidencias/fase-02.md), [fase 1](docs/evidencias/fase-01.md) y [migración a pnpm](docs/cambios/001-pnpm-github.md).
 
 ## Estructura
 
