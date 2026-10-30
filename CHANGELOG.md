@@ -1,5 +1,14 @@
 # Historial de entregas
 
+## 2026-10-29 — Transacciones, acceso y equipo
+
+- T032–T052: unidad de trabajo, bloqueos, referencias y resultados atómicos, auditoría inmutable.
+- Registro SaaS/setup local, credenciales Argon2id, sesiones opacas, Origin/CSRF y revocación.
+- Equipo con permisos actuales, protección del último administrador, perfil de empresa y consulta segura de resultados.
+- Cinco migraciones nuevas; 17 totales e idempotentes en desarrollo/pruebas.
+- 152 pruebas unitarias y 83 de integración; lint, 11 controles de arquitectura, tipos y build correctos.
+- [Evidencia de ejecución](docs/evidencias/fase-03-04.md). Siguiente: T053.
+
 ## 2026-10-29 — Persistencia y aislamiento
 
 - T020–T031: 11 migraciones nuevas, 23 tablas de empresa, claves compuestas, cantidades exactas y referencias de operaciones.
@@ -23,4 +32,4 @@
 - Documentación de arquitectura, preparación, estado y contribución.
 - Repositorio público autorizado para mostrar el desarrollo; aplicación todavía local.
 
-Estado actual: 31/214 tareas completadas; la siguiente es T032. Las pantallas comienzan en T119. Esta entrega documenta una base en desarrollo y no constituye una versión de producción del WMS.
+Estado actual: 52/214 tareas completadas; la siguiente es T053. Las pantallas comienzan en T119. Esta entrega documenta una base en desarrollo y no constituye una versión de producción del WMS.
