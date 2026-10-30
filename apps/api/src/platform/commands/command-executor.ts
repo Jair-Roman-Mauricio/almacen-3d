@@ -16,6 +16,8 @@ export interface CommandStamp {
   type: string;
 }
 export interface CommandOptions {
+  /** Internal durable-job continuation; never selected by an HTTP request. */
+  resumePending?: boolean;
   clock?: () => Date;
   permissions?: 'shared' | 'exclusive';
   authorize?: (context: TenantContext) => Promise<void>;
@@ -48,16 +50,19 @@ export async function executeCommand(pool: Pool, request: CommandRequest, apply:
     if (existing) {
       if (existing.operation_type !== request.type || existing.data_hash !== hash)
         throw new DomainError('REFERENCE_REUSED', 'La referencia ya fue utilizada con otros datos.');
-      if (existing.state !== 'confirmed')
+      if (existing.state !== 'confirmed' && (!options.resumePending || existing.actor_id !== request.actorId))
         throw new DomainError('TEMPORARY_FAILURE', 'La operación todavía no tiene resultado confirmado.');
-      await options.validateReplay?.(context, existing.result as Record<string, unknown>);
-      return { operation: { reference, status: 'confirmed' as const, type: existing.operation_type as string, confirmedAt: (existing.confirmed_at as Date).toISOString(), result: existing.result as Record<string, unknown> }, replayed: true };
+      if (existing.state === 'confirmed') {
+        await options.validateReplay?.(context, existing.result as Record<string, unknown>);
+        return { operation: { reference, status: 'confirmed' as const, type: existing.operation_type as string, confirmedAt: (existing.confirmed_at as Date).toISOString(), result: existing.result as Record<string, unknown> }, replayed: true };
+      }
     }
     const date = (options.clock ?? (() => new Date()))();
     if (!Number.isFinite(date.getTime()))
       throw new Error('El reloj no devolvió una fecha válida.');
     const stamp = Object.freeze({ actorId: actor.id as string, reference, occurredAt: date.toISOString(), type: request.type });
-    await queryTenant(context, "INSERT INTO app.commands(tenant_id,reference,operation_type,data_hash,actor_id) VALUES ($1,$2,$3,$4,$5)", [context.tenantId, reference, request.type, hash, request.actorId]);
+    if (!existing)
+      await queryTenant(context, "INSERT INTO app.commands(tenant_id,reference,operation_type,data_hash,actor_id) VALUES ($1,$2,$3,$4,$5)", [context.tenantId, reference, request.type, hash, request.actorId]);
     const applied = await apply(context, stamp);
     const serialized = JSON.stringify(applied);
     if (!applied || Array.isArray(applied) || typeof applied !== 'object')

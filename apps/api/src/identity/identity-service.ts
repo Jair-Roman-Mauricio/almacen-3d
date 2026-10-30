@@ -1,3 +1,4 @@
+import { demoAccounts, publicDemoAccount } from '../demo/manifest.js';
 import { randomUUID } from 'node:crypto';
 import pg from 'pg';
 import type { Pool } from 'pg';
@@ -53,6 +54,8 @@ export class IdentityService implements OnModuleDestroy {
     this.appPool = prepare(options.appPool, process.env.DATABASE_URL);
     this.provisionPool = prepare(options.provisionPool, process.env.DATABASE_PROVISION_URL);
   }
+  /** Server-only adapter; never returned by an HTTP handler. */
+  backgroundDatabase(): Pool { return this.pool('app'); }
   async onModuleDestroy(): Promise<void> { await Promise.all(this.owned.map(pool => pool.end())); }
   protected pool(kind: 'app' | 'provision'): Pool {
     const pool = kind === 'app' ? this.appPool : this.provisionPool;
@@ -90,6 +93,15 @@ export class IdentityService implements OnModuleDestroy {
     catch (error) {
       this.databaseError(error);
     }
+  }
+  async demoAccess() {
+    if (!this.demoMode)
+      throw new DomainError('DEMO_UNAVAILABLE', 'La demostración no está habilitada.');
+    const keys = new Set((await this.pool('app').query('SELECT * FROM app.demo_manifest_keys()')).rows.map(row => row.manifest_key));
+    const accounts = demoAccounts.filter(account => keys.has(account.key)).map(publicDemoAccount);
+    if (!accounts.length)
+      throw new DomainError('DEMO_UNAVAILABLE', 'La demostración todavía no fue precargada.');
+    return { synthetic: true, accounts };
   }
   async config(): Promise<{
     mode: 'saas' | 'local';

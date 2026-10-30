@@ -1,3 +1,4 @@
+import {lockSkuKeys} from './sku-lock.js';
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'node:crypto';
 import { queryTenant, appendAuditEvent, appendChange, lockResources, type TenantContext } from '@almacen/database';
@@ -28,6 +29,7 @@ export class CatalogueService {
     const data = { sku: normalizeCode(input.sku).value, name: normalizeName(input.name), unit: { kind, label: normalizeName(input.unit.label) } };
     try {
       return await this.identity.command(headers, 'product.create', data, async (context, stamp) => {
+        await lockSkuKeys(context,[normalizeCode(data.sku).key]);
         const id = randomUUID();
         const row = (await queryTenant(context, `INSERT INTO app.products(tenant_id,id,sku,name,unit_kind,unit_label) VALUES ($1,$2,$3,$4,$5,$6) RETURNING ${productColumns}`, [context.tenantId, id, data.sku, data.name, kind, data.unit.label])).rows[0]!;
         const result = productDto(row);

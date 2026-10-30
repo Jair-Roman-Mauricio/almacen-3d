@@ -4,7 +4,7 @@ import { DomainError } from '@almacen/domain';
 // persisted types fail closed instead of inheriting an accidental permission.
 export function operationRoles(type: string): readonly string[] {
   if(['count.create','transfer.receive','order.prepare','inventory.receipt','inventory.internal-move'].includes(type))return ['admin','supervisor','operator'];
-  if(['count.adjust','transfer.create','transfer.depart','order.create','order.reserve','order.assign','order.dispatch','order.cancel','product.create','product.update','product.remove'].includes(type))return ['admin','supervisor'];
+  if(['threshold.set','count.adjust','transfer.create','transfer.depart','order.create','order.reserve','order.assign','order.dispatch','order.cancel','product.create','product.update','product.remove'].includes(type))return ['admin','supervisor'];
   return ['location.block','location.unblock','layout.save','warehouse.create','user.create', 'user.update', 'company.update', 'import.apply'].includes(type) ? ['admin'] : [];
 }
 export async function operationResult(context: TenantContext, reference: string, role: string, actorId:string) {

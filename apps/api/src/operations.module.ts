@@ -1,3 +1,12 @@
+import {ChangesController} from './changes/changes.controller.js';
+import {ChangeService} from './changes/change-service.js';
+import {ExportService} from './exchange/export-service.js';
+import {ExportController} from './exchange/export.controller.js';
+import {ImportWorkerHost} from './exchange/import-worker-host.js';
+import {ImportService} from './exchange/import-service.js';
+import {ImportController} from './exchange/import.controller.js';
+import {ReportService} from './reporting/report-service.js';
+import {ReportController} from './reporting/report.controller.js';
 import { Module, type DynamicModule } from '@nestjs/common';
 import {CountService} from './counts/count-service.js';
 import {CountsController} from './counts/counts.controller.js';
@@ -20,6 +29,19 @@ import { WarehouseService } from './warehouses/warehouse-service.js';
 @Module({})
 export class OperationsModule {
   static register(options: IdentityOptions): DynamicModule {
-    return { module: OperationsModule, imports: [IdentityModule.register(options)], controllers: [OperationsController,OrdersController,TransfersController,CountsController], providers: [CountService,TransferWorkflowService,TransferService,OrderWorkflowService,OrderService,WarehouseService, CatalogueService, LayoutService, InventoryService, PhysicalOperationsService, LocationService, HistoryService] };
+    return {
+      module: OperationsModule,
+      imports: [IdentityModule.register(options)],
+      controllers: [
+        ChangesController, ExportController, ImportController, ReportController,
+        OperationsController, OrdersController, TransfersController, CountsController,
+      ],
+      providers: [
+        ChangeService, ExportService, ImportWorkerHost, ImportService, ReportService,
+        CountService, TransferWorkflowService, TransferService, OrderWorkflowService,
+        OrderService, WarehouseService, CatalogueService, LayoutService,
+        InventoryService, PhysicalOperationsService, LocationService, HistoryService,
+      ],
+    };
   }
 }

@@ -122,6 +122,10 @@ export class IdentityController {
   }
 
   @Header('Cache-Control', 'no-store')
+  @Get('public/demo-access')
+  async demoAccess() { return {data: await this.identity.demoAccess()}; }
+
+  @Header('Cache-Control', 'no-store')
   @Get('public/config')
   async config() {
     return {data: await this.identity.config()};

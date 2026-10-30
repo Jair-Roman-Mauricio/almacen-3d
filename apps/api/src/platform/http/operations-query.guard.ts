@@ -2,6 +2,10 @@ import type { CanActivate, ExecutionContext } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { invalidInput } from './operation-input.js';
 const filters: Record<string, readonly string[]> = {
+  template:['format'],
+  exportInventory:['warehouseId','productId','locationId','q','cursor','limit','format'],exportHistory:['warehouseId','productId','from','to','cursor','limit','format'],
+  importRows:['cursor','limit'],
+  dashboard:['warehouseId','from','to'],alerts:['warehouseId','cursor','limit'],
   listCounts:['warehouseId','productId','locationId','cursor','limit'],
   listTransfers:['warehouseId','status','cursor','limit'],
   listOrders:['warehouseId','status','assignedToMe','q','cursor','limit'],
