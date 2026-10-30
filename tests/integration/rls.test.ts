@@ -53,7 +53,8 @@ describe('I-ISO/rls-sin-bypass', () => {
   });
   it('cubre todas las tablas de empresa con RLS forzada y separa tres roles sin bypass', async () => {
     const tables=(await db.owner.query("SELECT c.relname,c.relrowsecurity,c.relforcerowsecurity,pg_get_userbyid(c.relowner) AS owner FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='app' AND c.relkind='r' AND (c.relname='companies' OR EXISTS(SELECT 1 FROM pg_attribute a WHERE a.attrelid=c.oid AND a.attname='tenant_id'))")).rows;
-    expect(tables).toHaveLength(23);
+    expect(tables).toHaveLength(24);
+    expect(tables.some(table=>table.relname==='demo_accounts')).toBe(true);
     for (const table of tables) expect(table).toMatchObject({relrowsecurity:true,relforcerowsecurity:true,owner:'alm_migrator'});
     const roles=(await db.owner.query("SELECT rolname,rolsuper,rolbypassrls,rolcreaterole FROM pg_roles WHERE rolname IN ('alm_app','alm_migrator','alm_provision') ORDER BY rolname")).rows;
     expect(roles).toHaveLength(3);

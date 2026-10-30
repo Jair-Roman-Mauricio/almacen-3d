@@ -1,46 +1,69 @@
 # Estado del proyecto
 
-Actualizado el 29/10/2026. Fuente de progreso: [tasks.md](../specs/001-wms-operativo-3d/tasks.md), con evidencia en [fase 0](evidencias/fase-00.md) y [revalidación pnpm](cambios/001-pnpm-github.md) y [fase 1](evidencias/fase-01.md) y [fase 2](evidencias/fase-02.md).
+Actualizado el 30/10/2026. Fuente de progreso: [tasks.md](../specs/001-wms-operativo-3d/tasks.md).
+Evidencia: [fase 0](evidencias/fase-00.md), [pnpm](cambios/001-pnpm-github.md),
+[fase 1](evidencias/fase-01.md), [fase 2](evidencias/fase-02.md) y
+[fases 3–4](evidencias/fase-03-04.md) y [fases 5–6](evidencias/fase-05-06.md) y [fases 7–8](evidencias/fase-07-08.md) y [fases 9–10](evidencias/fase-09-10.md).
 
-## Implementado: T001–T031
+## Implementado: T001–T118
 
-- Workspace de seis paquetes/aplicaciones, TypeScript y límites automáticos de capas.
-- Runtime local fijado; gestión exclusiva con pnpm y dependencias internas `workspace:*`.
-- API NestJS ESM y aplicación Next con rutas técnicas de salud.
-- PostgreSQL separado para desarrollo y pruebas; credenciales y roles diferenciados.
-- Diario de migraciones con hashes, exclusión concurrente e idempotencia.
-- Helper de transacciones con rollback y pruebas contra PostgreSQL real.
-- Validación inicial de entrada de cantidades y contrato uniforme de errores HTTP.
+- Workspace Next/Nest con TypeScript, runtime fijado y gestión exclusiva con pnpm.
+- PostgreSQL local separado para desarrollo/pruebas, roles distintos y 22
+  migraciones con integridad e idempotencia comprobadas.
+- Cantidades exactas, normalización Unicode, fechas IANA, reglas puras de
+  inventario/pedidos/tránsito y geometría.
+- Esquema con claves de ámbito, RLS forzada en 24 tablas e índices de consultas.
+- Unidad de trabajo y protocolo de bloqueos, comando atómico, replay y auditoría
+  con autor/fecha/referencia. Resultados confirmados inmutables.
+- Registro SaaS y setup local conjuntos; exclusión concurrente y recuperación al
+  reiniciar la API sin volver a abrir una instalación configurada.
+- Acceso por empresa, Argon2id, sesión opaca, Origin/CSRF y logout revocable.
+- Alta/lista/cambio de equipo, permisos actuales, último administrador protegido,
+  perfil de empresa y consulta autorizada de resultados.
 
-- Cantidades exactas en BigInt por unidad, normalización Unicode y filtros de fechas en zona de empresa.
-- Saldos puros por línea/asignación, estados del pedido y conservación del tránsito.
-- Jerarquía y contención geométrica con decimales exactos; detección de solapamientos prohibidos.
-- Disponibilidad operativa y alertas por producto/almacén.
+- Almacenes/catálogo y guardado de distribuciones con jerarquía, contención,
+  colisiones, revisión concurrente y protección de elementos ocupados.
+- Inventario por posición/unidad, recepciones y movimientos atómicos con libro,
+  bloqueo/desbloqueo autorizado, historial/auditoría y reconciliación de saldos.
 
-- Esquema de negocio con claves de ámbito, cantidades exactas, revisión física y vínculos de confirmación.
-- Contexto de empresa por transacción y repositorio acotado; RLS forzada en 23 tablas.
-- Aplicación, provisión y migraciones con credenciales/privilegios separados; 13 índices de consultas versionados.
+- Pedidos con reservas/preparación/despachos parciales, asignación actual y
+  cancelación protegida; reintentos y competencia por saldos.
+- Traslados con salida, tránsito y recepción parcial; conteos y ajustes con motivo,
+  protección de reservas y referencia física que detecta A→B→A.
+- Reconciliación integrada de libro, físico, reservado y tránsito tras combinar flujos.
 
-Verificación vigente: **198 pruebas aprobadas** (149 unitarias y 49 de integración), más 11 comprobaciones de arquitectura; lint, tipos y build correctos.
+- Indicadores y alertas; CSV/XLSX con preview, validación y aplicación asíncrona atómica.
+- Exportación segura de consultas, outbox/SSE por empresa y seed demo explícito recuperable.
 
-**No hay aún login funcional, endpoints operativos de inventario, pantallas, editor 3D ni landing.** El contrato inicial HTTP no acredita autorización ni aislamiento multiempresa completo.
+Verificación vigente: **341 pruebas aprobadas** (152 unitarias y 189 de integración),
+11 comprobaciones de arquitectura, instalación congelada, lint, tipos y build
+correctos. Las pruebas de concurrencia usan PostgreSQL real; la auditoría de acceso
+alterna dos empresas sobre una misma conexión reutilizada.
+
+El backend implementado se puede utilizar por HTTP. **La interfaz del producto,
+el editor 3D y la landing siguen pendientes.**
+No se presenta este bloque como un WMS completo ni como una versión de producción.
 
 ## Hitos pendientes
 
 | Tareas | Contenido |
 |---|---|
-| T032–T037 | Transacciones, bloqueos y referencias de operación |
-| T038–T118 | Acceso, operaciones, archivos y sincronización |
 | T119–T140 | Fundamentos UI y primeras pantallas |
 | T141–T153 | Editor visual y visor 3D |
 | T154–T176 | Operaciones y reportes en pantalla |
 | T177–T182 | Landing, modalidades y demostración |
 | T183–T214 | Instalación, recuperación, mediciones y QA final |
 
-La siguiente tarea funcional es **T032: centralizar transacciones y orden de bloqueos**. La preparación de GitHub y pnpm es mantenimiento técnico solicitado, no avance de estas tareas. Solo T001–T031 están marcadas. El dominio y la base de persistencia no sustituyen los servicios de negocio, las sesiones y los flujos completos de las fases siguientes.
+Siguiente tarea: **T119 — contexto de producto para diseño**, no iniciada.
+La equivalencia operativa completa SaaS/local, restauración y mediciones del perfil
+grande aún requieren sus pruebas posteriores.
 
 ## Vista previa y publicación
 
-El repositorio público permite revisar código y documentación. La aplicación continúa en desarrollo local. No se abre un servidor de vista previa visual en esta entrega porque no existe interfaz de producto. Los endpoints de salud se pueden iniciar para diagnóstico siguiendo la guía local.
+Desarrollo local. La [guía](desarrollo.md) permite iniciar la API para probar altas,
+login, geometría, catálogo, inventario, salidas, traslados y ajustes; Next mantiene únicamente su ruta técnica de salud. No hay una
+pantalla de producto que previsualizar todavía.
 
-Railway, cobros reales e integraciones externas no están habilitados. No se ha anunciado una demo funcional ni resultados de rendimiento del perfil grande.
+Los cambios del bloque se revisan en una feature con destino `dev`; la promoción
+a `main` se realiza por un PR posterior. No se fusionan automáticamente las ramas.
+Railway, releases, cobros reales y servicios externos continúan sin habilitar.

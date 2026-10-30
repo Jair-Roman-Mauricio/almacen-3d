@@ -6,7 +6,7 @@ Dos aplicaciones y cuatro paquetes compartidos, con un monolito modular de negoc
 
 | Módulo | Responsabilidad actual | Límite |
 |---|---|---|
-| `apps/api` | Arranque Nest, salud, validación y errores | Punto de entrada HTTP; sin operaciones WMS todavía |
+| `apps/api` | Arranque Nest, salud, acceso/equipo, geometría/inventario, salidas/traslados/conteos, comandos, validación y errores | Punto de entrada HTTP; Operaciones HTTP; reportes, archivos, avisos y demo disponibles |
 | `apps/web` | Next App Router y `/health` | Sin páginas ni componentes de producto |
 | `packages/domain` | Cantidades exactas, identificadores, fechas, saldos, geometría y alertas | No importa frameworks, SQL ni red |
 | `packages/contracts` | Esquemas compartidos y formato de errores | No accede a datos |
@@ -23,7 +23,7 @@ La ruta de salud no comprueba por sí sola la disponibilidad de todas las futura
 
 ## Persistencia
 
-PostgreSQL local tiene servicios, credenciales y volúmenes separados para desarrollo y pruebas. Las migraciones usan un rol distinto al de aplicación, una única conexión, advisory lock de sesión y comprobación de hashes del diario aplicado. Repetir la migración no reaplica versiones. El diario incluye la base técnica y 11 migraciones de negocio/aislamiento/índices: 23 tablas de empresa, control de instalación y diario de Drizzle.
+PostgreSQL local tiene servicios, credenciales y volúmenes separados para desarrollo y pruebas. Las migraciones usan un rol distinto al de aplicación, una única conexión, advisory lock de sesión y comprobación de hashes del diario aplicado. Repetir la migración no reaplica versiones. El diario incluye 22 versiones de base, negocio, aislamiento, índices y acceso: 24 tablas de empresa, marcadores demo, control de instalación y diario de Drizzle.
 
 `withTransaction` abre una transacción READ COMMITTED, confirma en éxito y revierte ante error. Si falla el rollback, descarta la conexión para evitar devolverla contaminada al pool. Las pruebas comprueban el comportamiento con PostgreSQL real.
 
@@ -35,6 +35,81 @@ La fase 1 añade valores de cantidad en milésimas BigInt y reglas por unidad, n
 
 La fase 2 incorpora claves compuestas de ámbito, restricciones sin redondeo, revisión física, comandos/auditoría/outbox y staging. `withTenantTransaction` fija la empresa localmente y caduca el contexto al terminar; el repositorio filtra por esa empresa. RLS forzada y privilegios por tabla/columna añaden una segunda barrera. [Persistencia](persistencia.md) detalla roles y límites; [la evidencia](evidencias/fase-02.md) registra pruebas reales y el [informe de índices](reportes/consultas-fase-02.md) sus planes.
 
+## Transacciones y acceso implementados
+
+La fase 3 añade una unidad de trabajo con barreras ordenadas de permisos,
+referencia, geometría y filas. El ejecutor confirma efecto, auditoría, outbox y
+resultado en una transacción. Las referencias se serializan por empresa y sus
+confirmaciones son inmutables; el dominio canoniza datos sin importar criptografía.
+
+La fase 4 resuelve credenciales/sesiones mediante funciones SQL limitadas. La API
+valida Argon2id y almacena solo el hash del token opaco. El tenant procede de la
+sesión; la unidad de trabajo relee cuenta/rol/revocación tras adquirir la barrera
+de permisos. Los cambios de equipo y logout usan su modo exclusivo. El alta
+SaaS/setup local usa la conexión de provisión, sin privilegios generales de datos.
+
+La [evidencia de fases 3–4](evidencias/fase-03-04.md) registra rollback, reintentos,
+carreras de setup/permisos y acceso cruzado HTTP con conexiones reutilizadas.
+
+## Geometría e inventario implementados
+
+`OperationsModule` reutiliza el servicio de identidad y registra módulos de
+almacenes/distribuciones, catálogo e inventario. Cada acción protegida conserva
+el tenant y permiso actuales dentro de la unidad de trabajo. Los comandos físicos
+usan barrera compartida de almacén y locks ordenados; el guardado geométrico usa
+la exclusiva, relee ocupación y confirma contra la revisión de partida.
+
+`removed_at` conserva las identidades físicas retiradas sin invalidar claves
+históricas. Las consultas del layout solo muestran los elementos activos.
+La API valida cajas y colisiones con el dominio exacto antes de persistir.
+Recepciones y movimientos suman líneas, protegen disponibilidad y escriben libro,
+resultado y outbox en el mismo commit. El historial agrupa asientos por referencia;
+la auditoría conserva los hechos administrativos y sus motivos.
+
+[Evidencia de fases 5–6](evidencias/fase-05-06.md): aislamiento HTTP completo del
+bloque, carreras de editor/stock/bloqueos y reconciliación de cantidades exactas.
+
+## Salidas, traslados y ajustes implementados
+
+Los módulos `orders`, `transfers` y `counts` componen los modelos puros de
+líneas/estados con el mismo contexto de empresa y ejecutor de comandos. Las
+acciones bloquean almacenes antes del pedido/traslado/conteo y sus posiciones.
+La barrera de permisos evita confirmar con un rol revocado; la fila de pedido
+serializa reservas, asignación, preparación y despacho.
+
+Los asientos de reserva no cambian físico; el despacho consume físico/reserva y
+preparación juntos. El traslado declara ruta, cambia físico por tránsito al
+salir y lo reintegra al destino al recibir. El conteo fija físico/revisión sin
+modificarlos; el ajuste compara esa revisión y las reservas actuales, y conserva
+motivo y delta en la misma confirmación. Las consultas no ejecutan efectos.
+
+[Evidencia de fases 7–8](evidencias/fase-07-08.md): carreras de permisos/saldos,
+reintentos históricos, ABA, aislamiento y reconciliación integrada del libro.
+
+## Reportes, archivos y avisos implementados
+
+`reporting` cuenta entidades/operaciones sin mezclar unidades y deriva alertas de
+stock disponible frente al umbral. `exchange` separa staging, validación e intención
+pendiente. Un trabajador Node lee CSV/XLSX y aplica trabajos con el rol `alm_app`,
+contexto RLS y permisos actuales. El ejecutor solo permite continuar una intención
+pendiente desde ese adaptador interno; efectos y resultado siguen confirmándose juntos.
+
+Los SKU se serializan antes de bloquear productos; stock inicial sigue el orden de
+almacén, ubicaciones, productos y saldos. Un rechazo o fallo revierte el lote completo.
+Las descargas leen sus filas en una sola sentencia MVCC, con zona de empresa estable,
+y preservan filtros y cantidades exactas. La exportación abarca todas las coincidencias.
+
+`changes` revisa pendientes cada segundo bajo un único publicador PostgreSQL.
+No usa un máximo de secuencia: marca publicado después de emitir. SSE solo lleva
+ámbitos; cada envío comprueba sesión bajo la barrera de permisos. El navegador
+no mantiene una conexión PostgreSQL ni decide confirmaciones con esos avisos.
+La reconexión emite `ready` con `refresh:true`; la invalidación de UI corresponde a T129.
+
+El seed usa provisión limitada para marcar exclusivamente empresas/cuentas ficticias
+y después ejecuta servicios operativos normales con referencias deterministas.
+Puede repetirse sin resetear operaciones y rechaza bases que ya contienen datos no demo.
+Ver [evidencia de fases 9–10](evidencias/fase-09-10.md).
+
 ## Pendiente según el plan
 
-Las sesiones operativas, servicios de inventario, idempotencia operativa, dispatcher outbox/SSE, importaciones, editor y visor 3D se implementarán en sus tareas. No se atribuyen esas capacidades a los helpers actuales. Las mediciones, restauración y equivalencia completa SaaS/local también están pendientes de evidencia.
+El editor y visor 3D, las pantallas operativas y la landing se implementarán en sus tareas. Las mediciones, restauración y equivalencia completa SaaS/local también están pendientes de evidencia.

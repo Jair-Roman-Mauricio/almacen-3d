@@ -1,0 +1,4 @@
+export const demoPassword = 'DemoAlmacen3D!2026';
+export const demoCompanies = [{ id: 'd0000000-0000-4000-8000-000000000001', code: 'DEMO-ROBOTICA', name: 'Robótica ficticia — demostración', prefix: 'd1000000' }, { id: 'd0000000-0000-4000-8000-000000000002', code: 'DEMO-COMERCIO', name: 'Comercio ficticio — demostración', prefix: 'd2000000' }] as const;
+export const demoAccounts = demoCompanies.flatMap(company => (['admin', 'supervisor', 'operator'] as const).map((role, i) => ({ key: company.code + ':' + role, companyId: company.id, userId: company.prefix + '-0000-4000-8000-' + String(i + 1).padStart(12, '0'), companyCode: company.code, email: role + '@demo.example.test', password: demoPassword, role })));
+export const publicDemoAccount = (account: typeof demoAccounts[number]) => ({ companyCode: account.companyCode, email: account.email, password: account.password, role: account.role });
