@@ -255,6 +255,6 @@ export class IdentityService implements OnModuleDestroy {
   }
   async operation(cookie: string | undefined, value: string) {
     const reference = this.entityId(value);
-    return this.withIdentity(cookie, ['admin', 'supervisor', 'operator'], async (context, session) => { const user = await this.authorize(context, session, ['admin', 'supervisor', 'operator']); return operationResult(context, reference, user.role); });
+    return this.withIdentity(cookie, ['admin', 'supervisor', 'operator'], async (context, session) => { const user = await this.authorize(context, session, ['admin', 'supervisor', 'operator']); return operationResult(context, reference, user.role, user.id); });
   }
 }

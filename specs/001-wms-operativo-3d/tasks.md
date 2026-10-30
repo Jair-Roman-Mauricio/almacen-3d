@@ -356,97 +356,97 @@ Tras la aprobación de estas tareas, se propone comenzar **T001–T010 (fase 0)*
 
 ## Fase 7 — Pedidos, reservas, picking y despacho
 
-- [ ] **T073 Registra y consulta pedidos válidos.** Primero escribe y ejecuta su prueba en rojo. Conecta alta/lista/detalle con solicitado por línea y filtros de almacén.
+- [x] **T073 Registra y consulta pedidos válidos.** Primero escribe y ejecuta su prueba en rojo. Conecta alta/lista/detalle con solicitado por línea y filtros de almacén.
   RF: RF-50, RF-51, RF-55, RF-107, RF-160 · Dep.: T054, T063, T024, T014, T045 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-OUT/alta-consulta-pedido con cantidades inválidas rechazadas y saldos por línea.
 
-- [ ] **T074 Reserva cantidades parciales de un pedido.** Primero escribe y ejecuta su prueba en rojo. Compromete saldos en ubicaciones habilitadas sin reducir físico.
+- [x] **T074 Reserva cantidades parciales de un pedido.** Primero escribe y ejecuta su prueba en rojo. Compromete saldos en ubicaciones habilitadas sin reducir físico.
   RF: RF-52, RF-53, RF-54, RF-55, RF-156, RF-159, RF-160, RF-200 · Dep.: T073, T034, T066, T014, T068 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-OUT/reserva-parcial con disponible, saldo de pedido y bloqueo comprobados antes de confirmar.
 
-- [ ] **T075 Protege reservas frente a dos competidores.** Primero escribe y ejecuta su prueba en rojo. Prueba competencia por stock y por saldo de línea, incluyendo líneas repetidas en una solicitud.
+- [x] **T075 Protege reservas frente a dos competidores.** Primero escribe y ejecuta su prueba en rojo. Prueba competencia por stock y por saldo de línea, incluyendo líneas repetidas en una solicitud.
   RF: RF-40, RF-53, RF-103, RF-159, RF-169 · Dep.: T074 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-OUT/reserva-concurrente sin exceder físico ni pendiente de reservar aunque sobre stock en otro origen.
 
-- [ ] **T076 Asigna y reasigna picking a un operario válido.** Primero escribe y ejecuta su prueba en rojo. Conecta responsable actual y auditoría conservando avances confirmados.
+- [x] **T076 Asigna y reasigna picking a un operario válido.** Primero escribe y ejecuta su prueba en rojo. Conecta responsable actual y auditoría conservando avances confirmados.
   RF: RF-163, RF-164, RF-166, RF-167, RF-168 · Dep.: T073, T048, T037 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-OUT/asignacion con inactivo/rol inválido/otra empresa rechazados y autor/fecha registrados.
 
-- [ ] **T077 Registra preparación parcial desde reservas.** Primero escribe y ejecuta su prueba en rojo. Conecta avances por allocation y permiso del operario asignado actual.
+- [x] **T077 Registra preparación parcial desde reservas.** Primero escribe y ejecuta su prueba en rojo. Conecta avances por allocation y permiso del operario asignado actual.
   RF: RF-56, RF-57, RF-107, RF-157, RF-160, RF-165, RF-200 · Dep.: T074, T076, T014 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-OUT/picking-parcial sin reducir físico ni exceder lo reservado pendiente de preparar.
 
-- [ ] **T078 Protege picking de carreras y reasignación tardía.** Primero escribe y ejecuta su prueba en rojo. Comprueba el responsable al commit y el saldo conjunto de avances simultáneos.
+- [x] **T078 Protege picking de carreras y reasignación tardía.** Primero escribe y ejecuta su prueba en rojo. Comprueba el responsable al commit y el saldo conjunto de avances simultáneos.
   RF: RF-7, RF-8, RF-164, RF-165, RF-166, RF-167, RF-170 · Dep.: T077, T048 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-OUT/picking-carrera al rechazar al operario anterior o inactivo y el avance que excede saldo.
 
-- [ ] **T079 Despacha cantidades preparadas de forma atómica.** Primero escribe y ejecuta su prueba en rojo. Consume físico/reserva/preparación e incrementa despachado por línea.
+- [x] **T079 Despacha cantidades preparadas de forma atómica.** Primero escribe y ejecuta su prueba en rojo. Consume físico/reserva/preparación e incrementa despachado por línea.
   RF: RF-58, RF-59, RF-60, RF-61, RF-107, RF-118, RF-119, RF-158, RF-160, RF-200 · Dep.: T077, T037, T014 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-OUT/despacho-parcial con descuentos exactos o rollback total si alguna línea falla.
 
-- [ ] **T080 Impide despachos repetidos y consumo concurrente excesivo.** Primero escribe y ejecuta su prueba en rojo. Distingue replay confirmado de nueva salida y protege saldo físico/reservado/preparado.
+- [x] **T080 Impide despachos repetidos y consumo concurrente excesivo.** Primero escribe y ejecuta su prueba en rojo. Distingue replay confirmado de nueva salida y protege saldo físico/reservado/preparado.
   RF: RF-60, RF-61, RF-102, RF-110, RF-118, RF-119, RF-120, RF-121 · Dep.: T079, T036 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-OUT/despacho-repetido-concurrente sin consumir dos veces la misma preparación.
 
-- [ ] **T081 Completa un pedido en avances de 40 y 60.** Primero escribe y ejecuta su prueba en rojo. Integra estado derivado y saldos tras ambas rondas de reserva/preparación/despacho.
+- [x] **T081 Completa un pedido en avances de 40 y 60.** Primero escribe y ejecuta su prueba en rojo. Integra estado derivado y saldos tras ambas rondas de reserva/preparación/despacho.
   RF: RF-156, RF-157, RF-158, RF-159, RF-160, RF-161, RF-162 · Dep.: T079, T075, T078, T015 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-OUT/ciclo-100-40-60 con estado parcial tras 40 y completo únicamente tras despachar 100.
 
-- [ ] **T082 Cancela pedidos solo antes de preparar o despachar.** Primero escribe y ejecuta su prueba en rojo. Libera reservas del pedido permitido y rechaza cancelación después de avances.
+- [x] **T082 Cancela pedidos solo antes de preparar o despachar.** Primero escribe y ejecuta su prueba en rojo. Libera reservas del pedido permitido y rechaza cancelación después de avances.
   RF: RF-62, RF-63 · Dep.: T079, T073 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-OUT/cancelacion con reservas liberadas exclusivamente en pedido sin preparado ni despachado.
 
-- [ ] **T083 Suspende el trabajo de reservas anteriores al bloqueo.** Primero escribe y ejecuta su prueba en rojo. Prueba reserva/preparación/despacho y su reanudación manual tras desbloqueo.
+- [x] **T083 Suspende el trabajo de reservas anteriores al bloqueo.** Primero escribe y ejecuta su prueba en rojo. Prueba reserva/preparación/despacho y su reanudación manual tras desbloqueo.
   RF: RF-110, RF-200, RF-201, RF-204, RF-207 · Dep.: T068, T081, T082 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-BLK/salida-suspendida conservando compromisos y devolviendo replay anterior sin nuevo movimiento.
 
-- [ ] **T084 Comprueba permisos y empresa en todas las salidas.** Primero escribe y ejecuta su prueba en rojo. Audita pedidos, reservas, asignación, picking, despacho y cancelación con tres roles.
+- [x] **T084 Comprueba permisos y empresa en todas las salidas.** Primero escribe y ejecuta su prueba en rojo. Audita pedidos, reservas, asignación, picking, despacho y cancelación con tres roles.
   RF: RF-5, RF-6, RF-7, RF-8, RF-55, RF-164, RF-165, RNF-2 · Dep.: T083, T052 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ISO/salidas-rutas con acciones de supervisor/operario restringidas según matriz.
 
 ## Fase 8 — Traslados, conteos y ajustes
 
-- [ ] **T085 Registra y consulta traslados de la empresa.** Primero escribe y ejecuta su prueba en rojo. Conecta origen/destino distintos y orígenes declarados como trabajo pendiente.
+- [x] **T085 Registra y consulta traslados de la empresa.** Primero escribe y ejecuta su prueba en rojo. Conecta origen/destino distintos y orígenes declarados como trabajo pendiente.
   RF: RF-171, RF-172, RF-177, RF-182 · Dep.: T025, T053, T054, T034, T016 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-TRA/registro-consulta con mismo almacén y empresa ajena rechazados sin cambiar stock.
 
-- [ ] **T086 Confirma una salida de traslado.** Primero escribe y ejecuta su prueba en rojo. Descuenta mercancía no reservada e incorpora tránsito en la misma transacción.
+- [x] **T086 Confirma una salida de traslado.** Primero escribe y ejecuta su prueba en rojo. Descuenta mercancía no reservada e incorpora tránsito en la misma transacción.
   RF: RF-173, RF-174, RF-175, RF-176, RF-178, RF-182, RF-185, RF-186, RF-187, RF-200 · Dep.: T085, T066, T037 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-TRA/salida-100-20 dejando 80 en origen y 20 en tránsito, sin incrementar destino.
 
-- [ ] **T087 Recibe mercancía en el almacén destino.** Primero escribe y ejecuta su prueba en rojo. Reduce tránsito y suma físico en destinos válidos, admitiendo confirmación parcial explícita.
+- [x] **T087 Recibe mercancía en el almacén destino.** Primero escribe y ejecuta su prueba en rojo. Reduce tránsito y suma físico en destinos válidos, admitiendo confirmación parcial explícita.
   RF: RF-179, RF-180, RF-181, RF-182, RF-183, RF-184, RF-185, RF-186, RF-187, RF-200 · Dep.: T086, T064 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-TRA/recepcion con saldo pendiente correcto y estado recibido solo cuando todas las líneas quedan a cero.
 
-- [ ] **T088 Protege etapas de traslado contra reintentos y carreras.** Primero escribe y ejecuta su prueba en rojo. Prueba segunda salida nueva, replay idéntico y recepciones simultáneas del mismo tránsito.
+- [x] **T088 Protege etapas de traslado contra reintentos y carreras.** Primero escribe y ejecuta su prueba en rojo. Prueba segunda salida nueva, replay idéntico y recepciones simultáneas del mismo tránsito.
   RF: RF-102, RF-110, RF-111, RF-176, RF-181, RF-185, RF-188 · Dep.: T087, T036 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-TRA/etapas-concurrentes sin salida duplicada ni cantidad recibida superior a tránsito.
 
-- [ ] **T089 Verifica conservación, reservas y bloqueos del traslado.** Primero escribe y ejecuta su prueba en rojo. Cubre no usar reservas ajenas, no reservar tránsito y rechazar cualquier extremo bloqueado.
+- [x] **T089 Verifica conservación, reservas y bloqueos del traslado.** Primero escribe y ejecuta su prueba en rojo. Cubre no usar reservas ajenas, no reservar tránsito y rechazar cualquier extremo bloqueado.
   RF: RF-175, RF-177, RF-178, RF-183, RF-185, RF-186, RF-200 · Dep.: T088, T074, T068 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-TRA/conservacion-y-bloqueo por SKU después de cada etapa, incluidas solicitudes fallidas.
 
-- [ ] **T090 Audita las rutas y roles de traslado.** Primero escribe y ejecuta su prueba en rojo. Comprueba destinos ajenos y permisos distintos para creación/salida/recepción.
+- [x] **T090 Audita las rutas y roles de traslado.** Primero escribe y ejecuta su prueba en rojo. Comprueba destinos ajenos y permisos distintos para creación/salida/recepción.
   RF: RF-5, RF-6, RF-172, RF-183, RNF-2 · Dep.: T089, T084 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ISO/traslados-rutas sin alterar inventario de ninguna empresa ante acceso cruzado.
 
-- [ ] **T091 Registra conteos por producto y ubicación.** Primero escribe y ejecuta su prueba en rojo. Guarda observado, físico/revisión de referencia y diferencia sin cambiar saldo.
+- [x] **T091 Registra conteos por producto y ubicación.** Primero escribe y ejecuta su prueba en rojo. Guarda observado, físico/revisión de referencia y diferencia sin cambiar saldo.
   RF: RF-64, RF-65, RF-66, RF-108, RF-109, RF-123, RF-124, RF-202 · Dep.: T026, T063, T011, T034 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CNT/conteo con cero válido y varias referencias de SKU separadas en una ubicación.
 
-- [ ] **T092 Autoriza ajustes con motivo y protección de reservas.** Primero escribe y ejecuta su prueba en rojo. Conecta ajuste de conteo con físico actual, revisión, motivo y asiento.
+- [x] **T092 Autoriza ajustes con motivo y protección de reservas.** Primero escribe y ejecuta su prueba en rojo. Conecta ajuste de conteo con físico actual, revisión, motivo y asiento.
   RF: RF-67, RF-68, RF-69, RF-70, RF-71, RF-203 · Dep.: T091, T074, T037 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CNT/ajuste-autorizado con motivo obligatorio y rechazo de físico menor que reservado.
 
-- [ ] **T093 Rechaza referencias físicas desactualizadas.** Primero escribe y ejecuta su prueba en rojo. Prueba movimiento posterior, A→B→A, otro SKU y reserva posterior al conteo.
+- [x] **T093 Rechaza referencias físicas desactualizadas.** Primero escribe y ejecuta su prueba en rojo. Prueba movimiento posterior, A→B→A, otro SKU y reserva posterior al conteo.
   RF: RF-65, RF-66, RF-69, RF-70 · Dep.: T092, T066 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CNT/revision-fisica sin aceptar ABA ni invalidar por un cambio exclusivamente de otro producto.
 
-- [ ] **T094 Comprueba conteos y ajustes en ubicación bloqueada.** Primero escribe y ejecuta su prueba en rojo. Permite acciones autorizadas sin omitir revisión, motivo o protección de reservas.
+- [x] **T094 Comprueba conteos y ajustes en ubicación bloqueada.** Primero escribe y ejecuta su prueba en rojo. Permite acciones autorizadas sin omitir revisión, motivo o protección de reservas.
   RF: RF-202, RF-203 · Dep.: T093, T068 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-BLK/conteo-ajuste-bloqueado con observación permitida y corrección inválida rechazada.
 
-- [ ] **T095 Audita permisos y referencias de conteos.** Primero escribe y ejecuta su prueba en rojo. Comprueba rol para autorización y ámbito de producto/ubicación/conteo.
+- [x] **T095 Audita permisos y referencias de conteos.** Primero escribe y ejecuta su prueba en rojo. Comprueba rol para autorización y ámbito de producto/ubicación/conteo.
   RF: RF-5, RF-6, RF-109, RNF-2 · Dep.: T094, T090 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ISO/conteos-rutas sin ajuste por operario ni por referencia de otra empresa.
 
