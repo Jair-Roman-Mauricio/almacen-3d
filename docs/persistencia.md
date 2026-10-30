@@ -75,7 +75,7 @@ La migración fija los rangos L/N del runtime y los 28 pares de compatibilidad, 
 
 Ver [evidencia de fase 2](evidencias/fase-02.md) e [informe de consultas](reportes/consultas-fase-02.md). Las pruebas crean bases `phase2_<uuid>_test`, aplican el diario real y eliminan solo esas bases. El bootstrap también se verificó en un contenedor PostgreSQL vacío y sin red publicada.
 
-Hay acceso/equipo por HTTP y funciones limitadas de credencial/provisión; faltan endpoints operativos de inventario, dispatcher SSE, parser CSV/XLSX y UI. RLS SQL y los índices actuales no acreditan esas tareas ni los objetivos de rendimiento del perfil grande.
+Hay acceso/equipo por HTTP y funciones limitadas de credencial/provisión; hay almacenes, catálogo, geometría, recepciones/movimientos e historial; faltan salidas/traslados/conteos HTTP, dispatcher SSE, parser CSV/XLSX y UI. RLS SQL y los índices actuales no acreditan esas tareas ni los objetivos de rendimiento del perfil grande.
 
 
 La fase 3 añade un trigger que rechaza reescribir comandos confirmados y un
@@ -83,3 +83,17 @@ protocolo común de bloqueos. La fase 4 añade funciones de acceso, registro,
 setup y creación de sesión; no modifica las primeras doce migraciones ya
 aplicadas. Hay 17 versiones y se conserva RLS forzada en 23 tablas. Ver
 [evidencia de fases 3–4](evidencias/fase-03-04.md).
+
+
+## Fases 5–6: identidad física y operaciones
+
+`0017_layout_identity` añade retiro lógico de elementos físicos, unicidad de UUID
+por empresa y códigos únicos entre elementos activos. Los FK históricos y las
+filas vacías de stock permanecen intactos; los locks de ubicación excluyen filas
+retiradas. No se editan las versiones previas del diario. Total: 18 migraciones.
+
+Las recepciones/movimientos validan después de adquirir barreras y filas; crean
+saldos vacíos bajo el lock de ubicación y confirman cantidades, revisión física,
+asientos y resultado juntos. Los bloqueos no modifican reservas ni avances.
+El [informe ejecutado](evidencias/fase-05-06.md) registra las carreras y la
+reconciliación SQL independiente del libro contra saldos.

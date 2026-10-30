@@ -3,12 +3,12 @@
 Actualizado el 29/10/2026. Fuente de progreso: [tasks.md](../specs/001-wms-operativo-3d/tasks.md).
 Evidencia: [fase 0](evidencias/fase-00.md), [pnpm](cambios/001-pnpm-github.md),
 [fase 1](evidencias/fase-01.md), [fase 2](evidencias/fase-02.md) y
-[fases 3–4](evidencias/fase-03-04.md).
+[fases 3–4](evidencias/fase-03-04.md) y [fases 5–6](evidencias/fase-05-06.md).
 
-## Implementado: T001–T052
+## Implementado: T001–T072
 
 - Workspace Next/Nest con TypeScript, runtime fijado y gestión exclusiva con pnpm.
-- PostgreSQL local separado para desarrollo/pruebas, roles distintos y 17
+- PostgreSQL local separado para desarrollo/pruebas, roles distintos y 18
   migraciones con integridad e idempotencia comprobadas.
 - Cantidades exactas, normalización Unicode, fechas IANA, reglas puras de
   inventario/pedidos/tránsito y geometría.
@@ -21,21 +21,25 @@ Evidencia: [fase 0](evidencias/fase-00.md), [pnpm](cambios/001-pnpm-github.md),
 - Alta/lista/cambio de equipo, permisos actuales, último administrador protegido,
   perfil de empresa y consulta autorizada de resultados.
 
-Verificación vigente: **235 pruebas aprobadas** (152 unitarias y 83 de integración),
+- Almacenes/catálogo y guardado de distribuciones con jerarquía, contención,
+  colisiones, revisión concurrente y protección de elementos ocupados.
+- Inventario por posición/unidad, recepciones y movimientos atómicos con libro,
+  bloqueo/desbloqueo autorizado, historial/auditoría y reconciliación de saldos.
+
+Verificación vigente: **273 pruebas aprobadas** (152 unitarias y 121 de integración),
 11 comprobaciones de arquitectura, instalación congelada, lint, tipos y build
 correctos. Las pruebas de concurrencia usan PostgreSQL real; la auditoría de acceso
 alterna dos empresas sobre una misma conexión reutilizada.
 
-El backend de acceso/equipo funciona por HTTP. **La interfaz del producto, las
-operaciones HTTP de inventario, el editor 3D y la landing siguen pendientes.**
+El backend implementado se puede utilizar por HTTP. **La interfaz del producto,
+los pedidos y demás operaciones posteriores, el editor 3D y la landing siguen pendientes.**
 No se presenta este bloque como un WMS completo ni como una versión de producción.
 
 ## Hitos pendientes
 
 | Tareas | Contenido |
 |---|---|
-| T053–T062 | Almacenes, geometría y catálogo |
-| T063–T095 | Inventario, pedidos, picking, traslados y conteos |
+| T073–T095 | Pedidos, picking, despachos, traslados y conteos |
 | T096–T118 | Reportes, archivos y sincronización |
 | T119–T140 | Fundamentos UI y primeras pantallas |
 | T141–T153 | Editor visual y visor 3D |
@@ -43,14 +47,14 @@ No se presenta este bloque como un WMS completo ni como una versión de producci
 | T177–T182 | Landing, modalidades y demostración |
 | T183–T214 | Instalación, recuperación, mediciones y QA final |
 
-Siguiente tarea: **T053 — registrar y consultar almacenes**, no iniciada.
+Siguiente tarea: **T073 — registrar y consultar pedidos válidos**, no iniciada.
 La equivalencia operativa completa SaaS/local, restauración y mediciones del perfil
 grande aún requieren sus pruebas posteriores.
 
 ## Vista previa y publicación
 
 Desarrollo local. La [guía](desarrollo.md) permite iniciar la API para probar altas,
-login y equipo; Next mantiene únicamente su ruta técnica de salud. No hay una
+login, geometría, catálogo e inventario; Next mantiene únicamente su ruta técnica de salud. No hay una
 pantalla de producto que previsualizar todavía.
 
 Los cambios del bloque se revisan en una feature con destino `dev`; la promoción
