@@ -1,5 +1,24 @@
 # Historial de entregas
 
+## 2026-10-29 — Almacenes, geometría e inventario
+
+- T053–T072: almacenes y catálogo, distribuciones persistentes, contención/colisiones y revisión concurrente.
+- Protección de elementos ocupados y de sus descendientes, con identidad y referencias históricas conservadas.
+- Consultas de inventario, recepciones/movimientos atómicos, reintentos y competencia por stock disponible.
+- Bloqueos autorizados, motivo de desbloqueo, historial/auditoría por zona de empresa y reconciliación del libro.
+- 18 migraciones e idempotencia en desarrollo/pruebas; JSON configurable y gzip para layouts.
+- 152 pruebas unitarias y 121 de integración; lint, 11 controles de arquitectura, tipos y build correctos.
+- [Evidencia de ejecución](docs/evidencias/fase-05-06.md). Siguiente: T073.
+
+## 2026-10-29 — Transacciones, acceso y equipo
+
+- T032–T052: unidad de trabajo, bloqueos, referencias y resultados atómicos, auditoría inmutable.
+- Registro SaaS/setup local, credenciales Argon2id, sesiones opacas, Origin/CSRF y revocación.
+- Equipo con permisos actuales, protección del último administrador, perfil de empresa y consulta segura de resultados.
+- Cinco migraciones nuevas; 17 totales e idempotentes en desarrollo/pruebas.
+- 152 pruebas unitarias y 83 de integración; lint, 11 controles de arquitectura, tipos y build correctos.
+- [Evidencia de ejecución](docs/evidencias/fase-03-04.md). Siguiente: T053.
+
 ## 2026-10-29 — Persistencia y aislamiento
 
 - T020–T031: 11 migraciones nuevas, 23 tablas de empresa, claves compuestas, cantidades exactas y referencias de operaciones.
@@ -23,4 +42,4 @@
 - Documentación de arquitectura, preparación, estado y contribución.
 - Repositorio público autorizado para mostrar el desarrollo; aplicación todavía local.
 
-Estado actual: 31/214 tareas completadas; la siguiente es T032. Las pantallas comienzan en T119. Esta entrega documenta una base en desarrollo y no constituye una versión de producción del WMS.
+Estado actual: 72/214 tareas completadas; la siguiente es T073. Las pantallas comienzan en T119. Esta entrega documenta una base en desarrollo y no constituye una versión de producción del WMS.

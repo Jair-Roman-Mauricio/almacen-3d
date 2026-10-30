@@ -8,3 +8,4 @@ verifyDepsBeforeRun: error
 allowBuilds:
   esbuild@0.18.20 || 0.25.12 || 0.28.2: true
   fsevents@2.3.3: true
+  argon2@0.45.1: true

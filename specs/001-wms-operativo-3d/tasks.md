@@ -184,173 +184,173 @@ Tras la aprobación de estas tareas, se propone comenzar **T001–T010 (fase 0)*
 
 ## Fase 3 — Transacciones y referencias de operación
 
-- [ ] **T032 Centraliza transacciones y orden de bloqueos.** Primero escribe y ejecuta su prueba en rojo. Implementa la unidad de trabajo y las barreras compartidas/exclusivas descritas en §3.2.
+- [x] **T032 Centraliza transacciones y orden de bloqueos.** Primero escribe y ejecuta su prueba en rojo. Implementa la unidad de trabajo y las barreras compartidas/exclusivas descritas en §3.2.
   RF: RF-48, RF-61, RF-103, RF-121, RF-169, RF-170, RF-188, RF-197, RNF-2 · Dep.: T030, T009 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-INV/orden-bloqueos en conexiones distintas sin transacciones anidadas independientes.
 
-- [ ] **T033 Canoniza los datos de negocio.** Primero escribe y ejecuta su prueba en rojo. Define la huella por empresa, tipo, entidades y valores exactos, excluyendo metadatos de transporte.
+- [x] **T033 Canoniza los datos de negocio.** Primero escribe y ejecuta su prueba en rojo. Define la huella por empresa, tipo, entidades y valores exactos, excluyendo metadatos de transporte.
   RF: RF-87, RF-102, RF-110, RF-111, RF-112 · Dep.: T011, T012, T027 · Est.: 25 min.
   Hecho cuando: `pnpm run test:unit` pasa I-CMD/huella-canonica con reordenación irrelevante y cambios reales de cantidad, ubicación o tipo.
 
-- [ ] **T034 Persiste resultado y efectos conjuntamente.** Primero escribe y ejecuta su prueba en rojo. Implementa el ejecutor de comando síncrono con resultado inmutable y rollback total.
+- [x] **T034 Persiste resultado y efectos conjuntamente.** Primero escribe y ejecuta su prueba en rojo. Implementa el ejecutor de comando síncrono con resultado inmutable y rollback total.
   RF: RF-48, RF-61, RF-87, RF-102, RF-104, RF-110, RF-111 · Dep.: T032, T033 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CMD/commit-resultado al inyectar fallo antes y después de commit sin separar efecto de confirmación.
 
-- [ ] **T035 Prueba los tres tipos de repetición.** Primero escribe y ejecuta su prueba en rojo. Distingue replay idéntico, referencia reutilizada con otros datos y acción nueva de contenido igual.
+- [x] **T035 Prueba los tres tipos de repetición.** Primero escribe y ejecuta su prueba en rojo. Distingue replay idéntico, referencia reutilizada con otros datos y acción nueva de contenido igual.
   RF: RF-87, RF-102, RF-110, RF-111, RF-112 · Dep.: T034 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CMD/repeticion-tres-casos con resultado original, conflicto sin efecto y dos acciones independientes.
 
-- [ ] **T036 Serializa reintentos simultáneos.** Primero escribe y ejecuta su prueba en rojo. Comprueba exclusión por referencia en conexiones distintas y retorno del único resultado.
+- [x] **T036 Serializa reintentos simultáneos.** Primero escribe y ejecuta su prueba en rojo. Comprueba exclusión por referencia en conexiones distintas y retorno del único resultado.
   RF: RF-87, RF-102, RF-110 · Dep.: T035 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CMD/replay-concurrente con un solo conjunto de efectos persistidos.
 
-- [ ] **T037 Centraliza los asientos y su auditoría.** Primero escribe y ejecuta su prueba en rojo. Introduce el borde de reloj/actor/referencia y el registro inmutable vinculado al comando.
+- [x] **T037 Centraliza los asientos y su auditoría.** Primero escribe y ejecuta su prueba en rojo. Introduce el borde de reloj/actor/referencia y el registro inmutable vinculado al comando.
   RF: RF-49, RF-71, RF-72, RF-168, RF-187, RF-206 · Dep.: T034, T013 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-AUD/registro-inmutable con actor, fecha, referencia y deltas exactos; no existe borrado de confirmaciones.
 
 ## Fase 4 — Alta, sesiones y equipo
 
-- [ ] **T038 Acota el acceso SQL de autenticación.** Primero escribe y ejecuta su prueba en rojo. Implementa directorio de empresa y funciones limitadas de credencial/sesión sin privilegios operativos globales.
+- [x] **T038 Acota el acceso SQL de autenticación.** Primero escribe y ejecuta su prueba en rojo. Implementa directorio de empresa y funciones limitadas de credencial/sesión sin privilegios operativos globales.
   RF: RF-1, RF-4, RF-5, RF-149, RNF-2 · Dep.: T030, T020 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ISO/adaptador-acceso al resolver solo cuentas de la empresa indicada sin permitir consultar inventario.
 
-- [ ] **T039 Protege las contraseñas de las cuentas.** Primero escribe y ejecuta su prueba en rojo. Implementa hash Argon2id y validación de credenciales presentes sin transformar contraseñas.
+- [x] **T039 Protege las contraseñas de las cuentas.** Primero escribe y ejecuta su prueba en rojo. Implementa hash Argon2id y validación de credenciales presentes sin transformar contraseñas.
   RF: RF-1, RF-2, RF-150, RF-151, RF-152 · Dep.: T038, T010 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ACC/credenciales con hash verificable, correo inválido rechazado y contraseña preservada como entrada.
 
-- [ ] **T040 Crea empresa y administrador SaaS de forma atómica.** Primero escribe y ejecuta su prueba en rojo. Conecta POST registrations y validación conjunta según modalidad.
+- [x] **T040 Crea empresa y administrador SaaS de forma atómica.** Primero escribe y ejecuta su prueba en rojo. Conecta POST registrations y validación conjunta según modalidad.
   RF: RF-139, RF-140, RF-141, RF-142, RF-143, RF-150, RF-151, RF-152 · Dep.: T039, T012, T013 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-SET/registro-saas con código de acceso devuelto y fallo entre empresa/admin sin alta incompleta.
 
-- [ ] **T041 Resuelve registros SaaS concurrentes.** Primero escribe y ejecuta su prueba en rojo. Prueba unicidad de código normalizado sin modificar empresa existente.
+- [x] **T041 Resuelve registros SaaS concurrentes.** Primero escribe y ejecuta su prueba en rojo. Prueba unicidad de código normalizado sin modificar empresa existente.
   RF: RF-141, RF-142 · Dep.: T040 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-SET/codigo-concurrente confirmando una sola pareja empresa-administrador.
 
-- [ ] **T042 Implementa el asistente inicial del servidor local.** Primero escribe y ejecuta su prueba en rojo. Conecta estado público y alta conjunta bajo bloqueo de instalación.
+- [x] **T042 Implementa el asistente inicial del servidor local.** Primero escribe y ejecuta su prueba en rojo. Conecta estado público y alta conjunta bajo bloqueo de instalación.
   RF: RF-144, RF-145, RF-146, RF-147, RF-148, RF-150, RF-151, RF-152, RNF-3 · Dep.: T040 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-SET/alta-local con modo correcto, creación conjunta y rechazo del segundo setup.
 
-- [ ] **T043 Protege setup frente a carreras y reinicios.** Primero escribe y ejecuta su prueba en rojo. Verifica dos finalizaciones simultáneas y lectura de la instalación ya configurada.
+- [x] **T043 Protege setup frente a carreras y reinicios.** Primero escribe y ejecuta su prueba en rojo. Verifica dos finalizaciones simultáneas y lectura de la instalación ya configurada.
   RF: RF-104, RF-147, RF-148 · Dep.: T042 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-SET/setup-concurrente-reinicio conservando la primera configuración confirmada.
 
-- [ ] **T044 Inicia sesión dentro de la empresa elegida.** Primero escribe y ejecuta su prueba en rojo. Conecta POST sessions y token opaco/cookie con errores de credencial uniformes.
+- [x] **T044 Inicia sesión dentro de la empresa elegida.** Primero escribe y ejecuta su prueba en rojo. Conecta POST sessions y token opaco/cookie con errores de credencial uniformes.
   RF: RF-1, RF-2, RF-149, RF-150 · Dep.: T039, T040, T042 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ACC/login-empresa con mismo correo en dos empresas y credenciales correctas solo en la empresa elegida.
 
-- [ ] **T045 Exige sesión y permiso actuales.** Primero escribe y ejecuta su prueba en rojo. Conecta sesión actual y guard de roles al contexto de transacción; rechaza sesión ausente/inactiva.
+- [x] **T045 Exige sesión y permiso actuales.** Primero escribe y ejecuta su prueba en rojo. Conecta sesión actual y guard de roles al contexto de transacción; rechaza sesión ausente/inactiva.
   RF: RF-4, RF-5, RF-6, RF-7, RF-8, RNF-2 · Dep.: T044, T032 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ACC/accion-protegida con 401/403 y usuario/rol leídos al confirmar.
 
-- [ ] **T046 Revoca la sesión y protege mutaciones.** Primero escribe y ejecuta su prueba en rojo. Implementa cierre, cookie y controles CSRF/Origin del mismo origen.
+- [x] **T046 Revoca la sesión y protege mutaciones.** Primero escribe y ejecuta su prueba en rojo. Implementa cierre, cookie y controles CSRF/Origin del mismo origen.
   RF: RF-3, RF-4, RNF-2 · Dep.: T045 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ACC/logout-csrf al rechazar el token revocado y una mutación de origen no autorizado.
 
-- [ ] **T047 Crea cuentas del equipo en su empresa.** Primero escribe y ejecuta su prueba en rojo. Conecta usuarios con rol permitido, correo único por empresa y credenciales locales.
+- [x] **T047 Crea cuentas del equipo en su empresa.** Primero escribe y ejecuta su prueba en rojo. Conecta usuarios con rol permitido, correo único por empresa y credenciales locales.
   RF: RF-6, RF-113, RF-114, RF-115, RF-150, RF-151, RF-152 · Dep.: T045, T034, T039 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ACC/alta-equipo para admin y rechaza rol inválido, correo duplicado y creación por no administrador.
 
-- [ ] **T048 Aplica roles y desactivación al siguiente acceso.** Primero escribe y ejecuta su prueba en rojo. Conecta PATCH users bajo barrera exclusiva de permisos.
+- [x] **T048 Aplica roles y desactivación al siguiente acceso.** Primero escribe y ejecuta su prueba en rojo. Conecta PATCH users bajo barrera exclusiva de permisos.
   RF: RF-7, RF-8, RF-115, RNF-2 · Dep.: T047, T032 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ACC/cambio-permisos con sesión ya abierta que pierde capacidad en la acción siguiente.
 
-- [ ] **T049 Impide perder el último administrador activo.** Primero escribe y ejecuta su prueba en rojo. Comprueba el recuento bajo exclusión incluso con dos cambios simultáneos.
+- [x] **T049 Impide perder el último administrador activo.** Primero escribe y ejecuta su prueba en rojo. Comprueba el recuento bajo exclusión incluso con dos cambios simultáneos.
   RF: RF-9 · Dep.: T048 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ACC/ultimo-admin-concurrente conservando al menos un administrador activo.
 
-- [ ] **T050 Permite editar nombre y zona de empresa.** Primero escribe y ejecuta su prueba en rojo. Conecta GET/PATCH company y persiste America/Lima si no se elige otra zona.
+- [x] **T050 Permite editar nombre y zona de empresa.** Primero escribe y ejecuta su prueba en rojo. Conecta GET/PATCH company y persiste America/Lima si no se elige otra zona.
   RF: RF-6, RF-127, RF-129, RF-130, RF-131 · Dep.: T045, T034, T013 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ACC/perfil-empresa con zona válida aplicada y datos inválidos rechazados.
 
-- [ ] **T051 Expone la consulta segura de resultado.** Primero escribe y ejecuta su prueba en rojo. Conecta GET operations/reference para resultado confirmado y referencias todavía sin resultado.
+- [x] **T051 Expone la consulta segura de resultado.** Primero escribe y ejecuta su prueba en rojo. Conecta GET operations/reference para resultado confirmado y referencias todavía sin resultado.
   RF: RF-49, RF-100, RF-101, RF-104, RF-110, RF-111 · Dep.: T045, T034 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CMD/consultar-resultado sin ejecutar efectos ni mostrar datos a otra empresa/usuario desactivado.
 
-- [ ] **T052 Audita el aislamiento de acceso y equipo.** Primero escribe y ejecuta su prueba en rojo. Cubre intentos cruzados por ruta, cuerpo y cambio de IDs con sesiones reales.
+- [x] **T052 Audita el aislamiento de acceso y equipo.** Primero escribe y ejecuta su prueba en rojo. Cubre intentos cruzados por ruta, cuerpo y cambio de IDs con sesiones reales.
   RF: RF-5, RF-6, RF-7, RF-8, RF-113, RF-114, RF-149, RNF-2 · Dep.: T048, T049, T050, T051 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ISO/identidad-rutas para empresas A/B y conexiones reutilizadas.
 
 ## Fase 5 — Almacenes, geometría y catálogo
 
-- [ ] **T053 Registra y consulta almacenes.** Primero escribe y ejecuta su prueba en rojo. Conecta las rutas de almacén con códigos/dimensiones válidos y ámbito de empresa.
+- [x] **T053 Registra y consulta almacenes.** Primero escribe y ejecuta su prueba en rojo. Conecta las rutas de almacén con códigos/dimensiones válidos y ámbito de empresa.
   RF: RF-10, RF-11, RF-127, RF-128 · Dep.: T045, T034, T021 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/alta-consulta-almacen con código duplicado y dimensiones inválidas rechazados.
 
-- [ ] **T054 Conecta el catálogo y sus actualizaciones.** Primero escribe y ejecuta su prueba en rojo. Implementa alta/lista/cambio de nombre conservando SKU, unidad e identidad.
+- [x] **T054 Conecta el catálogo y sus actualizaciones.** Primero escribe y ejecuta su prueba en rojo. Implementa alta/lista/cambio de nombre conservando SKU, unidad e identidad.
   RF: RF-34, RF-35, RF-36, RF-125, RF-127, RF-128 · Dep.: T045, T034, T022, T012 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CAT/catalogo-rutas con SKU duplicado normalizado y nombre editado sin cambiar identidad.
 
-- [ ] **T055 Protege la eliminación del producto.** Primero escribe y ejecuta su prueba en rojo. Retira producto activo solo sin stock, reservas ni trabajo pendiente; mantiene historia.
+- [x] **T055 Protege la eliminación del producto.** Primero escribe y ejecuta su prueba en rojo. Retira producto activo solo sin stock, reservas ni trabajo pendiente; mantiene historia.
   RF: RF-41, RF-72 · Dep.: T054, T032 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CAT/eliminacion-protegida para cada referencia persistente y no destruye asientos históricos.
 
-- [ ] **T056 Recupera la distribución guardada.** Primero escribe y ejecuta su prueba en rojo. Conecta layout/locations con jerarquía e IDs persistidos y estado vacío.
+- [x] **T056 Recupera la distribución guardada.** Primero escribe y ejecuta su prueba en rojo. Conecta layout/locations con jerarquía e IDs persistidos y estado vacío.
   RF: RF-11, RF-18, RF-24, RF-33 · Dep.: T053 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/lectura-layout para almacén vacío, distribución guardada y acceso ajeno rechazado.
 
-- [ ] **T057 Guarda distribuciones válidas sin alterar identidad.** Primero escribe y ejecuta su prueba en rojo. Implementa PUT layout con revisión y validación exacta de jerarquía/contención.
+- [x] **T057 Guarda distribuciones válidas sin alterar identidad.** Primero escribe y ejecuta su prueba en rojo. Implementa PUT layout con revisión y validación exacta de jerarquía/contención.
   RF: RF-15, RF-16, RF-17, RF-18, RF-22, RF-23, RF-126, RF-189, RF-194 · Dep.: T056, T017, T034 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/guardar-reabrir conservando IDs y cantidades anteriores.
 
-- [ ] **T058 Rechaza colisiones con explicación por elemento.** Primero escribe y ejecuta su prueba en rojo. Integra detección por grupos e índice temporal de candidatos.
+- [x] **T058 Rechaza colisiones con explicación por elemento.** Primero escribe y ejecuta su prueba en rojo. Integra detección por grupos e índice temporal de candidatos.
   RF: RF-190, RF-191, RF-192, RF-193, RF-197, RF-198, RF-199 · Dep.: T057, T018 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/solapamientos-api con ID/motivo y rollback completo frente a un único cambio inválido.
 
-- [ ] **T059 Protege guardados concurrentes del editor.** Primero escribe y ejecuta su prueba en rojo. Serializa revisión de layout y retorna currentRevision en conflicto.
+- [x] **T059 Protege guardados concurrentes del editor.** Primero escribe y ejecuta su prueba en rojo. Serializa revisión de layout y retorna currentRevision en conflicto.
   RF: RF-116, RF-117 · Dep.: T058, T032 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/revision-concurrente conservando exclusivamente el primer layout válido.
 
-- [ ] **T060 Rechaza cambios de elementos ocupados y descendientes.** Primero escribe y ejecuta su prueba en rojo. Comprueba posición/dimensiones/eliminación frente a stock o trabajo abierto al guardar.
+- [x] **T060 Rechaza cambios de elementos ocupados y descendientes.** Primero escribe y ejecuta su prueba en rojo. Comprueba posición/dimensiones/eliminación frente a stock o trabajo abierto al guardar.
   RF: RF-21, RF-195, RF-196, RF-197, RF-199 · Dep.: T059, T024, T025 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/ocupacion-descendientes con contenedor aparentemente vacío y referencias abiertas de sus hijos.
 
-- [ ] **T061 Coordina edición y entrada de existencias.** Primero escribe y ejecuta su prueba en rojo. Prueba ambos órdenes de commit de guardar layout y crear stock/trabajo abierto.
+- [x] **T061 Coordina edición y entrada de existencias.** Primero escribe y ejecuta su prueba en rojo. Prueba ambos órdenes de commit de guardar layout y crear stock/trabajo abierto.
   RF: RF-21, RF-22, RF-23, RF-195, RF-196, RF-197 · Dep.: T060, T032 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/ocupacion-carrera sin borrar ni mover ubicaciones que recibieron stock antes del guardado.
 
-- [ ] **T062 Busca SKU y códigos de ubicación.** Primero escribe y ejecuta su prueba en rojo. Conecta búsqueda normalizada y lista de IDs de ubicaciones sin escribir inventario.
+- [x] **T062 Busca SKU y códigos de ubicación.** Primero escribe y ejecuta su prueba en rojo. Conecta búsqueda normalizada y lista de IDs de ubicaciones sin escribir inventario.
   RF: RF-27, RF-28, RF-29, RF-105 · Dep.: T056, T054, T031 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/busqueda-espacial con coincidencias, vacío y ausencia de efectos de stock.
 
 ## Fase 6 — Inventario, bloqueos e historial
 
-- [ ] **T063 Consulta saldos por producto y ubicación.** Primero escribe y ejecuta su prueba en rojo. Conecta inventory/totals y detalle de ubicación con cursores y disponibilidad derivada.
+- [x] **T063 Consulta saldos por producto y ubicación.** Primero escribe y ejecuta su prueba en rojo. Conecta inventory/totals y detalle de ubicación con cursores y disponibilidad derivada.
   RF: RF-26, RF-37, RF-38 · Dep.: T056, T054, T019, T031 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-INV/consultas-saldos con varios productos por ubicación y totales por almacén sin mezclar unidades.
 
-- [ ] **T064 Confirma recepciones atómicas.** Primero escribe y ejecuta su prueba en rojo. Conecta entradas con saldos, revisión física, asientos y resultado persistido.
+- [x] **T064 Confirma recepciones atómicas.** Primero escribe y ejecuta su prueba en rojo. Conecta entradas con saldos, revisión física, asientos y resultado persistido.
   RF: RF-42, RF-43, RF-44, RF-48, RF-49, RF-71 · Dep.: T063, T037, T034, T011 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-INV/recepcion con incremento exacto o estado previo intacto ante fallo en cualquier línea.
 
-- [ ] **T065 Prueba reintentos de una recepción real.** Primero escribe y ejecuta su prueba en rojo. Repite recepción con respuesta perdida, envío simultáneo y referencia de datos distintos.
+- [x] **T065 Prueba reintentos de una recepción real.** Primero escribe y ejecuta su prueba en rojo. Repite recepción con respuesta perdida, envío simultáneo y referencia de datos distintos.
   RF: RF-49, RF-102, RF-104, RF-110, RF-111, RF-112 · Dep.: T064, T036, T051 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CMD/recepcion-real sin duplicar stock/asientos y conservando su resultado después de reiniciar la API.
 
-- [ ] **T066 Confirma movimientos internos íntegros.** Primero escribe y ejecuta su prueba en rojo. Conecta origen/destino del mismo almacén y protección de stock no reservado.
+- [x] **T066 Confirma movimientos internos íntegros.** Primero escribe y ejecuta su prueba en rojo. Conecta origen/destino del mismo almacén y protección de stock no reservado.
   RF: RF-45, RF-46, RF-47, RF-48, RF-49, RF-103, RF-107 · Dep.: T064, T011, T032 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-INV/movimiento con mismo origen, saldo insuficiente y fallo intermedio sin efectos parciales.
 
-- [ ] **T067 Prueba competencia real por la última existencia.** Primero escribe y ejecuta su prueba en rojo. Ejecuta movimientos simultáneos sobre una posición y creación concurrente de saldo destino inexistente.
+- [x] **T067 Prueba competencia real por la última existencia.** Primero escribe y ejecuta su prueba en rojo. Ejecuta movimientos simultáneos sobre una posición y creación concurrente de saldo destino inexistente.
   RF: RF-39, RF-40, RF-48, RF-103 · Dep.: T066 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-INV/ultima-existencia con conexiones distintas sin físico negativo ni escritura perdida.
 
-- [ ] **T068 Bloquea y desbloquea con autorización y motivo.** Primero escribe y ejecuta su prueba en rojo. Conecta endpoints de ubicación y auditoría sin cancelar compromisos existentes.
+- [x] **T068 Bloquea y desbloquea con autorización y motivo.** Primero escribe y ejecuta su prueba en rojo. Conecta endpoints de ubicación y auditoría sin cancelar compromisos existentes.
   RF: RF-31, RF-201, RF-204, RF-205, RF-206, RF-207 · Dep.: T063, T037, T045 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-BLK/bloquear-desbloquear con rechazo por rol/motivo y trabajo pendiente preservado.
 
-- [ ] **T069 Impide entradas y movimientos en ubicaciones bloqueadas.** Primero escribe y ejecuta su prueba en rojo. Integra la validación común en confirmaciones físicas y comprueba bloqueo posterior a abrir formulario.
+- [x] **T069 Impide entradas y movimientos en ubicaciones bloqueadas.** Primero escribe y ejecuta su prueba en rojo. Integra la validación común en confirmaciones físicas y comprueba bloqueo posterior a abrir formulario.
   RF: RF-31, RF-48, RF-200, RF-201 · Dep.: T068, T064, T066 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-BLK/recepcion-movimiento-bloqueados en ambos extremos y ambos órdenes de commit.
 
-- [ ] **T070 Comprueba acceso cruzado de inventario y geometría.** Primero escribe y ejecuta su prueba en rojo. Prueba todas las rutas disponibles de almacén, catálogo, stock, layout y bloqueos.
+- [x] **T070 Comprueba acceso cruzado de inventario y geometría.** Primero escribe y ejecuta su prueba en rojo. Prueba todas las rutas disponibles de almacén, catálogo, stock, layout y bloqueos.
   RF: RF-5, RF-6, RF-10, RF-11, RF-24, RF-37, RF-42, RF-45, RF-200, RF-205, RNF-2 · Dep.: T069, T062, T061 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ISO/inventario-geometria sin mutar ni revelar datos ajenos.
 
-- [ ] **T071 Consulta historial y auditoría de la empresa.** Primero escribe y ejecuta su prueba en rojo. Conecta filtros por almacén/producto/fechas y lectura de autor/referencia sin borrado.
+- [x] **T071 Consulta historial y auditoría de la empresa.** Primero escribe y ejecuta su prueba en rojo. Conecta filtros por almacén/producto/fechas y lectura de autor/referencia sin borrado.
   RF: RF-49, RF-71, RF-72, RF-73, RF-131, RF-132, RF-133, RF-206 · Dep.: T064, T066, T013, T037, T045 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-AUD/filtros-historial incluyendo días extremos en zona de empresa desde cliente con otra zona.
 
-- [ ] **T072 Reconcilia libro, saldos y consultas sin efectos.** Primero escribe y ejecuta su prueba en rojo. Verifica balances tras secuencias confirmadas y que búsquedas/GET nunca cambian inventario.
+- [x] **T072 Reconcilia libro, saldos y consultas sin efectos.** Primero escribe y ejecuta su prueba en rojo. Verifica balances tras secuencias confirmadas y que búsquedas/GET nunca cambian inventario.
   RF: RF-23, RF-37, RF-39, RF-40, RF-71, RF-105 · Dep.: T071, T067, T062 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-INV/reconciliacion-libro antes y después de navegar consultas y guardar geometría válida.
 
