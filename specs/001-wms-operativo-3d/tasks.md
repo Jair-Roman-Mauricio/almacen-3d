@@ -272,85 +272,85 @@ Tras la aprobación de estas tareas, se propone comenzar **T001–T010 (fase 0)*
 
 ## Fase 5 — Almacenes, geometría y catálogo
 
-- [ ] **T053 Registra y consulta almacenes.** Primero escribe y ejecuta su prueba en rojo. Conecta las rutas de almacén con códigos/dimensiones válidos y ámbito de empresa.
+- [x] **T053 Registra y consulta almacenes.** Primero escribe y ejecuta su prueba en rojo. Conecta las rutas de almacén con códigos/dimensiones válidos y ámbito de empresa.
   RF: RF-10, RF-11, RF-127, RF-128 · Dep.: T045, T034, T021 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/alta-consulta-almacen con código duplicado y dimensiones inválidas rechazados.
 
-- [ ] **T054 Conecta el catálogo y sus actualizaciones.** Primero escribe y ejecuta su prueba en rojo. Implementa alta/lista/cambio de nombre conservando SKU, unidad e identidad.
+- [x] **T054 Conecta el catálogo y sus actualizaciones.** Primero escribe y ejecuta su prueba en rojo. Implementa alta/lista/cambio de nombre conservando SKU, unidad e identidad.
   RF: RF-34, RF-35, RF-36, RF-125, RF-127, RF-128 · Dep.: T045, T034, T022, T012 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CAT/catalogo-rutas con SKU duplicado normalizado y nombre editado sin cambiar identidad.
 
-- [ ] **T055 Protege la eliminación del producto.** Primero escribe y ejecuta su prueba en rojo. Retira producto activo solo sin stock, reservas ni trabajo pendiente; mantiene historia.
+- [x] **T055 Protege la eliminación del producto.** Primero escribe y ejecuta su prueba en rojo. Retira producto activo solo sin stock, reservas ni trabajo pendiente; mantiene historia.
   RF: RF-41, RF-72 · Dep.: T054, T032 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CAT/eliminacion-protegida para cada referencia persistente y no destruye asientos históricos.
 
-- [ ] **T056 Recupera la distribución guardada.** Primero escribe y ejecuta su prueba en rojo. Conecta layout/locations con jerarquía e IDs persistidos y estado vacío.
+- [x] **T056 Recupera la distribución guardada.** Primero escribe y ejecuta su prueba en rojo. Conecta layout/locations con jerarquía e IDs persistidos y estado vacío.
   RF: RF-11, RF-18, RF-24, RF-33 · Dep.: T053 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/lectura-layout para almacén vacío, distribución guardada y acceso ajeno rechazado.
 
-- [ ] **T057 Guarda distribuciones válidas sin alterar identidad.** Primero escribe y ejecuta su prueba en rojo. Implementa PUT layout con revisión y validación exacta de jerarquía/contención.
+- [x] **T057 Guarda distribuciones válidas sin alterar identidad.** Primero escribe y ejecuta su prueba en rojo. Implementa PUT layout con revisión y validación exacta de jerarquía/contención.
   RF: RF-15, RF-16, RF-17, RF-18, RF-22, RF-23, RF-126, RF-189, RF-194 · Dep.: T056, T017, T034 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/guardar-reabrir conservando IDs y cantidades anteriores.
 
-- [ ] **T058 Rechaza colisiones con explicación por elemento.** Primero escribe y ejecuta su prueba en rojo. Integra detección por grupos e índice temporal de candidatos.
+- [x] **T058 Rechaza colisiones con explicación por elemento.** Primero escribe y ejecuta su prueba en rojo. Integra detección por grupos e índice temporal de candidatos.
   RF: RF-190, RF-191, RF-192, RF-193, RF-197, RF-198, RF-199 · Dep.: T057, T018 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/solapamientos-api con ID/motivo y rollback completo frente a un único cambio inválido.
 
-- [ ] **T059 Protege guardados concurrentes del editor.** Primero escribe y ejecuta su prueba en rojo. Serializa revisión de layout y retorna currentRevision en conflicto.
+- [x] **T059 Protege guardados concurrentes del editor.** Primero escribe y ejecuta su prueba en rojo. Serializa revisión de layout y retorna currentRevision en conflicto.
   RF: RF-116, RF-117 · Dep.: T058, T032 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/revision-concurrente conservando exclusivamente el primer layout válido.
 
-- [ ] **T060 Rechaza cambios de elementos ocupados y descendientes.** Primero escribe y ejecuta su prueba en rojo. Comprueba posición/dimensiones/eliminación frente a stock o trabajo abierto al guardar.
+- [x] **T060 Rechaza cambios de elementos ocupados y descendientes.** Primero escribe y ejecuta su prueba en rojo. Comprueba posición/dimensiones/eliminación frente a stock o trabajo abierto al guardar.
   RF: RF-21, RF-195, RF-196, RF-197, RF-199 · Dep.: T059, T024, T025 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/ocupacion-descendientes con contenedor aparentemente vacío y referencias abiertas de sus hijos.
 
-- [ ] **T061 Coordina edición y entrada de existencias.** Primero escribe y ejecuta su prueba en rojo. Prueba ambos órdenes de commit de guardar layout y crear stock/trabajo abierto.
+- [x] **T061 Coordina edición y entrada de existencias.** Primero escribe y ejecuta su prueba en rojo. Prueba ambos órdenes de commit de guardar layout y crear stock/trabajo abierto.
   RF: RF-21, RF-22, RF-23, RF-195, RF-196, RF-197 · Dep.: T060, T032 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/ocupacion-carrera sin borrar ni mover ubicaciones que recibieron stock antes del guardado.
 
-- [ ] **T062 Busca SKU y códigos de ubicación.** Primero escribe y ejecuta su prueba en rojo. Conecta búsqueda normalizada y lista de IDs de ubicaciones sin escribir inventario.
+- [x] **T062 Busca SKU y códigos de ubicación.** Primero escribe y ejecuta su prueba en rojo. Conecta búsqueda normalizada y lista de IDs de ubicaciones sin escribir inventario.
   RF: RF-27, RF-28, RF-29, RF-105 · Dep.: T056, T054, T031 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-GEO/busqueda-espacial con coincidencias, vacío y ausencia de efectos de stock.
 
 ## Fase 6 — Inventario, bloqueos e historial
 
-- [ ] **T063 Consulta saldos por producto y ubicación.** Primero escribe y ejecuta su prueba en rojo. Conecta inventory/totals y detalle de ubicación con cursores y disponibilidad derivada.
+- [x] **T063 Consulta saldos por producto y ubicación.** Primero escribe y ejecuta su prueba en rojo. Conecta inventory/totals y detalle de ubicación con cursores y disponibilidad derivada.
   RF: RF-26, RF-37, RF-38 · Dep.: T056, T054, T019, T031 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-INV/consultas-saldos con varios productos por ubicación y totales por almacén sin mezclar unidades.
 
-- [ ] **T064 Confirma recepciones atómicas.** Primero escribe y ejecuta su prueba en rojo. Conecta entradas con saldos, revisión física, asientos y resultado persistido.
+- [x] **T064 Confirma recepciones atómicas.** Primero escribe y ejecuta su prueba en rojo. Conecta entradas con saldos, revisión física, asientos y resultado persistido.
   RF: RF-42, RF-43, RF-44, RF-48, RF-49, RF-71 · Dep.: T063, T037, T034, T011 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-INV/recepcion con incremento exacto o estado previo intacto ante fallo en cualquier línea.
 
-- [ ] **T065 Prueba reintentos de una recepción real.** Primero escribe y ejecuta su prueba en rojo. Repite recepción con respuesta perdida, envío simultáneo y referencia de datos distintos.
+- [x] **T065 Prueba reintentos de una recepción real.** Primero escribe y ejecuta su prueba en rojo. Repite recepción con respuesta perdida, envío simultáneo y referencia de datos distintos.
   RF: RF-49, RF-102, RF-104, RF-110, RF-111, RF-112 · Dep.: T064, T036, T051 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-CMD/recepcion-real sin duplicar stock/asientos y conservando su resultado después de reiniciar la API.
 
-- [ ] **T066 Confirma movimientos internos íntegros.** Primero escribe y ejecuta su prueba en rojo. Conecta origen/destino del mismo almacén y protección de stock no reservado.
+- [x] **T066 Confirma movimientos internos íntegros.** Primero escribe y ejecuta su prueba en rojo. Conecta origen/destino del mismo almacén y protección de stock no reservado.
   RF: RF-45, RF-46, RF-47, RF-48, RF-49, RF-103, RF-107 · Dep.: T064, T011, T032 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-INV/movimiento con mismo origen, saldo insuficiente y fallo intermedio sin efectos parciales.
 
-- [ ] **T067 Prueba competencia real por la última existencia.** Primero escribe y ejecuta su prueba en rojo. Ejecuta movimientos simultáneos sobre una posición y creación concurrente de saldo destino inexistente.
+- [x] **T067 Prueba competencia real por la última existencia.** Primero escribe y ejecuta su prueba en rojo. Ejecuta movimientos simultáneos sobre una posición y creación concurrente de saldo destino inexistente.
   RF: RF-39, RF-40, RF-48, RF-103 · Dep.: T066 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-INV/ultima-existencia con conexiones distintas sin físico negativo ni escritura perdida.
 
-- [ ] **T068 Bloquea y desbloquea con autorización y motivo.** Primero escribe y ejecuta su prueba en rojo. Conecta endpoints de ubicación y auditoría sin cancelar compromisos existentes.
+- [x] **T068 Bloquea y desbloquea con autorización y motivo.** Primero escribe y ejecuta su prueba en rojo. Conecta endpoints de ubicación y auditoría sin cancelar compromisos existentes.
   RF: RF-31, RF-201, RF-204, RF-205, RF-206, RF-207 · Dep.: T063, T037, T045 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-BLK/bloquear-desbloquear con rechazo por rol/motivo y trabajo pendiente preservado.
 
-- [ ] **T069 Impide entradas y movimientos en ubicaciones bloqueadas.** Primero escribe y ejecuta su prueba en rojo. Integra la validación común en confirmaciones físicas y comprueba bloqueo posterior a abrir formulario.
+- [x] **T069 Impide entradas y movimientos en ubicaciones bloqueadas.** Primero escribe y ejecuta su prueba en rojo. Integra la validación común en confirmaciones físicas y comprueba bloqueo posterior a abrir formulario.
   RF: RF-31, RF-48, RF-200, RF-201 · Dep.: T068, T064, T066 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-BLK/recepcion-movimiento-bloqueados en ambos extremos y ambos órdenes de commit.
 
-- [ ] **T070 Comprueba acceso cruzado de inventario y geometría.** Primero escribe y ejecuta su prueba en rojo. Prueba todas las rutas disponibles de almacén, catálogo, stock, layout y bloqueos.
+- [x] **T070 Comprueba acceso cruzado de inventario y geometría.** Primero escribe y ejecuta su prueba en rojo. Prueba todas las rutas disponibles de almacén, catálogo, stock, layout y bloqueos.
   RF: RF-5, RF-6, RF-10, RF-11, RF-24, RF-37, RF-42, RF-45, RF-200, RF-205, RNF-2 · Dep.: T069, T062, T061 · Est.: 30 min.
   Hecho cuando: `pnpm run test:integration` pasa I-ISO/inventario-geometria sin mutar ni revelar datos ajenos.
 
-- [ ] **T071 Consulta historial y auditoría de la empresa.** Primero escribe y ejecuta su prueba en rojo. Conecta filtros por almacén/producto/fechas y lectura de autor/referencia sin borrado.
+- [x] **T071 Consulta historial y auditoría de la empresa.** Primero escribe y ejecuta su prueba en rojo. Conecta filtros por almacén/producto/fechas y lectura de autor/referencia sin borrado.
   RF: RF-49, RF-71, RF-72, RF-73, RF-131, RF-132, RF-133, RF-206 · Dep.: T064, T066, T013, T037, T045 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-AUD/filtros-historial incluyendo días extremos en zona de empresa desde cliente con otra zona.
 
-- [ ] **T072 Reconcilia libro, saldos y consultas sin efectos.** Primero escribe y ejecuta su prueba en rojo. Verifica balances tras secuencias confirmadas y que búsquedas/GET nunca cambian inventario.
+- [x] **T072 Reconcilia libro, saldos y consultas sin efectos.** Primero escribe y ejecuta su prueba en rojo. Verifica balances tras secuencias confirmadas y que búsquedas/GET nunca cambian inventario.
   RF: RF-23, RF-37, RF-39, RF-40, RF-71, RF-105 · Dep.: T071, T067, T062 · Est.: 25 min.
   Hecho cuando: `pnpm run test:integration` pasa I-INV/reconciliacion-libro antes y después de navegar consultas y guardar geometría válida.
 

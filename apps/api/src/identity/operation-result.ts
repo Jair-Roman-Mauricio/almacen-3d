@@ -3,7 +3,9 @@ import { DomainError } from '@almacen/domain';
 // Extend this explicit policy when a new command type is implemented. Unknown
 // persisted types fail closed instead of inheriting an accidental permission.
 export function operationRoles(type: string): readonly string[] {
-  return ['user.create', 'user.update', 'company.update', 'import.apply'].includes(type) ? ['admin'] : [];
+  if(['inventory.receipt','inventory.internal-move'].includes(type))return ['admin','supervisor','operator'];
+  if(['product.create','product.update','product.remove'].includes(type))return ['admin','supervisor'];
+  return ['location.block','location.unblock','layout.save','warehouse.create','user.create', 'user.update', 'company.update', 'import.apply'].includes(type) ? ['admin'] : [];
 }
 export async function operationResult(context: TenantContext, reference: string, role: string) {
   const row = (await queryTenant(context, `SELECT c.reference,c.operation_type,c.state,c.result,c.confirmed_at,j.id AS job_id

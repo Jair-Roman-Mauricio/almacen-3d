@@ -177,11 +177,11 @@ export class IdentityService implements OnModuleDestroy {
     if (value !== 'admin' && value !== 'supervisor' && value !== 'operator') throw new DomainError('INVALID_ROLE', 'El rol no es válido.');
     return value;
   }
-  private async command(headers: CommandHeaders, type: string, data: unknown, apply: (context: TenantContext, stamp: CommandStamp) => Promise<Record<string, unknown>>, options: Pick<CommandOptions, 'permissions' | 'validateReplay'> = {}) {
-    this.publicMutation(headers);
+  async command(headers: CommandHeaders, type: string, data: unknown, apply: (context: TenantContext, stamp: CommandStamp) => Promise<Record<string, unknown>>, options: Pick<CommandOptions, 'permissions' | 'validateReplay'> & {roles?:readonly string[];jsonBody?:boolean} = {}) {
+    if(options.jsonBody!==false)this.publicMutation(headers);
     this.protectedMutation(headers);
     const session = await this.resolveSession(headers.cookie);
-    return executeCommand(this.pool('app'), { tenantId: session.tenant_id, actorId: session.user_id, reference: headers.reference ?? '', type, data }, apply, { ...options, clock: this.clock, authorize: async (context) => { await this.authorize(context, session, ['admin']); } });
+    return executeCommand(this.pool('app'), { tenantId: session.tenant_id, actorId: session.user_id, reference: headers.reference ?? '', type, data }, apply, { ...options, clock: this.clock, authorize: async (context) => { await this.authorize(context, session, options.roles??['admin']); } });
   }
   async createUser(headers: CommandHeaders, input: CreateUserInput) {
     const name = normalizeName(input.name), role = this.role(input.role), credentials = this.passwords.validate(input.email, input.password);

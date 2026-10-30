@@ -120,6 +120,13 @@
       "when": 1793232000016,
       "tag": "0016_session_creation",
       "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1793232000017,
+      "tag": "0017_layout_identity",
+      "breakpoints": true
     }
   ]
 }

@@ -67,7 +67,7 @@ export async function lockResources(context: TenantContext, requests: readonly L
         if (!r.warehouseId)
           fail('El bloqueo requiere almacén.');
         const table = r.kind === 'order' ? 'orders' : 'layout_elements';
-        result = await queryTenant(context, `SELECT id FROM app.${table} WHERE tenant_id=$1 AND warehouse_id=$2 AND id=$3 ${r.kind === 'location' ? "AND type='location'" : ''} FOR UPDATE`, [context.tenantId, r.warehouseId, r.id]);
+        result = await queryTenant(context, `SELECT id FROM app.${table} WHERE tenant_id=$1 AND warehouse_id=$2 AND id=$3 ${r.kind === 'location' ? "AND type='location' AND removed_at IS NULL" : ''} FOR UPDATE`, [context.tenantId, r.warehouseId, r.id]);
       }
       else if (r.kind === 'stock') {
         if (!r.warehouseId || !r.productId)
