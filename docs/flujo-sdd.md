@@ -129,3 +129,36 @@ El usuario pidió completar el bloque seguido y confirmó que no se use Supabase
 ## Versionado y publicación solicitados — 29/10/2026
 
 El usuario solicitó subir los cambios versionados de forma profesional. Se separan los bloques en commits de dominio (T011–T019) y persistencia/aislamiento (T020–T031), con evidencia y documentación. Esta publicación de código no despliega la aplicación ni cambia el siguiente bloque pendiente. Los cierres anteriores sin commit/push describen el estado al terminar cada ejecución, antes de esta solicitud.
+
+
+## Ejecución continua autorizada: T032–T052 — 29/10/2026
+
+Se completó el bloque de transacciones/referencias y acceso/equipo en una rama
+feature creada desde `dev`. [Evidencia de fases 3–4](evidencias/fase-03-04.md):
+152 pruebas unitarias y 83 de integración, 11 controles de arquitectura,
+instalación congelada, tipos/build y migraciones repetibles correctos.
+Se conservaron spec, plan, contratos y constitución; solo se marcaron las casillas
+aprobadas. T053 no se inicia. El flujo de revisión solicitado dirige el PR a `dev`;
+la integración a `main` requiere su PR posterior. No se adelantó UI ni despliegue.
+
+
+## Ejecución continua autorizada: T053–T072 — 29/10/2026
+
+Se completó el bloque de almacenes, geometría, catálogo, inventario, bloqueos e
+historial en `feature/t053-t072-warehouse-inventory`, partiendo de T052 porque su
+PR todavía espera integración. [Evidencia de fases 5–6](evidencias/fase-05-06.md):
+152 unitarias y 121 de integración, lint, 11 controles de capas, tipos/build y
+migraciones repetibles correctos. Se conservaron spec, plan, contratos y
+constitución; se marcaron solo T053–T072. La dependencia del PR anterior queda
+expresada en la revisión. No se fusionan ramas ni se inicia T073 o UI.
+
+
+## Ejecución continua autorizada: T073–T095 — 30/10/2026
+
+Se completaron pedidos/reservas/picking/despachos, traslados y conteos/ajustes en
+`feature/t073-t095-outbound-transfers-counts`, basada en T072 y dependiente del PR #4.
+[Evidencia de fases 7–8](evidencias/fase-07-08.md): 152 unitarias y 159 de integración,
+11 controles de capas, lint, tipos/build, instalación congelada y migraciones
+repetibles. Se conservaron spec, plan, contratos y constitución; solo se marcaron
+T073–T095. Las comprobaciones que pasaron con protecciones previas se registran
+como verificación directa. No se inicia T096, UI o despliegue ni se fusionan ramas.

@@ -37,7 +37,7 @@ Estas restricciones no implementan todavía el flujo HTTP ni sustituyen las comp
 
 `withTenantTransaction(pool, tenantId, callback)` fija `app.tenant_id` mediante `set_config(..., true)`, equivalente a un valor local de transacción. El objeto de contexto es inmutable, solo se admite mientras está activo y no se puede reconstruir pasando un objeto con el mismo UUID. Se invalida al finalizar, también ante rollback.
 
-`ProductRepository.findById` añade el filtro explícito de empresa y excluye productos retirados. RLS es la segunda barrera. La identidad de empresa debe proceder del servidor; la autenticación y conexión del guard de sesión corresponden a T038–T045. Esta base no autentica a una persona por recibir un UUID.
+`ProductRepository.findById` añade el filtro explícito de empresa y excluye productos retirados. RLS es la segunda barrera. La identidad de empresa debe proceder del servidor; la API ya deriva esa identidad de la sesión en T038–T045. Esta base no autentica a una persona por recibir un UUID.
 
 La prueba reutiliza el mismo backend PostgreSQL para alternar empresas y comprueba que no queda contexto después de commit o rollback. El SQL de `queryTenant` es interno del servidor; no se ofrece una entrada de SQL al cliente.
 
@@ -46,13 +46,13 @@ La prueba reutiliza el mismo backend PostgreSQL para alternar empresas y comprue
 | Rol | Uso | Privilegios relevantes |
 |---|---|---|
 | `alm_app` | Consultas y operaciones del servidor | Sin superusuario, creación de roles/base, propiedad o BYPASSRLS; acceso por empresa y actualizaciones limitadas por columna |
-| `alm_provision` | Futuro adaptador limitado de alta inicial | Credencial independiente; sin acceso directo a inventario ni permisos generales sobre tablas |
+| `alm_provision` | Adaptador limitado de alta SaaS/setup local | Credencial independiente; sin acceso directo a inventario ni permisos generales sobre tablas |
 | `alm_migrator` | Migraciones y mantenimiento autorizado | Propietario de objetos, sin superusuario/BYPASSRLS; política de mantenimiento explícita |
 | `alm_bootstrap` | Preparación local y fixtures aisladas | Administrador del contenedor; no es credencial de operación del WMS |
 
 RLS está habilitada y forzada en las 23 tablas de empresa. `alm_app` solo ve/escribe filas del contexto; sin contexto no ve datos y no puede insertar filas operativas. El rol de migraciones tiene una política de mantenimiento intencionalmente amplia, por lo que su credencial no se usa como conexión normal de la API.
 
-Libro y auditoría permiten a la aplicación SELECT/INSERT, no UPDATE/DELETE/TRUNCATE. Las posiciones de stock tampoco se borran con ese rol. La creación global de empresas y la instalación quedan fuera del acceso SQL directo de aplicación. Las funciones limitadas de acceso/provisión se implementarán en T038 y tareas de alta; no se adelantan aquí.
+Libro y auditoría permiten a la aplicación SELECT/INSERT, no UPDATE/DELETE/TRUNCATE. Las posiciones de stock tampoco se borran con ese rol. La creación global de empresas y la instalación quedan fuera del acceso SQL directo de aplicación. Las funciones de acceso/provisión de T038–T044 tienen permisos específicos de ejecución y search_path fijo; no permiten un listado operativo global. La aplicación crea sesiones mediante la función acotada, sin INSERT directo sobre esa tabla.
 
 ## Preparación de una instalación existente
 
@@ -75,4 +75,40 @@ La migración fija los rangos L/N del runtime y los 28 pares de compatibilidad, 
 
 Ver [evidencia de fase 2](evidencias/fase-02.md) e [informe de consultas](reportes/consultas-fase-02.md). Las pruebas crean bases `phase2_<uuid>_test`, aplican el diario real y eliminan solo esas bases. El bootstrap también se verificó en un contenedor PostgreSQL vacío y sin red publicada.
 
-No hay todavía endpoints operativos de inventario, login funcional, funciones iniciales de credencial, dispatcher SSE, parser CSV/XLSX o UI. RLS SQL y los índices actuales no acreditan esas tareas ni los objetivos de rendimiento del perfil grande.
+Hay acceso/equipo por HTTP y funciones limitadas de credencial/provisión; hay almacenes, catálogo, geometría, recepciones/movimientos e historial; también hay salidas, traslados y conteos/ajustes HTTP; faltan reportes/archivos, dispatcher SSE y UI. RLS SQL y los índices actuales no acreditan esas tareas ni los objetivos de rendimiento del perfil grande.
+
+
+La fase 3 añade un trigger que rechaza reescribir comandos confirmados y un
+protocolo común de bloqueos. La fase 4 añade funciones de acceso, registro,
+setup y creación de sesión; no modifica las primeras doce migraciones ya
+aplicadas. Hay 17 versiones y se conserva RLS forzada en 23 tablas. Ver
+[evidencia de fases 3–4](evidencias/fase-03-04.md).
+
+
+## Fases 5–6: identidad física y operaciones
+
+`0017_layout_identity` añade retiro lógico de elementos físicos, unicidad de UUID
+por empresa y códigos únicos entre elementos activos. Los FK históricos y las
+filas vacías de stock permanecen intactos; los locks de ubicación excluyen filas
+retiradas. No se editan las versiones previas del diario. Total: 18 migraciones.
+
+Las recepciones/movimientos validan después de adquirir barreras y filas; crean
+saldos vacíos bajo el lock de ubicación y confirman cantidades, revisión física,
+asientos y resultado juntos. Los bloqueos no modifican reservas ni avances.
+El [informe ejecutado](evidencias/fase-05-06.md) registra las carreras y la
+reconciliación SQL independiente del libro contra saldos.
+
+
+## Fases 7–8: saldos de salida, tránsito y correcciones
+
+No cambian tablas ni migraciones: las 18 versiones existentes ya contemplaban
+pedidos/líneas/asignaciones, traslados/recibos y conteos/ajustes con sus FK de ámbito.
+Los servicios validan y bloquean las referencias antes de escribir los acumulados.
+No se usa la credencial de mantenimiento para el tráfico HTTP normal.
+
+El físico y reservado por posición reconcilian con sus deltas del libro; el
+tránsito por traslado/producto reconcilia con `departed-received`. La cancelación
+libera reserva sin disminuir físico. El ajuste conserva la referencia de conteo
+original y registra otra confirmación con su motivo; no sobrescribe observaciones.
+La [evidencia ejecutada](evidencias/fase-07-08.md) incluye pruebas con roles reales,
+fallos intermedios, conexiones distintas y un flujo combinado con reconciliación SQL.
